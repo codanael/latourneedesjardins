@@ -1,16 +1,21 @@
 import { Handlers } from "$fresh/server.ts";
-import { createUser, createEvent, getUserByEmail, getEventsByHost } from "../../utils/db-operations.ts";
+import {
+  createEvent,
+  createUser,
+  getEventsByHost,
+  getUserByEmail,
+} from "../../utils/db-operations.ts";
 
 export const handler: Handlers = {
   // GET /api/hosts - Get host profile and events
   GET(req) {
     const url = new URL(req.url);
     const email = url.searchParams.get("email");
-    
+
     if (!email) {
       return new Response(
         JSON.stringify({ error: "Email parameter is required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json" } },
       );
     }
 
@@ -19,7 +24,7 @@ export const handler: Handlers = {
       if (!user) {
         return new Response(
           JSON.stringify({ error: "Host not found" }),
-          { status: 404, headers: { "Content-Type": "application/json" } }
+          { status: 404, headers: { "Content-Type": "application/json" } },
         );
       }
 
@@ -37,16 +42,18 @@ export const handler: Handlers = {
           events: hostedEvents,
           stats: {
             totalEvents: hostedEvents.length,
-            upcomingEvents: hostedEvents.filter(event => new Date(event.date) >= new Date()).length,
-          }
+            upcomingEvents: hostedEvents.filter((event) =>
+              new Date(event.date) >= new Date()
+            ).length,
+          },
         }),
-        { status: 200, headers: { "Content-Type": "application/json" } }
+        { status: 200, headers: { "Content-Type": "application/json" } },
       );
     } catch (error) {
       console.error("Error fetching host data:", error);
       return new Response(
         JSON.stringify({ error: "Internal server error" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        { status: 500, headers: { "Content-Type": "application/json" } },
       );
     }
   },
@@ -55,7 +62,7 @@ export const handler: Handlers = {
   async POST(req) {
     try {
       const body = await req.json();
-      
+
       const {
         name,
         email,
@@ -73,13 +80,15 @@ export const handler: Handlers = {
 
       // Validation
       const errors: string[] = [];
-      
+
       if (!name?.trim()) errors.push("Le nom est requis");
       if (!email?.trim()) errors.push("L'email est requis");
-      if (!eventTitle?.trim()) errors.push("Le titre de l'événement est requis");
+      if (!eventTitle?.trim()) {
+        errors.push("Le titre de l'événement est requis");
+      }
       if (!eventDate?.trim()) errors.push("La date est requise");
       if (!location?.trim()) errors.push("L'adresse est requise");
-      
+
       // Email format validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (email && !emailRegex.test(email)) {
@@ -91,7 +100,7 @@ export const handler: Handlers = {
         const eventDateObj = new Date(eventDate);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         if (eventDateObj < today) {
           errors.push("La date de l'événement doit être dans le futur");
         }
@@ -99,14 +108,16 @@ export const handler: Handlers = {
 
       // Max attendees validation
       const maxAttendeesNum = parseInt(maxAttendees);
-      if (isNaN(maxAttendeesNum) || maxAttendeesNum < 1 || maxAttendeesNum > 100) {
+      if (
+        isNaN(maxAttendeesNum) || maxAttendeesNum < 1 || maxAttendeesNum > 100
+      ) {
         errors.push("Le nombre de participants doit être entre 1 et 100");
       }
 
       if (errors.length > 0) {
         return new Response(
           JSON.stringify({ error: errors.join(", ") }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
+          { status: 400, headers: { "Content-Type": "application/json" } },
         );
       }
 
@@ -144,15 +155,17 @@ export const handler: Handlers = {
             date: event.date,
             time: event.time,
             location: event.location,
-          }
+          },
         }),
-        { status: 201, headers: { "Content-Type": "application/json" } }
+        { status: 201, headers: { "Content-Type": "application/json" } },
       );
     } catch (error) {
       console.error("Error creating host event:", error);
       return new Response(
-        JSON.stringify({ error: "Une erreur est survenue lors de la création de l'événement" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({
+          error: "Une erreur est survenue lors de la création de l'événement",
+        }),
+        { status: 500, headers: { "Content-Type": "application/json" } },
       );
     }
   },

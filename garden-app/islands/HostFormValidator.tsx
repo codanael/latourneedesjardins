@@ -12,13 +12,17 @@ interface HostFormValidatorProps {
   onValidationChange: (result: ValidationResult | null) => void;
 }
 
-export default function HostFormValidator({ onValidationChange }: HostFormValidatorProps) {
+export default function HostFormValidator(
+  { onValidationChange }: HostFormValidatorProps,
+) {
   const [isValidating, setIsValidating] = useState(false);
-  const [lastValidation, setLastValidation] = useState<ValidationResult | null>(null);
+  const [lastValidation, setLastValidation] = useState<ValidationResult | null>(
+    null,
+  );
 
   const validateForm = async (formData: FormData) => {
     setIsValidating(true);
-    
+
     try {
       const data = {
         name: formData.get("name")?.toString() || "",
@@ -61,13 +65,23 @@ export default function HostFormValidator({ onValidationChange }: HostFormValida
   return (
     <div class="bg-gray-50 p-4 rounded-lg mb-6">
       {/* Validation results display */}
-      
+
       {lastValidation && (
-        <div class={`p-3 rounded-md ${lastValidation.valid ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
-          <h4 class={`font-medium ${lastValidation.valid ? 'text-green-800' : 'text-red-800'}`}>
+        <div
+          class={`p-3 rounded-md ${
+            lastValidation.valid
+              ? "bg-green-50 border border-green-200"
+              : "bg-red-50 border border-red-200"
+          }`}
+        >
+          <h4
+            class={`font-medium ${
+              lastValidation.valid ? "text-green-800" : "text-red-800"
+            }`}
+          >
             {lastValidation.message}
           </h4>
-          
+
           {lastValidation.errors.length > 0 && (
             <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
               {lastValidation.errors.map((error, index) => (
@@ -75,7 +89,7 @@ export default function HostFormValidator({ onValidationChange }: HostFormValida
               ))}
             </ul>
           )}
-          
+
           {lastValidation.warnings.length > 0 && (
             <ul class="mt-2 text-sm text-yellow-700 list-disc list-inside">
               {lastValidation.warnings.map((warning, index) => (
@@ -85,10 +99,11 @@ export default function HostFormValidator({ onValidationChange }: HostFormValida
           )}
         </div>
       )}
-      
+
       {isValidating && (
         <div class="text-center text-gray-600">
-          <span class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-2"></span>
+          <span class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-2">
+          </span>
           Validation en cours...
         </div>
       )}

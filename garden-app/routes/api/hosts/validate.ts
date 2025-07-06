@@ -23,7 +23,9 @@ export const handler: Handlers = {
       // Required field validation
       if (!name?.trim()) errors.push("Le nom est requis");
       if (!email?.trim()) errors.push("L'email est requis");
-      if (!eventTitle?.trim()) errors.push("Le titre de l'événement est requis");
+      if (!eventTitle?.trim()) {
+        errors.push("Le titre de l'événement est requis");
+      }
       if (!eventDate?.trim()) errors.push("La date est requise");
       if (!location?.trim()) errors.push("L'adresse est requise");
 
@@ -37,7 +39,9 @@ export const handler: Handlers = {
       if (email && emailRegex.test(email)) {
         const existingUser = getUserByEmail(email);
         if (existingUser) {
-          warnings.push("Cet email est déjà utilisé. L'événement sera ajouté à votre compte existant.");
+          warnings.push(
+            "Cet email est déjà utilisé. L'événement sera ajouté à votre compte existant.",
+          );
         }
       }
 
@@ -54,12 +58,14 @@ export const handler: Handlers = {
         const eventDateObj = new Date(eventDate);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        
+
         if (isNaN(eventDateObj.getTime())) {
           errors.push("Format de date invalide");
         } else if (eventDateObj < today) {
           errors.push("La date de l'événement doit être dans le futur");
-        } else if (eventDateObj > new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)) {
+        } else if (
+          eventDateObj > new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+        ) {
           warnings.push("L'événement est prévu dans plus d'un an");
         }
       }
@@ -82,18 +88,24 @@ export const handler: Handlers = {
         } else if (maxAttendeesNum > 100) {
           errors.push("Le nombre maximum de participants est 100");
         } else if (maxAttendeesNum < 5) {
-          warnings.push("Un petit nombre de participants peut limiter l'intérêt pour votre événement");
+          warnings.push(
+            "Un petit nombre de participants peut limiter l'intérêt pour votre événement",
+          );
         }
       }
 
       // Event title validation
       if (eventTitle && eventTitle.trim().length < 5) {
-        warnings.push("Un titre plus descriptif pourrait attirer plus de participants");
+        warnings.push(
+          "Un titre plus descriptif pourrait attirer plus de participants",
+        );
       }
 
       // Location validation
       if (location && location.trim().length < 10) {
-        warnings.push("Une adresse plus complète aiderait les participants à vous trouver");
+        warnings.push(
+          "Une adresse plus complète aiderait les participants à vous trouver",
+        );
       }
 
       const isValid = errors.length === 0;
@@ -105,23 +117,28 @@ export const handler: Handlers = {
           errors: errors,
           warnings: warnings,
           hasWarnings: hasWarnings,
-          message: isValid 
-            ? (hasWarnings ? "Validation réussie avec des avertissements" : "Validation réussie")
-            : "Erreurs de validation détectées"
+          message: isValid
+            ? (hasWarnings
+              ? "Validation réussie avec des avertissements"
+              : "Validation réussie")
+            : "Erreurs de validation détectées",
         }),
-        { status: isValid ? 200 : 400, headers: { "Content-Type": "application/json" } }
+        {
+          status: isValid ? 200 : 400,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     } catch (error) {
       console.error("Error validating host data:", error);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           valid: false,
           errors: ["Erreur de validation interne"],
           warnings: [],
           hasWarnings: false,
-          message: "Erreur de validation interne"
+          message: "Erreur de validation interne",
         }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        { status: 500, headers: { "Content-Type": "application/json" } },
       );
     }
   },

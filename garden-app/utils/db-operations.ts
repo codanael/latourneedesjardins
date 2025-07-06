@@ -53,11 +53,15 @@ export interface PotluckItem {
 }
 
 // User operations
-export function createUser(name: string, email: string, status: 'pending' | 'approved' | 'rejected' = 'pending'): User {
+export function createUser(
+  name: string,
+  email: string,
+  status: "pending" | "approved" | "rejected" = "pending",
+): User {
   const db = getDatabase();
   const now = new Date().toISOString();
-  const confirmedAt = status === 'approved' ? now : null;
-  
+  const confirmedAt = status === "approved" ? now : null;
+
   db.query(
     `
     INSERT INTO users (name, email, host_status, confirmed_at)
@@ -98,7 +102,7 @@ function rowToUser(row: unknown[]): User {
     email: row[2] as string,
     created_at: row[3] as string,
     updated_at: row[4] as string,
-    host_status: (row[5] as string) || 'pending',
+    host_status: (row[5] as string) || "pending",
     admin_notes: (row[6] as string) || undefined,
     confirmed_at: (row[7] as string) || undefined,
   };
@@ -465,22 +469,22 @@ export function getUserById(id: number): User | null {
     `SELECT * FROM users WHERE id = ?`,
     [id],
   );
-  
+
   if (result.length === 0) return null;
   return rowToUser(result[0] as unknown[]);
 }
 
 export function deleteEvent(id: number): boolean {
   const db = getDatabase();
-  
+
   try {
     // Delete related records first (foreign key constraints)
     db.query(`DELETE FROM potluck_items WHERE event_id = ?`, [id]);
     db.query(`DELETE FROM rsvps WHERE event_id = ?`, [id]);
-    
+
     // Delete the event
     db.query(`DELETE FROM events WHERE id = ?`, [id]);
-    
+
     return true;
   } catch (error) {
     console.error("Error deleting event:", error);
@@ -489,19 +493,23 @@ export function deleteEvent(id: number): boolean {
 }
 
 // Host status management functions
-export function updateHostStatus(userId: number, status: 'pending' | 'approved' | 'rejected', adminNotes?: string): boolean {
+export function updateHostStatus(
+  userId: number,
+  status: "pending" | "approved" | "rejected",
+  adminNotes?: string,
+): boolean {
   const db = getDatabase();
-  
+
   try {
-    const now = status === 'approved' ? new Date().toISOString() : null;
-    
+    const now = status === "approved" ? new Date().toISOString() : null;
+
     db.query(
       `UPDATE users 
        SET host_status = ?, admin_notes = ?, confirmed_at = ?, updated_at = CURRENT_TIMESTAMP 
        WHERE id = ?`,
-      [status, adminNotes || null, now, userId]
+      [status, adminNotes || null, now, userId],
     );
-    
+
     return true;
   } catch (error) {
     console.error("Error updating host status:", error);
@@ -509,36 +517,38 @@ export function updateHostStatus(userId: number, status: 'pending' | 'approved' 
   }
 }
 
-export function getHostsByStatus(status?: 'pending' | 'approved' | 'rejected'): User[] {
+export function getHostsByStatus(
+  status?: "pending" | "approved" | "rejected",
+): User[] {
   const db = getDatabase();
-  
+
   let query = `SELECT * FROM users`;
   const params: (string | number)[] = [];
-  
+
   if (status) {
     query += ` WHERE host_status = ?`;
     params.push(status);
   }
-  
+
   query += ` ORDER BY created_at DESC`;
-  
+
   const result = db.query(query, params);
   return result.map((row) => rowToUser(row as unknown[]));
 }
 
 export function autoApproveHost(email: string): boolean {
   const db = getDatabase();
-  
+
   try {
     const now = new Date().toISOString();
-    
+
     db.query(
       `UPDATE users 
        SET host_status = 'approved', confirmed_at = ?, admin_notes = 'Auto-approved', updated_at = CURRENT_TIMESTAMP 
        WHERE email = ?`,
-      [now, email]
+      [now, email],
     );
-    
+
     return true;
   } catch (error) {
     console.error("Error auto-approving host:", error);
@@ -548,17 +558,17 @@ export function autoApproveHost(email: string): boolean {
 
 export function requiresApproval(userId: number): boolean {
   const db = getDatabase();
-  
+
   try {
     const result = db.query(
       `SELECT host_status FROM users WHERE id = ?`,
-      [userId]
+      [userId],
     );
-    
+
     if (result.length === 0) return true;
-    
+
     const status = (result[0] as unknown[])[0] as string;
-    return status === 'pending';
+    return status === "pending";
   } catch (error) {
     console.error("Error checking approval status:", error);
     return true; // Default to requiring approval on error

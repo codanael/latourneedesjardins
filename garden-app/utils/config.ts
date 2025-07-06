@@ -4,11 +4,11 @@ export interface AppConfig {
   // Host approval settings
   autoApproveHosts: boolean;
   requireAdminReview: boolean;
-  
+
   // Email notifications (placeholder for future implementation)
   sendApprovalEmails: boolean;
   sendRejectionEmails: boolean;
-  
+
   // Admin settings
   adminEmails: string[];
 }
@@ -49,7 +49,7 @@ export function getAdminEmails(): string[] {
 // Host approval workflow logic
 export function getApprovalWorkflow(): "auto" | "manual" | "hybrid" {
   const config = getConfig();
-  
+
   if (config.autoApproveHosts && !config.requireAdminReview) {
     return "auto"; // Automatic approval, no admin review
   } else if (!config.autoApproveHosts || config.requireAdminReview) {

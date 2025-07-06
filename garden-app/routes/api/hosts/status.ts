@@ -1,5 +1,10 @@
 import { Handlers } from "$fresh/server.ts";
-import { getUserByEmail, getHostsByStatus, getEventsByHost, updateHostStatus } from "../../../utils/db-operations.ts";
+import {
+  getEventsByHost,
+  getHostsByStatus,
+  getUserByEmail,
+  updateHostStatus,
+} from "../../../utils/db-operations.ts";
 
 interface HostStatus {
   id: number;
@@ -17,8 +22,12 @@ export const handler: Handlers = {
   // GET /api/hosts/status - Get all hosts with their status
   GET(req) {
     const url = new URL(req.url);
-    const statusFilter = url.searchParams.get("status") as "approved" | "pending" | "rejected" | null;
-    
+    const statusFilter = url.searchParams.get("status") as
+      | "approved"
+      | "pending"
+      | "rejected"
+      | null;
+
     try {
       const hosts = getHostsByStatus(statusFilter || undefined);
       const hostStatuses: HostStatus[] = [];
@@ -26,13 +35,16 @@ export const handler: Handlers = {
       for (const user of hosts) {
         const userEvents = getEventsByHost(user.id);
         const now = new Date();
-        const upcomingEvents = userEvents.filter(event => new Date(event.date) >= now);
+        const upcomingEvents = userEvents.filter((event) =>
+          new Date(event.date) >= now
+        );
 
         const hostStatusObj: HostStatus = {
           id: user.id,
           name: user.name,
           email: user.email,
-          status: (user.host_status as "approved" | "pending" | "rejected") || "pending",
+          status: (user.host_status as "approved" | "pending" | "rejected") ||
+            "pending",
           totalEvents: userEvents.length,
           upcomingEvents: upcomingEvents.length,
           joined: user.created_at,
@@ -56,18 +68,22 @@ export const handler: Handlers = {
           hosts: hostStatuses,
           summary: {
             total: hostStatuses.length,
-            approved: hostStatuses.filter(h => h.status === "approved").length,
-            pending: hostStatuses.filter(h => h.status === "pending").length,
-            rejected: hostStatuses.filter(h => h.status === "rejected").length,
-          }
+            approved: hostStatuses.filter((h) =>
+              h.status === "approved"
+            ).length,
+            pending: hostStatuses.filter((h) => h.status === "pending").length,
+            rejected: hostStatuses.filter((h) =>
+              h.status === "rejected"
+            ).length,
+          },
         }),
-        { status: 200, headers: { "Content-Type": "application/json" } }
+        { status: 200, headers: { "Content-Type": "application/json" } },
       );
     } catch (error) {
       console.error("Error fetching host statuses:", error);
       return new Response(
         JSON.stringify({ error: "Internal server error" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        { status: 500, headers: { "Content-Type": "application/json" } },
       );
     }
   },
@@ -76,7 +92,7 @@ export const handler: Handlers = {
   async POST(req) {
     try {
       let email: string, action: string, adminNotes: string | undefined;
-      
+
       const contentType = req.headers.get("content-type");
       if (contentType?.includes("application/json")) {
         const body = await req.json();
@@ -92,7 +108,7 @@ export const handler: Handlers = {
       if (!email || !action) {
         return new Response(
           JSON.stringify({ error: "Email and action are required" }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
+          { status: 400, headers: { "Content-Type": "application/json" } },
         );
       }
 
@@ -100,12 +116,15 @@ export const handler: Handlers = {
       if (!user) {
         return new Response(
           JSON.stringify({ error: "Host not found" }),
-          { status: 404, headers: { "Content-Type": "application/json" } }
+          { status: 404, headers: { "Content-Type": "application/json" } },
         );
       }
 
       // Map actions to status values
-      const actionStatusMap: Record<string, "pending" | "approved" | "rejected"> = {
+      const actionStatusMap: Record<
+        string,
+        "pending" | "approved" | "rejected"
+      > = {
         approve: "approved",
         reject: "rejected",
         pending: "pending",
@@ -114,8 +133,10 @@ export const handler: Handlers = {
       const validActions = Object.keys(actionStatusMap);
       if (!validActions.includes(action)) {
         return new Response(
-          JSON.stringify({ error: "Invalid action. Valid actions: " + validActions.join(", ") }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
+          JSON.stringify({
+            error: "Invalid action. Valid actions: " + validActions.join(", "),
+          }),
+          { status: 400, headers: { "Content-Type": "application/json" } },
         );
       }
 
@@ -126,20 +147,20 @@ export const handler: Handlers = {
         if (contentType?.includes("application/json")) {
           return new Response(
             JSON.stringify({ error: "Failed to update host status" }),
-            { status: 500, headers: { "Content-Type": "application/json" } }
+            { status: 500, headers: { "Content-Type": "application/json" } },
           );
         } else {
           return new Response("", {
             status: 302,
-            headers: { "Location": "/admin/hosts?error=update_failed" }
+            headers: { "Location": "/admin/hosts?error=update_failed" },
           });
         }
       }
 
       if (contentType?.includes("application/json")) {
         return new Response(
-          JSON.stringify({ 
-            success: true, 
+          JSON.stringify({
+            success: true,
             message: `Host status updated to ${newStatus}`,
             host: {
               id: user.id,
@@ -147,21 +168,21 @@ export const handler: Handlers = {
               email: user.email,
               status: newStatus,
               adminNotes: adminNotes,
-            }
+            },
           }),
-          { status: 200, headers: { "Content-Type": "application/json" } }
+          { status: 200, headers: { "Content-Type": "application/json" } },
         );
       } else {
         return new Response("", {
           status: 302,
-          headers: { "Location": "/admin/hosts?success=status_updated" }
+          headers: { "Location": "/admin/hosts?success=status_updated" },
         });
       }
     } catch (error) {
       console.error("Error processing host status update:", error);
       return new Response(
         JSON.stringify({ error: "Internal server error" }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
+        { status: 500, headers: { "Content-Type": "application/json" } },
       );
     }
   },

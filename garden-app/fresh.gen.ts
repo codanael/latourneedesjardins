@@ -5,12 +5,19 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $admin_hosts from "./routes/admin/hosts.tsx";
+import * as $admin_security from "./routes/admin/security.tsx";
 import * as $api_events_id_rsvp from "./routes/api/events/[id]/rsvp.ts";
 import * as $api_hosts from "./routes/api/hosts.ts";
 import * as $api_hosts_id_events from "./routes/api/hosts/[id]/events.ts";
 import * as $api_hosts_status from "./routes/api/hosts/status.ts";
 import * as $api_hosts_validate from "./routes/api/hosts/validate.ts";
 import * as $api_joke from "./routes/api/joke.ts";
+import * as $auth_apple from "./routes/auth/apple.ts";
+import * as $auth_callback_apple from "./routes/auth/callback/apple.ts";
+import * as $auth_callback_google from "./routes/auth/callback/google.ts";
+import * as $auth_google from "./routes/auth/google.ts";
+import * as $auth_login from "./routes/auth/login.tsx";
+import * as $auth_logout from "./routes/auth/logout.ts";
 import * as $calendar from "./routes/calendar.tsx";
 import * as $events_id_ from "./routes/events/[id].tsx";
 import * as $events_id_edit from "./routes/events/[id]/edit.tsx";
@@ -20,6 +27,7 @@ import * as $host from "./routes/host.tsx";
 import * as $host_attendees_id_ from "./routes/host/attendees/[id].tsx";
 import * as $host_dashboard from "./routes/host/dashboard.tsx";
 import * as $index from "./routes/index.tsx";
+import * as $profile from "./routes/profile.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $HostFormValidator from "./islands/HostFormValidator.tsx";
 import * as $RSVPButton from "./islands/RSVPButton.tsx";
@@ -30,12 +38,19 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/admin/hosts.tsx": $admin_hosts,
+    "./routes/admin/security.tsx": $admin_security,
     "./routes/api/events/[id]/rsvp.ts": $api_events_id_rsvp,
     "./routes/api/hosts.ts": $api_hosts,
     "./routes/api/hosts/[id]/events.ts": $api_hosts_id_events,
     "./routes/api/hosts/status.ts": $api_hosts_status,
     "./routes/api/hosts/validate.ts": $api_hosts_validate,
     "./routes/api/joke.ts": $api_joke,
+    "./routes/auth/apple.ts": $auth_apple,
+    "./routes/auth/callback/apple.ts": $auth_callback_apple,
+    "./routes/auth/callback/google.ts": $auth_callback_google,
+    "./routes/auth/google.ts": $auth_google,
+    "./routes/auth/login.tsx": $auth_login,
+    "./routes/auth/logout.ts": $auth_logout,
     "./routes/calendar.tsx": $calendar,
     "./routes/events/[id].tsx": $events_id_,
     "./routes/events/[id]/edit.tsx": $events_id_edit,
@@ -45,6 +60,7 @@ const manifest = {
     "./routes/host/attendees/[id].tsx": $host_attendees_id_,
     "./routes/host/dashboard.tsx": $host_dashboard,
     "./routes/index.tsx": $index,
+    "./routes/profile.tsx": $profile,
   },
   islands: {
     "./islands/Counter.tsx": $Counter,

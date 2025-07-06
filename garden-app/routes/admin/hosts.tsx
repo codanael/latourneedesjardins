@@ -12,16 +12,16 @@ interface HostAdminData {
 export const handler: Handlers<HostAdminData> = {
   GET(_req, ctx) {
     try {
-      const pendingHosts = getHostsByStatus('pending');
-      const approvedHosts = getHostsByStatus('approved');
-      const rejectedHosts = getHostsByStatus('rejected');
+      const pendingHosts = getHostsByStatus("pending");
+      const approvedHosts = getHostsByStatus("approved");
+      const rejectedHosts = getHostsByStatus("rejected");
 
       return ctx.render({
         hosts: {
           pending: pendingHosts,
           approved: approvedHosts,
           rejected: rejectedHosts,
-        }
+        },
       });
     } catch (error) {
       console.error("Error loading hosts:", error);
@@ -30,7 +30,7 @@ export const handler: Handlers<HostAdminData> = {
           pending: [],
           approved: [],
           rejected: [],
-        }
+        },
       });
     }
   },
@@ -79,7 +79,9 @@ export default function AdminHostsPage({ data }: PageProps<HostAdminData>) {
               </div>
               <div class="ml-4">
                 <p class="text-sm font-medium text-yellow-800">En attente</p>
-                <p class="text-2xl font-bold text-yellow-900">{hosts.pending.length}</p>
+                <p class="text-2xl font-bold text-yellow-900">
+                  {hosts.pending.length}
+                </p>
               </div>
             </div>
           </div>
@@ -91,7 +93,9 @@ export default function AdminHostsPage({ data }: PageProps<HostAdminData>) {
               </div>
               <div class="ml-4">
                 <p class="text-sm font-medium text-green-800">Approuvés</p>
-                <p class="text-2xl font-bold text-green-900">{hosts.approved.length}</p>
+                <p class="text-2xl font-bold text-green-900">
+                  {hosts.approved.length}
+                </p>
               </div>
             </div>
           </div>
@@ -103,7 +107,9 @@ export default function AdminHostsPage({ data }: PageProps<HostAdminData>) {
               </div>
               <div class="ml-4">
                 <p class="text-sm font-medium text-red-800">Rejetés</p>
-                <p class="text-2xl font-bold text-red-900">{hosts.rejected.length}</p>
+                <p class="text-2xl font-bold text-red-900">
+                  {hosts.rejected.length}
+                </p>
               </div>
             </div>
           </div>
@@ -114,18 +120,20 @@ export default function AdminHostsPage({ data }: PageProps<HostAdminData>) {
           <h2 class="text-xl font-semibold text-gray-800 mb-4">
             Candidatures en attente ({hosts.pending.length})
           </h2>
-          
-          {hosts.pending.length > 0 ? (
-            <div class="space-y-4">
-              {hosts.pending.map((host) => (
-                <HostCard key={host.id} host={host} status="pending" />
-              ))}
-            </div>
-          ) : (
-            <p class="text-gray-600 text-center py-8">
-              Aucune candidature en attente
-            </p>
-          )}
+
+          {hosts.pending.length > 0
+            ? (
+              <div class="space-y-4">
+                {hosts.pending.map((host) => (
+                  <HostCard key={host.id} host={host} status="pending" />
+                ))}
+              </div>
+            )
+            : (
+              <p class="text-gray-600 text-center py-8">
+                Aucune candidature en attente
+              </p>
+            )}
         </section>
 
         {/* Approved Hosts Section */}
@@ -133,23 +141,25 @@ export default function AdminHostsPage({ data }: PageProps<HostAdminData>) {
           <h2 class="text-xl font-semibold text-gray-800 mb-4">
             Hôtes approuvés ({hosts.approved.length})
           </h2>
-          
-          {hosts.approved.length > 0 ? (
-            <div class="space-y-4">
-              {hosts.approved.slice(0, 5).map((host) => (
-                <HostCard key={host.id} host={host} status="approved" />
-              ))}
-              {hosts.approved.length > 5 && (
-                <p class="text-sm text-gray-600 text-center">
-                  ... et {hosts.approved.length - 5} autres hôtes approuvés
-                </p>
-              )}
-            </div>
-          ) : (
-            <p class="text-gray-600 text-center py-8">
-              Aucun hôte approuvé
-            </p>
-          )}
+
+          {hosts.approved.length > 0
+            ? (
+              <div class="space-y-4">
+                {hosts.approved.slice(0, 5).map((host) => (
+                  <HostCard key={host.id} host={host} status="approved" />
+                ))}
+                {hosts.approved.length > 5 && (
+                  <p class="text-sm text-gray-600 text-center">
+                    ... et {hosts.approved.length - 5} autres hôtes approuvés
+                  </p>
+                )}
+              </div>
+            )
+            : (
+              <p class="text-gray-600 text-center py-8">
+                Aucun hôte approuvé
+              </p>
+            )}
         </section>
 
         {/* Rejected Hosts Section */}
@@ -158,7 +168,7 @@ export default function AdminHostsPage({ data }: PageProps<HostAdminData>) {
             <h2 class="text-xl font-semibold text-gray-800 mb-4">
               Candidatures rejetées ({hosts.rejected.length})
             </h2>
-            
+
             <div class="space-y-4">
               {hosts.rejected.map((host) => (
                 <HostCard key={host.id} host={host} status="rejected" />
@@ -172,7 +182,6 @@ export default function AdminHostsPage({ data }: PageProps<HostAdminData>) {
 }
 
 function HostCard({ host, status }: { host: User; status: string }) {
-
   const statusColors = {
     pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
     approved: "bg-green-100 text-green-800 border-green-200",
@@ -186,7 +195,11 @@ function HostCard({ host, status }: { host: User; status: string }) {
   };
 
   return (
-    <div class={`border rounded-lg p-4 ${statusColors[status as keyof typeof statusColors]}`}>
+    <div
+      class={`border rounded-lg p-4 ${
+        statusColors[status as keyof typeof statusColors]
+      }`}
+    >
       <div class="flex flex-col md:flex-row md:items-center md:justify-between">
         <div class="flex-1 mb-4 md:mb-0">
           <h3 class="font-semibold text-lg">{host.name}</h3>
@@ -196,7 +209,8 @@ function HostCard({ host, status }: { host: User; status: string }) {
           </p>
           {host.confirmed_at && (
             <p class="text-xs opacity-60">
-              Confirmé le {new Date(host.confirmed_at).toLocaleDateString("fr-FR")}
+              Confirmé le{" "}
+              {new Date(host.confirmed_at).toLocaleDateString("fr-FR")}
             </p>
           )}
           {host.admin_notes && (
@@ -207,16 +221,28 @@ function HostCard({ host, status }: { host: User; status: string }) {
         </div>
 
         <div class="flex items-center space-x-2">
-          <span class={`px-2 py-1 text-xs font-medium rounded-full ${statusColors[status as keyof typeof statusColors]}`}>
+          <span
+            class={`px-2 py-1 text-xs font-medium rounded-full ${
+              statusColors[status as keyof typeof statusColors]
+            }`}
+          >
             {statusLabels[status as keyof typeof statusLabels]}
           </span>
-          
-          {status === 'pending' && (
+
+          {status === "pending" && (
             <div class="flex space-x-2">
-              <form method="POST" action="/api/hosts/status" style={{ display: 'inline' }}>
+              <form
+                method="POST"
+                action="/api/hosts/status"
+                style={{ display: "inline" }}
+              >
                 <input type="hidden" name="email" value={host.email} />
                 <input type="hidden" name="action" value="approve" />
-                <input type="hidden" name="adminNotes" value="Approuvé via interface admin" />
+                <input
+                  type="hidden"
+                  name="adminNotes"
+                  value="Approuvé via interface admin"
+                />
                 <button
                   type="submit"
                   class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors"
@@ -224,10 +250,18 @@ function HostCard({ host, status }: { host: User; status: string }) {
                   Approuver
                 </button>
               </form>
-              <form method="POST" action="/api/hosts/status" style={{ display: 'inline' }}>
+              <form
+                method="POST"
+                action="/api/hosts/status"
+                style={{ display: "inline" }}
+              >
                 <input type="hidden" name="email" value={host.email} />
                 <input type="hidden" name="action" value="reject" />
-                <input type="hidden" name="adminNotes" value="Rejeté via interface admin" />
+                <input
+                  type="hidden"
+                  name="adminNotes"
+                  value="Rejeté via interface admin"
+                />
                 <button
                   type="submit"
                   class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
@@ -237,12 +271,20 @@ function HostCard({ host, status }: { host: User; status: string }) {
               </form>
             </div>
           )}
-          
-          {status !== 'pending' && (
-            <form method="POST" action="/api/hosts/status" style={{ display: 'inline' }}>
+
+          {status !== "pending" && (
+            <form
+              method="POST"
+              action="/api/hosts/status"
+              style={{ display: "inline" }}
+            >
               <input type="hidden" name="email" value={host.email} />
               <input type="hidden" name="action" value="pending" />
-              <input type="hidden" name="adminNotes" value="Remis en attente via interface admin" />
+              <input
+                type="hidden"
+                name="adminNotes"
+                value="Remis en attente via interface admin"
+              />
               <button
                 type="submit"
                 class="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700 transition-colors"
