@@ -1,14 +1,43 @@
+import type { AuthenticatedUser } from "../utils/session.ts";
+
 interface NavigationProps {
   currentPath?: string;
+  user?: AuthenticatedUser | null;
 }
 
-export default function Navigation({ currentPath = "/" }: NavigationProps) {
-  const navItems = [
+export default function Navigation(
+  { currentPath = "/", user }: NavigationProps,
+) {
+  const baseNavItems = [
     { href: "/", label: "Accueil", icon: "🏠" },
     { href: "/events", label: "Événements", icon: "🌻" },
     { href: "/calendar", label: "Calendrier", icon: "📅" },
-    { href: "/host", label: "Devenir Hôte", icon: "🌱", highlight: true },
   ];
+
+  const authNavItems = user
+    ? [
+      ...(user.host_status === "approved"
+        ? [
+          { href: "/host/dashboard", label: "Tableau de bord", icon: "📊" },
+        ]
+        : []),
+      {
+        href: "/host",
+        label: user.host_status === "approved"
+          ? "Nouvel événement"
+          : "Devenir Hôte",
+        icon: "🌱",
+        highlight: true,
+      },
+      { href: "/profile", label: "Profil", icon: "👤" },
+      { href: "/auth/logout", label: "Déconnexion", icon: "🚪" },
+    ]
+    : [
+      { href: "/host", label: "Devenir Hôte", icon: "🌱", highlight: true },
+      { href: "/auth/login", label: "Connexion", icon: "🔑" },
+    ];
+
+  const navItems = [...baseNavItems, ...authNavItems];
 
   const isActive = (href: string) => {
     if (href === "/" && currentPath === "/") return true;

@@ -1,4 +1,5 @@
 import { getDatabase } from "./database.ts";
+import { initializeSessionsTable } from "./session.ts";
 
 export function initializeDatabase() {
   const db = getDatabase();
@@ -102,6 +103,9 @@ export function initializeDatabase() {
   db.query(
     `CREATE INDEX IF NOT EXISTS idx_potluck_event ON potluck_items (event_id)`,
   );
+
+  // Initialize sessions table for OAuth authentication
+  initializeSessionsTable();
 
   console.log("Database schema initialized successfully");
 }

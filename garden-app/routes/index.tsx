@@ -1,14 +1,26 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Event, getUpcomingEvents } from "../utils/db-operations.ts";
+import {
+  type AuthenticatedUser,
+  getAuthenticatedUser,
+} from "../utils/session.ts";
+import Navigation from "../components/Navigation.tsx";
 
-export const handler: Handlers<Event[]> = {
-  GET(_req, ctx) {
+interface HomeData {
+  events: Event[];
+  user: AuthenticatedUser | null;
+}
+
+export const handler: Handlers<HomeData> = {
+  GET(req, ctx) {
     const upcomingEvents = getUpcomingEvents(6);
-    return ctx.render(upcomingEvents);
+    const user = getAuthenticatedUser(req);
+    return ctx.render({ events: upcomingEvents, user });
   },
 };
 
-export default function Home({ data: events }: PageProps<Event[]>) {
+export default function Home({ data }: PageProps<HomeData>) {
+  const { events, user } = data;
   return (
     <div class="min-h-screen bg-green-50">
       <div class="container mx-auto px-4 py-8">
@@ -23,34 +35,7 @@ export default function Home({ data: events }: PageProps<Event[]>) {
         </header>
 
         {/* Navigation */}
-        <nav class="mb-8">
-          <div class="flex flex-wrap justify-center gap-4">
-            <a
-              href="/"
-              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Accueil
-            </a>
-            <a
-              href="/events"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Événements
-            </a>
-            <a
-              href="/calendar"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Calendrier
-            </a>
-            <a
-              href="/host"
-              class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
-            >
-              Devenir Hôte
-            </a>
-          </div>
-        </nav>
+        <Navigation currentPath="/" user={user} />
 
         {/* Upcoming Events */}
         <section class="mb-8">
