@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, it } from "$std/testing/bdd.ts";
 import {
   createEvent,
   createUser,
-  Event,
   getAllEvents,
   getAllUsers,
   getEventById,

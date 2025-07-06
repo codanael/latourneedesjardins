@@ -12,6 +12,8 @@ import config from "./fresh.config.ts";
 import { initializeDatabase } from "./utils/schema.ts";
 import { runMigrations } from "./utils/migrations.ts";
 import { validateEnv } from "./utils/env.ts";
+import { seedDatabase } from "./utils/seed-data.ts";
+import { getAllEvents } from "./utils/db-operations.ts";
 
 // Validate environment variables
 validateEnv();
@@ -19,5 +21,11 @@ validateEnv();
 // Initialize database on startup
 initializeDatabase();
 runMigrations();
+
+// Seed database with sample data if empty
+const existingEvents = getAllEvents();
+if (existingEvents.length === 0) {
+  seedDatabase();
+}
 
 await start(manifest, config);

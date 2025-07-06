@@ -7,6 +7,7 @@ import * as $_app from "./routes/_app.tsx";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $calendar from "./routes/calendar.tsx";
 import * as $events_id_ from "./routes/events/[id].tsx";
+import * as $events_id_edit from "./routes/events/[id]/edit.tsx";
 import * as $events_index from "./routes/events/index.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $host from "./routes/host.tsx";
@@ -22,6 +23,7 @@ const manifest = {
     "./routes/api/joke.ts": $api_joke,
     "./routes/calendar.tsx": $calendar,
     "./routes/events/[id].tsx": $events_id_,
+    "./routes/events/[id]/edit.tsx": $events_id_edit,
     "./routes/events/index.tsx": $events_index,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/host.tsx": $host,

@@ -130,6 +130,12 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
                 >
                   Gérer le Potluck
                 </a>
+                <a
+                  href={`/events/${event.id}/edit`}
+                  class="block w-full bg-orange-500 text-white text-center px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  ✏️ Modifier l'événement
+                </a>
               </div>
             </div>
           </div>

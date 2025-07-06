@@ -7,19 +7,19 @@
   .btn {
     @apply px-4 py-2 rounded-lg transition-colors font-medium;
   }
-  
+
   .btn-primary {
     @apply btn bg-green-600 text-white hover:bg-green-700;
   }
-  
+
   .btn-secondary {
     @apply btn bg-green-100 text-green-800 hover:bg-green-200;
   }
-  
+
   .btn-accent {
     @apply btn bg-yellow-500 text-white hover:bg-yellow-600;
   }
-  
+
   .card {
     @apply bg-white rounded-lg shadow-md p-6;
   }
@@ -29,11 +29,11 @@
   .text-garden {
     color: #15803d;
   }
-  
+
   .bg-garden {
     background-color: #15803d;
   }
-  
+
   .border-garden {
     border-color: #15803d;
   }

@@ -1,5 +1,42 @@
 ## Relevant Files
 
+### Core Application Files
+- `garden-app/main.ts` - Application entry point with database initialization and seeding
+- `garden-app/fresh.config.ts` - Fresh framework configuration with Tailwind plugin
+- `garden-app/deno.json` - Deno configuration with dependencies and tasks including testing
+- `garden-app/.env` - Environment variables for database and API configurations
+
+### Database Layer
+- `garden-app/utils/database.ts` - SQLite database connection singleton
+- `garden-app/utils/schema.ts` - Database schema initialization for all tables
+- `garden-app/utils/migrations.ts` - Database migration system with version tracking
+- `garden-app/utils/db-operations.ts` - Complete CRUD operations for users, events, RSVPs, potluck items
+- `garden-app/utils/seed-data.ts` - Sample data seeding for development
+- `garden-app/utils/env.ts` - Environment variable validation utilities
+
+### Routes and Pages
+- `garden-app/routes/index.tsx` - Homepage with upcoming events display
+- `garden-app/routes/events/index.tsx` - All events listing page with RSVP counts
+- `garden-app/routes/events/[id].tsx` - Event detail page with participants and potluck items
+- `garden-app/routes/events/[id]/edit.tsx` - Event editing form with validation and success handling
+- `garden-app/routes/calendar.tsx` - Calendar view of events by month
+- `garden-app/routes/host.tsx` - Host sign-up form for creating events
+
+### Components and Islands
+- `garden-app/components/Navigation.tsx` - Main navigation component
+- `garden-app/components/EventCard.tsx` - Reusable event display card
+- `garden-app/components/PageHeader.tsx` - Page header component
+- `garden-app/components/Button.tsx` - Styled button component
+- `garden-app/islands/RSVPButton.tsx` - Interactive RSVP component with API integration
+
+### Testing
+- `garden-app/tests/db-operations.test.ts` - Comprehensive database operations tests
+- `garden-app/tests/env.test.ts` - Environment configuration tests
+
+### Styling
+- `garden-app/static/styles.css` - Global CSS styles
+- `garden-app/tailwind.config.ts` - Tailwind CSS configuration
+
 ### Notes
 - Use environment variables for sensitive configurations and API keys.
 - Follow responsive design principles in the CSS framework chosen for mobile optimization.
@@ -33,10 +70,10 @@
   - [x] 5.2 Create main components and pages using Fresh’s island architecture.
   - [x] 5.3 Implement responsive design using a CSS framework compatible with Fresh.
 
-- [ ] 6.0 Event Information
-  - [ ] 6.1 Develop `EventDetail.tsx` component for event details display.
-  - [ ] 6.2 Implement backend route handlers in Fresh for event operations.
-  - [ ] 6.3 Add frontend functionality to edit and update event details.
+- [x] 6.0 Event Information
+  - [x] 6.1 Develop `EventDetail.tsx` component for event details display.
+  - [x] 6.2 Implement backend route handlers in Fresh for event operations.
+  - [x] 6.3 Add frontend functionality to edit and update event details.
 
 - [ ] 7.0 RSVP System
   - [ ] 7.1 Design RSVP UI elements in event detail page.
