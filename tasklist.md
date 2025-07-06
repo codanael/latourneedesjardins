@@ -24,14 +24,14 @@
   - [x] 3.2 Define and execute database schema for users, events, RSVPs, and potluck items.
   - [x] 3.3 Implement SQLite schema migration handling.
 
-- [ ] 4.0 Environment Configuration
-  - [ ] 4.1 Set environment variables for development in `.env`.
-  - [ ] 4.2 Securely add necessary API keys for external services like weather data.
+- [x] 4.0 Environment Configuration
+  - [x] 4.1 Set environment variables for development in `.env`.
+  - [x] 4.2 Securely add necessary API keys for external services like weather data.
 
-- [ ] 5.0 Basic UI Layout
-  - [ ] 5.1 Define Fresh routes for navigation within the app.
-  - [ ] 5.2 Create main components and pages using Fresh’s island architecture.
-  - [ ] 5.3 Implement responsive design using a CSS framework compatible with Fresh.
+- [x] 5.0 Basic UI Layout
+  - [x] 5.1 Define Fresh routes for navigation within the app.
+  - [x] 5.2 Create main components and pages using Fresh’s island architecture.
+  - [x] 5.3 Implement responsive design using a CSS framework compatible with Fresh.
 
 - [ ] 6.0 Event Information
   - [ ] 6.1 Develop `EventDetail.tsx` component for event details display.

@@ -69,7 +69,7 @@ export function runMigrations() {
       
       // Record migration as executed
       db.query(`
-        INSERT INTO migrations (version, description) 
+        INSERT OR REPLACE INTO migrations (version, description) 
         VALUES (?, ?)
       `, [migration.version, migration.description]);
       

@@ -1,39 +1,54 @@
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-* {
-  margin: 0;
-}
-button {
-  color: inherit;
-}
-button, [role="button"] {
-  cursor: pointer;
-}
-code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
-  font-size: 1em;
-}
-img,
-svg {
-  display: block;
-}
-img,
-video {
-  max-width: 100%;
-  height: auto;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for La Tournée des Jardins */
+@layer base {
+  html {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  }
 }
 
-html {
-  line-height: 1.5;
-  -webkit-text-size-adjust: 100%;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg transition-colors font-medium;
+  }
+  
+  .btn-primary {
+    @apply btn bg-green-600 text-white hover:bg-green-700;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-green-100 text-green-800 hover:bg-green-200;
+  }
+  
+  .btn-accent {
+    @apply btn bg-yellow-500 text-white hover:bg-yellow-600;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+  
+  .container {
+    @apply max-w-7xl mx-auto px-4;
+  }
+}
+
+@layer utilities {
+  .text-garden {
+    color: #15803d;
+  }
+  
+  .bg-garden {
+    background-color: #15803d;
+  }
+  
+  .border-garden {
+    border-color: #15803d;
+  }
 }
 .transition-colors {
   transition-property: background-color, border-color, color, fill, stroke;

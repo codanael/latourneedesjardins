@@ -11,6 +11,10 @@ import manifest from "./fresh.gen.ts";
 import config from "./fresh.config.ts";
 import { initializeDatabase } from "./utils/schema.ts";
 import { runMigrations } from "./utils/migrations.ts";
+import { validateEnv } from "./utils/env.ts";
+
+// Validate environment variables
+validateEnv();
 
 // Initialize database on startup
 initializeDatabase();
