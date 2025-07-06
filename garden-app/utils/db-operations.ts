@@ -6,6 +6,9 @@ export interface User {
   email: string;
   created_at: string;
   updated_at: string;
+  host_status?: string;
+  admin_notes?: string;
+  confirmed_at?: string;
 }
 
 export interface Event {
@@ -50,14 +53,17 @@ export interface PotluckItem {
 }
 
 // User operations
-export function createUser(name: string, email: string): User {
+export function createUser(name: string, email: string, status: 'pending' | 'approved' | 'rejected' = 'pending'): User {
   const db = getDatabase();
+  const now = new Date().toISOString();
+  const confirmedAt = status === 'approved' ? now : null;
+  
   db.query(
     `
-    INSERT INTO users (name, email)
-    VALUES (?, ?)
+    INSERT INTO users (name, email, host_status, confirmed_at)
+    VALUES (?, ?, ?, ?)
   `,
-    [name, email],
+    [name, email, status, confirmedAt],
   );
 
   const result = db.query(
@@ -92,6 +98,9 @@ function rowToUser(row: unknown[]): User {
     email: row[2] as string,
     created_at: row[3] as string,
     updated_at: row[4] as string,
+    host_status: (row[5] as string) || 'pending',
+    admin_notes: (row[6] as string) || undefined,
+    confirmed_at: (row[7] as string) || undefined,
   };
 }
 
@@ -476,5 +485,82 @@ export function deleteEvent(id: number): boolean {
   } catch (error) {
     console.error("Error deleting event:", error);
     return false;
+  }
+}
+
+// Host status management functions
+export function updateHostStatus(userId: number, status: 'pending' | 'approved' | 'rejected', adminNotes?: string): boolean {
+  const db = getDatabase();
+  
+  try {
+    const now = status === 'approved' ? new Date().toISOString() : null;
+    
+    db.query(
+      `UPDATE users 
+       SET host_status = ?, admin_notes = ?, confirmed_at = ?, updated_at = CURRENT_TIMESTAMP 
+       WHERE id = ?`,
+      [status, adminNotes || null, now, userId]
+    );
+    
+    return true;
+  } catch (error) {
+    console.error("Error updating host status:", error);
+    return false;
+  }
+}
+
+export function getHostsByStatus(status?: 'pending' | 'approved' | 'rejected'): User[] {
+  const db = getDatabase();
+  
+  let query = `SELECT * FROM users`;
+  const params: (string | number)[] = [];
+  
+  if (status) {
+    query += ` WHERE host_status = ?`;
+    params.push(status);
+  }
+  
+  query += ` ORDER BY created_at DESC`;
+  
+  const result = db.query(query, params);
+  return result.map((row) => rowToUser(row as unknown[]));
+}
+
+export function autoApproveHost(email: string): boolean {
+  const db = getDatabase();
+  
+  try {
+    const now = new Date().toISOString();
+    
+    db.query(
+      `UPDATE users 
+       SET host_status = 'approved', confirmed_at = ?, admin_notes = 'Auto-approved', updated_at = CURRENT_TIMESTAMP 
+       WHERE email = ?`,
+      [now, email]
+    );
+    
+    return true;
+  } catch (error) {
+    console.error("Error auto-approving host:", error);
+    return false;
+  }
+}
+
+export function requiresApproval(userId: number): boolean {
+  const db = getDatabase();
+  
+  try {
+    const result = db.query(
+      `SELECT host_status FROM users WHERE id = ?`,
+      [userId]
+    );
+    
+    if (result.length === 0) return true;
+    
+    const status = (result[0] as unknown[])[0] as string;
+    return status === 'pending';
+  } catch (error) {
+    console.error("Error checking approval status:", error);
+    return true; // Default to requiring approval on error
   }
 }

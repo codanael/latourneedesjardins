@@ -1,55 +1,46 @@
 import { Handlers } from "$fresh/server.ts";
-import { getUserByEmail, getAllUsers, getEventsByHost } from "../../../utils/db-operations.ts";
+import { getUserByEmail, getHostsByStatus, getEventsByHost, updateHostStatus } from "../../../utils/db-operations.ts";
 
 interface HostStatus {
   id: number;
   name: string;
   email: string;
-  status: "active" | "pending" | "inactive";
+  status: "approved" | "pending" | "rejected";
   totalEvents: number;
   upcomingEvents: number;
   joined: string;
+  confirmedAt?: string;
+  adminNotes?: string;
 }
 
 export const handler: Handlers = {
   // GET /api/hosts/status - Get all hosts with their status
   GET(req) {
     const url = new URL(req.url);
-    const status = url.searchParams.get("status"); // Filter by status if provided
+    const statusFilter = url.searchParams.get("status") as "approved" | "pending" | "rejected" | null;
     
     try {
-      const allUsers = getAllUsers();
+      const hosts = getHostsByStatus(statusFilter || undefined);
       const hostStatuses: HostStatus[] = [];
 
-      for (const user of allUsers) {
+      for (const user of hosts) {
         const userEvents = getEventsByHost(user.id);
         const now = new Date();
         const upcomingEvents = userEvents.filter(event => new Date(event.date) >= now);
-        
-        // Determine host status based on events and activity
-        let hostStatus: "active" | "pending" | "inactive" = "inactive";
-        if (userEvents.length === 0) {
-          hostStatus = "pending"; // New user who hasn't created events yet
-        } else if (upcomingEvents.length > 0) {
-          hostStatus = "active"; // Has upcoming events
-        } else {
-          hostStatus = "inactive"; // Only has past events
-        }
 
         const hostStatusObj: HostStatus = {
           id: user.id,
           name: user.name,
           email: user.email,
-          status: hostStatus,
+          status: (user.host_status as "approved" | "pending" | "rejected") || "pending",
           totalEvents: userEvents.length,
           upcomingEvents: upcomingEvents.length,
           joined: user.created_at,
+          confirmedAt: user.confirmed_at || undefined,
+          adminNotes: user.admin_notes || undefined,
         };
 
-        // Apply status filter if provided
-        if (!status || hostStatusObj.status === status) {
-          hostStatuses.push(hostStatusObj);
-        }
+        hostStatuses.push(hostStatusObj);
       }
 
       // Sort by number of events (most active first) and then by name
@@ -65,9 +56,9 @@ export const handler: Handlers = {
           hosts: hostStatuses,
           summary: {
             total: hostStatuses.length,
-            active: hostStatuses.filter(h => h.status === "active").length,
+            approved: hostStatuses.filter(h => h.status === "approved").length,
             pending: hostStatuses.filter(h => h.status === "pending").length,
-            inactive: hostStatuses.filter(h => h.status === "inactive").length,
+            rejected: hostStatuses.filter(h => h.status === "rejected").length,
           }
         }),
         { status: 200, headers: { "Content-Type": "application/json" } }
@@ -84,8 +75,19 @@ export const handler: Handlers = {
   // POST /api/hosts/status - Update host status (for admin use)
   async POST(req) {
     try {
-      const body = await req.json();
-      const { email, action } = body;
+      let email: string, action: string, adminNotes: string | undefined;
+      
+      const contentType = req.headers.get("content-type");
+      if (contentType?.includes("application/json")) {
+        const body = await req.json();
+        ({ email, action, adminNotes } = body);
+      } else {
+        // Handle form data
+        const formData = await req.formData();
+        email = formData.get("email")?.toString() || "";
+        action = formData.get("action")?.toString() || "";
+        adminNotes = formData.get("adminNotes")?.toString();
+      }
 
       if (!email || !action) {
         return new Response(
@@ -102,11 +104,14 @@ export const handler: Handlers = {
         );
       }
 
-      // For now, this is a placeholder for future admin functionality
-      // In a real application, you might want to add a status column to users table
-      // and implement actual approval/rejection logic
+      // Map actions to status values
+      const actionStatusMap: Record<string, "pending" | "approved" | "rejected"> = {
+        approve: "approved",
+        reject: "rejected",
+        pending: "pending",
+      };
 
-      const validActions = ["approve", "reject", "deactivate", "reactivate"];
+      const validActions = Object.keys(actionStatusMap);
       if (!validActions.includes(action)) {
         return new Response(
           JSON.stringify({ error: "Invalid action. Valid actions: " + validActions.join(", ") }),
@@ -114,22 +119,44 @@ export const handler: Handlers = {
         );
       }
 
-      // Log the action (in a real app, you'd update the database)
-      console.log(`Host status action: ${action} for user ${email} (ID: ${user.id})`);
+      const newStatus = actionStatusMap[action];
+      const success = updateHostStatus(user.id, newStatus, adminNotes);
 
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: `Host ${action} action processed successfully`,
-          host: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            action: action,
-          }
-        }),
-        { status: 200, headers: { "Content-Type": "application/json" } }
-      );
+      if (!success) {
+        if (contentType?.includes("application/json")) {
+          return new Response(
+            JSON.stringify({ error: "Failed to update host status" }),
+            { status: 500, headers: { "Content-Type": "application/json" } }
+          );
+        } else {
+          return new Response("", {
+            status: 302,
+            headers: { "Location": "/admin/hosts?error=update_failed" }
+          });
+        }
+      }
+
+      if (contentType?.includes("application/json")) {
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            message: `Host status updated to ${newStatus}`,
+            host: {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              status: newStatus,
+              adminNotes: adminNotes,
+            }
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        );
+      } else {
+        return new Response("", {
+          status: 302,
+          headers: { "Location": "/admin/hosts?success=status_updated" }
+        });
+      }
     } catch (error) {
       console.error("Error processing host status update:", error);
       return new Response(

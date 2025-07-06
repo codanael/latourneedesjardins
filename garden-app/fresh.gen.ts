@@ -5,6 +5,10 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $api_events_id_rsvp from "./routes/api/events/[id]/rsvp.ts";
+import * as $api_hosts from "./routes/api/hosts.ts";
+import * as $api_hosts_id_events from "./routes/api/hosts/[id]/events.ts";
+import * as $api_hosts_status from "./routes/api/hosts/status.ts";
+import * as $api_hosts_validate from "./routes/api/hosts/validate.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $calendar from "./routes/calendar.tsx";
 import * as $events_id_ from "./routes/events/[id].tsx";
@@ -16,6 +20,7 @@ import * as $host_attendees_id_ from "./routes/host/attendees/[id].tsx";
 import * as $host_dashboard from "./routes/host/dashboard.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $HostFormValidator from "./islands/HostFormValidator.tsx";
 import * as $RSVPButton from "./islands/RSVPButton.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
@@ -24,6 +29,10 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/api/events/[id]/rsvp.ts": $api_events_id_rsvp,
+    "./routes/api/hosts.ts": $api_hosts,
+    "./routes/api/hosts/[id]/events.ts": $api_hosts_id_events,
+    "./routes/api/hosts/status.ts": $api_hosts_status,
+    "./routes/api/hosts/validate.ts": $api_hosts_validate,
     "./routes/api/joke.ts": $api_joke,
     "./routes/calendar.tsx": $calendar,
     "./routes/events/[id].tsx": $events_id_,
@@ -37,6 +46,7 @@ const manifest = {
   },
   islands: {
     "./islands/Counter.tsx": $Counter,
+    "./islands/HostFormValidator.tsx": $HostFormValidator,
     "./islands/RSVPButton.tsx": $RSVPButton,
   },
   baseUrl: import.meta.url,

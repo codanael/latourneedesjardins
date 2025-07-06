@@ -41,6 +41,27 @@ export function initializeDatabase() {
     // Column already exists, ignore the error
   }
 
+  // Add host_status column to users table if it doesn't exist
+  try {
+    db.query(`ALTER TABLE users ADD COLUMN host_status TEXT DEFAULT 'pending'`);
+  } catch {
+    // Column already exists, ignore the error
+  }
+
+  // Add admin_notes column to users table if it doesn't exist
+  try {
+    db.query(`ALTER TABLE users ADD COLUMN admin_notes TEXT`);
+  } catch {
+    // Column already exists, ignore the error
+  }
+
+  // Add confirmed_at column to users table if it doesn't exist
+  try {
+    db.query(`ALTER TABLE users ADD COLUMN confirmed_at DATETIME`);
+  } catch {
+    // Column already exists, ignore the error
+  }
+
   // RSVPs table
   db.query(`
     CREATE TABLE IF NOT EXISTS rsvps (

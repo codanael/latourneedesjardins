@@ -1,10 +1,13 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { createUser, createEvent, getUserByEmail } from "../utils/db-operations.ts";
+import { isAutoApprovalEnabled } from "../utils/config.ts";
 
 interface FormData {
   success?: boolean;
   error?: string;
   formValues?: Record<string, string>;
+  autoApproved?: boolean;
+  userStatus?: string;
 }
 
 export const handler: Handlers<FormData> = {
@@ -78,7 +81,8 @@ export const handler: Handlers<FormData> = {
       // Check if user already exists or create new user
       let user = getUserByEmail(hostData.email);
       if (!user) {
-        user = createUser(hostData.name, hostData.email);
+        const initialStatus = isAutoApprovalEnabled() ? 'approved' : 'pending';
+        user = createUser(hostData.name, hostData.email, initialStatus);
       }
 
       // Create event
@@ -97,7 +101,11 @@ export const handler: Handlers<FormData> = {
 
       console.log("New host event created:", { user, event });
 
-      return ctx.render({ success: true });
+      return ctx.render({ 
+        success: true, 
+        autoApproved: isAutoApprovalEnabled(),
+        userStatus: user.host_status 
+      });
     } catch (error) {
       console.error("Error creating host event:", error);
       return ctx.render({
@@ -118,10 +126,13 @@ export default function HostPage({ data }: PageProps<FormData>) {
           <div class="text-center">
             <div class="text-6xl mb-4">🎉</div>
             <h1 class="text-2xl font-bold text-green-800 mb-4">
-              Merci pour votre candidature !
+              {data.autoApproved ? "Événement créé avec succès !" : "Candidature soumise !"}
             </h1>
             <p class="text-gray-600 mb-6">
-              Votre événement a été créé avec succès ! Il est maintenant visible dans le calendrier et les autres utilisateurs peuvent s'y inscrire.
+              {data.autoApproved 
+                ? "Votre événement a été créé et approuvé automatiquement ! Il est maintenant visible dans le calendrier et les autres utilisateurs peuvent s'y inscrire."
+                : "Votre candidature d'hôte a été soumise avec succès. Elle sera examinée par notre équipe et vous recevrez une notification une fois approuvée."
+              }
             </p>
             <div class="space-y-3">
               <a
@@ -130,18 +141,30 @@ export default function HostPage({ data }: PageProps<FormData>) {
               >
                 Retour à l'accueil
               </a>
-              <a
-                href="/calendar"
-                class="block w-full bg-green-100 text-green-800 text-center px-6 py-3 rounded-lg hover:bg-green-200 transition-colors"
-              >
-                Voir le calendrier
-              </a>
-              <a
-                href="/host/dashboard"
-                class="block w-full bg-blue-100 text-blue-800 text-center px-6 py-3 rounded-lg hover:bg-blue-200 transition-colors"
-              >
-                Gérer mes événements
-              </a>
+              
+              {data.autoApproved ? (
+                <>
+                  <a
+                    href="/calendar"
+                    class="block w-full bg-green-100 text-green-800 text-center px-6 py-3 rounded-lg hover:bg-green-200 transition-colors"
+                  >
+                    Voir le calendrier
+                  </a>
+                  <a
+                    href="/host/dashboard"
+                    class="block w-full bg-blue-100 text-blue-800 text-center px-6 py-3 rounded-lg hover:bg-blue-200 transition-colors"
+                  >
+                    Gérer mes événements
+                  </a>
+                </>
+              ) : (
+                <a
+                  href="/events"
+                  class="block w-full bg-green-100 text-green-800 text-center px-6 py-3 rounded-lg hover:bg-green-200 transition-colors"
+                >
+                  Voir les autres événements
+                </a>
+              )}
             </div>
           </div>
         </div>
