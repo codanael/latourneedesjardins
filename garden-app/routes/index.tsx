@@ -1,26 +1,9 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-
-interface Event {
-  id: number;
-  title: string;
-  date: string;
-  location: string;
-  host_name: string;
-}
+import { Event, getUpcomingEvents } from "../utils/db-operations.ts";
 
 export const handler: Handlers<Event[]> = {
-  async GET(req, ctx) {
-    // TODO: Fetch upcoming events from database
-    const upcomingEvents: Event[] = [
-      {
-        id: 1,
-        title: "Garden Party chez Marie",
-        date: "2024-07-15",
-        location: "123 Rue des Jardins, Paris",
-        host_name: "Marie Dupont"
-      }
-    ];
-    
+  GET(_req, ctx) {
+    const upcomingEvents = getUpcomingEvents(6);
     return ctx.render(upcomingEvents);
   },
 };
@@ -42,26 +25,26 @@ export default function Home({ data: events }: PageProps<Event[]>) {
         {/* Navigation */}
         <nav class="mb-8">
           <div class="flex flex-wrap justify-center gap-4">
-            <a 
-              href="/" 
+            <a
+              href="/"
               class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
             >
               Accueil
             </a>
-            <a 
-              href="/events" 
+            <a
+              href="/events"
               class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
             >
               Événements
             </a>
-            <a 
-              href="/calendar" 
+            <a
+              href="/calendar"
               class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
             >
               Calendrier
             </a>
-            <a 
-              href="/host" 
+            <a
+              href="/host"
               class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
             >
               Devenir Hôte
@@ -74,45 +57,50 @@ export default function Home({ data: events }: PageProps<Event[]>) {
           <h2 class="text-2xl font-semibold text-green-800 mb-4">
             Prochains Événements
           </h2>
-          
-          {events.length > 0 ? (
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {events.map((event) => (
-                <div key={event.id} class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                  <h3 class="text-xl font-semibold text-green-800 mb-2">
-                    {event.title}
-                  </h3>
-                  <p class="text-gray-600 mb-2">
-                    📅 {new Date(event.date).toLocaleDateString('fr-FR')}
-                  </p>
-                  <p class="text-gray-600 mb-2">
-                    📍 {event.location}
-                  </p>
-                  <p class="text-gray-600 mb-4">
-                    🌱 Hôte: {event.host_name}
-                  </p>
-                  <a 
-                    href={`/events/${event.id}`}
-                    class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+
+          {events.length > 0
+            ? (
+              <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {events.map((event) => (
+                  <div
+                    key={event.id}
+                    class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
                   >
-                    Voir détails
-                  </a>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div class="bg-white rounded-lg shadow-md p-8 text-center">
-              <p class="text-gray-600 mb-4">
-                Aucun événement prévu pour le moment
-              </p>
-              <a 
-                href="/host"
-                class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                Organiser un événement
-              </a>
-            </div>
-          )}
+                    <h3 class="text-xl font-semibold text-green-800 mb-2">
+                      {event.title}
+                    </h3>
+                    <p class="text-gray-600 mb-2">
+                      📅 {new Date(event.date).toLocaleDateString("fr-FR")}
+                    </p>
+                    <p class="text-gray-600 mb-2">
+                      📍 {event.location}
+                    </p>
+                    <p class="text-gray-600 mb-4">
+                      🌱 Hôte: {event.host_name}
+                    </p>
+                    <a
+                      href={`/events/${event.id}`}
+                      class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors"
+                    >
+                      Voir détails
+                    </a>
+                  </div>
+                ))}
+              </div>
+            )
+            : (
+              <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                <p class="text-gray-600 mb-4">
+                  Aucun événement prévu pour le moment
+                </p>
+                <a
+                  href="/host"
+                  class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                >
+                  Organiser un événement
+                </a>
+              </div>
+            )}
         </section>
 
         {/* Quick Actions */}
@@ -121,13 +109,13 @@ export default function Home({ data: events }: PageProps<Event[]>) {
             Actions Rapides
           </h2>
           <div class="flex flex-wrap justify-center gap-4">
-            <a 
+            <a
               href="/events"
               class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
             >
               Voir tous les événements
             </a>
-            <a 
+            <a
               href="/calendar"
               class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors"
             >

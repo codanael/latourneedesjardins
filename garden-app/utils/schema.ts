@@ -2,7 +2,7 @@ import { getDatabase } from "./database.ts";
 
 export function initializeDatabase() {
   const db = getDatabase();
-  
+
   // Users table
   db.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -70,7 +70,9 @@ export function initializeDatabase() {
   db.query(`CREATE INDEX IF NOT EXISTS idx_events_host ON events (host_id)`);
   db.query(`CREATE INDEX IF NOT EXISTS idx_rsvps_event ON rsvps (event_id)`);
   db.query(`CREATE INDEX IF NOT EXISTS idx_rsvps_user ON rsvps (user_id)`);
-  db.query(`CREATE INDEX IF NOT EXISTS idx_potluck_event ON potluck_items (event_id)`);
-  
+  db.query(
+    `CREATE INDEX IF NOT EXISTS idx_potluck_event ON potluck_items (event_id)`,
+  );
+
   console.log("Database schema initialized successfully");
 }

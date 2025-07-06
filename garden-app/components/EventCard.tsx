@@ -17,13 +17,15 @@ interface EventCardProps {
   showActions?: boolean;
 }
 
-export default function EventCard({ event, variant = "detailed", showActions = true }: EventCardProps) {
+export default function EventCard(
+  { event, variant = "detailed", showActions = true }: EventCardProps,
+) {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("fr-FR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -40,21 +42,21 @@ export default function EventCard({ event, variant = "detailed", showActions = t
             </div>
           )}
         </div>
-        
+
         <h3 class="text-lg font-semibold text-green-800 mb-2">
           {event.title}
         </h3>
-        
+
         <p class="text-sm text-gray-600 mb-2">
           📍 {event.location}
         </p>
-        
+
         <p class="text-sm text-gray-600 mb-3">
           🌱 {event.host_name}
         </p>
-        
+
         {showActions && (
-          <a 
+          <a
             href={`/events/${event.id}`}
             class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors text-sm"
           >
@@ -72,13 +74,13 @@ export default function EventCard({ event, variant = "detailed", showActions = t
           <h3 class="text-2xl font-semibold text-green-800 mb-2">
             {event.title}
           </h3>
-          
+
           {event.description && (
             <p class="text-gray-700 mb-4">
               {event.description}
             </p>
           )}
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <p class="text-gray-600 mb-1">
@@ -101,22 +103,23 @@ export default function EventCard({ event, variant = "detailed", showActions = t
               {(event.rsvp_count !== undefined || event.max_attendees) && (
                 <p class="text-gray-600">
                   👥 {event.rsvp_count || 0}
-                  {event.max_attendees ? `/${event.max_attendees}` : ''} participants
+                  {event.max_attendees ? `/${event.max_attendees}` : ""}{" "}
+                  participants
                 </p>
               )}
             </div>
           </div>
         </div>
-        
+
         {showActions && (
           <div class="flex flex-col gap-2 md:ml-6">
-            <a 
+            <a
               href={`/events/${event.id}`}
               class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors text-center"
             >
               Voir détails
             </a>
-            <a 
+            <a
               href={`/events/${event.id}/rsvp`}
               class="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors text-center"
             >
