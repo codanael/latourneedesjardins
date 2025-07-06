@@ -84,9 +84,9 @@
   - [x] 7.2 Implement backend handlers for RSVP storage and retrieval in SQLite.
   - [x] 7.3 Develop feature for hosts to view attendee responses.
 
-- [ ] 8.0 Calendar Integration
+- [x] 8.0 Calendar Integration
   - [x] 8.1 Implement calendar component to show events.
-  - [ ] 8.2 Add date range filtering capabilities in calendar view.
+  - [x] 8.2 Add date range filtering capabilities in calendar view.
 
 - [ ] 9.0 Host Sign-Up
   - [ ] 9.1 Create host sign-up form component.

@@ -1,10 +1,13 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Event, getAllEvents } from "../utils/db-operations.ts";
 
+
 interface CalendarData {
   events: Event[];
   currentMonth: number;
   currentYear: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export const handler: Handlers<CalendarData> = {
@@ -18,13 +21,36 @@ export const handler: Handlers<CalendarData> = {
       url.searchParams.get("year") || currentDate.getFullYear().toString(),
     );
 
-    const events = getAllEvents();
-    return ctx.render({ events, currentMonth, currentYear });
+    // Get date range filters
+    const startDate = url.searchParams.get("startDate") || undefined;
+    const endDate = url.searchParams.get("endDate") || undefined;
+
+    let events = getAllEvents();
+
+    // Apply date range filtering
+    if (startDate || endDate) {
+      events = events.filter((event) => {
+        const eventDate = new Date(event.date);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start && end) {
+          return eventDate >= start && eventDate <= end;
+        } else if (start) {
+          return eventDate >= start;
+        } else if (end) {
+          return eventDate <= end;
+        }
+        return true;
+      });
+    }
+
+    return ctx.render({ events, currentMonth, currentYear, startDate, endDate });
   },
 };
 
 export default function CalendarPage({ data }: PageProps<CalendarData>) {
-  const { events, currentMonth, currentYear } = data;
+  const { events, currentMonth, currentYear, startDate, endDate } = data;
 
   const months = [
     "Janvier",
@@ -43,15 +69,21 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
 
   const weekdays = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
 
-  // Get events for current month
-  const monthEvents = events.filter((event) => {
+  // Get events for current month (or filtered events if date range is applied)
+  const monthEvents = (startDate || endDate) ? events : events.filter((event) => {
     const eventDate = new Date(event.date);
     return eventDate.getMonth() === currentMonth &&
       eventDate.getFullYear() === currentYear;
   });
 
-  // Group events by day
-  const eventsByDay = monthEvents.reduce((acc, event) => {
+  // Group events by day for calendar grid (only events in current month)
+  const calendarEvents = events.filter((event) => {
+    const eventDate = new Date(event.date);
+    return eventDate.getMonth() === currentMonth &&
+      eventDate.getFullYear() === currentYear;
+  });
+  
+  const eventsByDay = calendarEvents.reduce((acc, event) => {
     const day = new Date(event.date).getDate();
     if (!acc[day]) {
       acc[day] = [];
@@ -152,11 +184,114 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
           </div>
         </nav>
 
+        {/* Date Range Filter */}
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h3 class="text-lg font-semibold text-green-800 mb-4">
+            Filtrer par période
+          </h3>
+          <form method="GET" action="/calendar" class="space-y-4">
+            {/* Preserve current month/year parameters */}
+            <input type="hidden" name="month" value={currentMonth} />
+            <input type="hidden" name="year" value={currentYear} />
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div>
+                <label
+                  for="startDate"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Date de début
+                </label>
+                <input
+                  type="date"
+                  id="startDate"
+                  name="startDate"
+                  value={startDate || ""}
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label
+                  for="endDate"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Date de fin
+                </label>
+                <input
+                  type="date"
+                  id="endDate"
+                  name="endDate"
+                  value={endDate || ""}
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div class="flex gap-2">
+                <button
+                  type="submit"
+                  class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                >
+                  Filtrer
+                </button>
+                <a
+                  href={`/calendar?month=${currentMonth}&year=${currentYear}`}
+                  class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors"
+                >
+                  Effacer
+                </a>
+              </div>
+            </div>
+            
+            {(startDate || endDate) && (
+              <div class="mt-4 p-3 bg-green-50 rounded-md">
+                <p class="text-sm text-green-800">
+                  <strong>Filtrage actif:</strong>
+                  {startDate && endDate && (
+                    <span> du {new Date(startDate).toLocaleDateString("fr-FR")} au {new Date(endDate).toLocaleDateString("fr-FR")}</span>
+                  )}
+                  {startDate && !endDate && (
+                    <span> à partir du {new Date(startDate).toLocaleDateString("fr-FR")}</span>
+                  )}
+                  {!startDate && endDate && (
+                    <span> jusqu'au {new Date(endDate).toLocaleDateString("fr-FR")}</span>
+                  )}
+                </p>
+              </div>
+            )}
+          </form>
+          
+          {/* Quick Filter Presets */}
+          <div class="mt-6 pt-4 border-t border-gray-200">
+            <h4 class="text-sm font-medium text-gray-700 mb-3">Filtres rapides :</h4>
+            <div class="flex flex-wrap gap-2">
+              <a
+                href={`/calendar?month=${currentMonth}&year=${currentYear}&startDate=${new Date().toISOString().split('T')[0]}&endDate=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}`}
+                class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors"
+              >
+                7 prochains jours
+              </a>
+              <a
+                href={`/calendar?month=${currentMonth}&year=${currentYear}&startDate=${new Date().toISOString().split('T')[0]}&endDate=${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}`}
+                class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm hover:bg-blue-200 transition-colors"
+              >
+                30 prochains jours
+              </a>
+              <a
+                href={`/calendar?month=${currentMonth}&year=${currentYear}&startDate=${new Date(currentYear, 0, 1).toISOString().split('T')[0]}&endDate=${new Date(currentYear, 11, 31).toISOString().split('T')[0]}`}
+                class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm hover:bg-purple-200 transition-colors"
+              >
+                Cette année
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Calendar Navigation */}
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
           <div class="flex items-center justify-between">
             <a
-              href={`/calendar?month=${prevMonth}&year=${prevYear}`}
+              href={`/calendar?month=${prevMonth}&year=${prevYear}${startDate ? `&startDate=${startDate}` : ""}${endDate ? `&endDate=${endDate}` : ""}`}
               class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
             >
               ← Mois précédent
@@ -167,7 +302,7 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
             </h2>
 
             <a
-              href={`/calendar?month=${nextMonth}&year=${nextYear}`}
+              href={`/calendar?month=${nextMonth}&year=${nextYear}${startDate ? `&startDate=${startDate}` : ""}${endDate ? `&endDate=${endDate}` : ""}`}
               class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
             >
               Mois suivant →
@@ -200,7 +335,18 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
         {/* Events List for Current Month */}
         <section class="bg-white rounded-lg shadow-md p-6">
           <h3 class="text-xl font-semibold text-green-800 mb-4">
-            Événements de {months[currentMonth]} {currentYear}
+            {(startDate || endDate) ? (
+              <>
+                Événements filtrés
+                {startDate && endDate && (
+                  <span class="text-sm font-normal text-gray-600">
+                     ({new Date(startDate).toLocaleDateString("fr-FR")} - {new Date(endDate).toLocaleDateString("fr-FR")})
+                  </span>
+                )}
+              </>
+            ) : (
+              <>Événements de {months[currentMonth]} {currentYear}</>
+            )}
           </h3>
 
           {monthEvents.length > 0
