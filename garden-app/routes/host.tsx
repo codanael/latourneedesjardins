@@ -1,8 +1,10 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
+import { createUser, createEvent, getUserByEmail } from "../utils/db-operations.ts";
 
 interface FormData {
   success?: boolean;
   error?: string;
+  formValues?: Record<string, string>;
 }
 
 export const handler: Handlers<FormData> = {
@@ -13,39 +15,102 @@ export const handler: Handlers<FormData> = {
   async POST(req, ctx) {
     const formData = await req.formData();
 
-    // TODO: Validate and save to database
     const hostData = {
-      name: formData.get("name"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      eventTitle: formData.get("eventTitle"),
-      eventDate: formData.get("eventDate"),
-      eventTime: formData.get("eventTime"),
-      location: formData.get("location"),
-      description: formData.get("description"),
-      theme: formData.get("theme"),
-      maxAttendees: formData.get("maxAttendees"),
-      specialInstructions: formData.get("specialInstructions"),
+      name: formData.get("name")?.toString() || "",
+      email: formData.get("email")?.toString() || "",
+      phone: formData.get("phone")?.toString() || "",
+      eventTitle: formData.get("eventTitle")?.toString() || "",
+      eventDate: formData.get("eventDate")?.toString() || "",
+      eventTime: formData.get("eventTime")?.toString() || "14:00",
+      location: formData.get("location")?.toString() || "",
+      description: formData.get("description")?.toString() || "",
+      theme: formData.get("theme")?.toString() || "",
+      maxAttendees: formData.get("maxAttendees")?.toString() || "15",
+      specialInstructions: formData.get("specialInstructions")?.toString() || "",
+      weatherLocation: formData.get("weatherLocation")?.toString() || "",
     };
 
-    // Simple validation
-    if (
-      !hostData.name || !hostData.email || !hostData.eventTitle ||
-      !hostData.eventDate
-    ) {
+    // Convert to form values for re-display on error
+    const formValues = Object.fromEntries(
+      Object.entries(hostData).map(([key, value]) => [key, value.toString()])
+    );
+
+    try {
+      // Enhanced validation
+      const errors: string[] = [];
+      
+      if (!hostData.name.trim()) errors.push("Le nom est requis");
+      if (!hostData.email.trim()) errors.push("L'email est requis");
+      if (!hostData.eventTitle.trim()) errors.push("Le titre de l'événement est requis");
+      if (!hostData.eventDate.trim()) errors.push("La date est requise");
+      if (!hostData.location.trim()) errors.push("L'adresse est requise");
+      
+      // Email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (hostData.email && !emailRegex.test(hostData.email)) {
+        errors.push("Format d'email invalide");
+      }
+
+      // Date validation (must be in the future)
+      if (hostData.eventDate) {
+        const eventDate = new Date(hostData.eventDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (eventDate < today) {
+          errors.push("La date de l'événement doit être dans le futur");
+        }
+      }
+
+      // Max attendees validation
+      const maxAttendees = parseInt(hostData.maxAttendees);
+      if (isNaN(maxAttendees) || maxAttendees < 1 || maxAttendees > 100) {
+        errors.push("Le nombre de participants doit être entre 1 et 100");
+      }
+
+      if (errors.length > 0) {
+        return ctx.render({
+          error: errors.join(", "),
+          formValues,
+        });
+      }
+
+      // Check if user already exists or create new user
+      let user = getUserByEmail(hostData.email);
+      if (!user) {
+        user = createUser(hostData.name, hostData.email);
+      }
+
+      // Create event
+      const event = createEvent({
+        title: hostData.eventTitle,
+        description: hostData.description || `Événement organisé par ${hostData.name}`,
+        date: hostData.eventDate,
+        time: hostData.eventTime,
+        location: hostData.location,
+        host_id: user.id,
+        theme: hostData.theme || "Garden Party",
+        max_attendees: parseInt(hostData.maxAttendees),
+        weather_location: hostData.weatherLocation || hostData.location,
+        special_instructions: hostData.specialInstructions,
+      });
+
+      console.log("New host event created:", { user, event });
+
+      return ctx.render({ success: true });
+    } catch (error) {
+      console.error("Error creating host event:", error);
       return ctx.render({
-        error: "Veuillez remplir tous les champs obligatoires",
+        error: "Une erreur est survenue lors de la création de l'événement. Veuillez réessayer.",
+        formValues,
       });
     }
-
-    // TODO: Save to database
-    console.log("New host event submission:", hostData);
-
-    return ctx.render({ success: true });
   },
 };
 
 export default function HostPage({ data }: PageProps<FormData>) {
+  const { formValues = {} } = data;
+  
   if (data.success) {
     return (
       <div class="min-h-screen bg-green-50 flex items-center justify-center">
@@ -56,8 +121,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
               Merci pour votre candidature !
             </h1>
             <p class="text-gray-600 mb-6">
-              Votre demande d'organisation d'événement a été reçue. Nous vous
-              contacterons bientôt pour confirmer les détails.
+              Votre événement a été créé avec succès ! Il est maintenant visible dans le calendrier et les autres utilisateurs peuvent s'y inscrire.
             </p>
             <div class="space-y-3">
               <a
@@ -67,10 +131,16 @@ export default function HostPage({ data }: PageProps<FormData>) {
                 Retour à l'accueil
               </a>
               <a
-                href="/events"
+                href="/calendar"
                 class="block w-full bg-green-100 text-green-800 text-center px-6 py-3 rounded-lg hover:bg-green-200 transition-colors"
               >
-                Voir les autres événements
+                Voir le calendrier
+              </a>
+              <a
+                href="/host/dashboard"
+                class="block w-full bg-blue-100 text-blue-800 text-center px-6 py-3 rounded-lg hover:bg-blue-200 transition-colors"
+              >
+                Gérer mes événements
               </a>
             </div>
           </div>
@@ -190,6 +260,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                       type="text"
                       name="name"
                       required
+                      value={formValues.name || ""}
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="Votre nom"
                     />
@@ -202,6 +273,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                       type="email"
                       name="email"
                       required
+                      value={formValues.email || ""}
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="votre@email.com"
                     />
@@ -214,6 +286,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                   <input
                     type="tel"
                     name="phone"
+                    value={formValues.phone || ""}
                     class="w-full md:w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                     placeholder="01 23 45 67 89"
                   />
@@ -234,6 +307,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                       type="text"
                       name="eventTitle"
                       required
+                      value={formValues.eventTitle || ""}
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="Garden Party chez..."
                     />
@@ -248,6 +322,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                         type="date"
                         name="eventDate"
                         required
+                        value={formValues.eventDate || ""}
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
@@ -258,6 +333,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                       <input
                         type="time"
                         name="eventTime"
+                        value={formValues.eventTime || "14:00"}
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
@@ -273,8 +349,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                       rows={2}
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="123 Rue des Jardins, 75001 Paris"
-                    >
-                    </textarea>
+                    >{formValues.location || ""}</textarea>
                   </div>
 
                   <div>
@@ -286,8 +361,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                       rows={4}
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="Décrivez votre jardin, l'ambiance prévue, ce qui rend votre événement spécial..."
-                    >
-                    </textarea>
+                    >{formValues.description || ""}</textarea>
                   </div>
 
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -298,6 +372,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                       <input
                         type="text"
                         name="theme"
+                        value={formValues.theme || ""}
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         placeholder="Potluck, Barbecue, Brunch..."
                       />
@@ -311,10 +386,27 @@ export default function HostPage({ data }: PageProps<FormData>) {
                         name="maxAttendees"
                         min="1"
                         max="100"
+                        value={formValues.maxAttendees || "15"}
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         placeholder="15"
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Ville pour la météo (optionnel)
+                    </label>
+                    <input
+                      type="text"
+                      name="weatherLocation"
+                      value={formValues.weatherLocation || ""}
+                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      placeholder="Paris, Lyon, Marseille..."
+                    />
+                    <p class="text-xs text-gray-500 mt-1">
+                      Si différent de l'adresse de l'événement, pour afficher la météo
+                    </p>
                   </div>
 
                   <div>
@@ -326,8 +418,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
                       rows={3}
                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       placeholder="Apportez vos couverts, parking disponible, accès PMR..."
-                    >
-                    </textarea>
+                    >{formValues.specialInstructions || ""}</textarea>
                   </div>
                 </div>
               </div>
@@ -337,11 +428,10 @@ export default function HostPage({ data }: PageProps<FormData>) {
                   type="submit"
                   class="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold"
                 >
-                  Soumettre ma candidature
+                  Créer mon événement
                 </button>
                 <p class="text-sm text-gray-600 mt-3 text-center">
-                  Votre candidature sera examinée et vous recevrez une
-                  confirmation par email
+                  En créant cet événement, vous acceptez d'accueillir les participants dans votre jardin
                 </p>
               </div>
             </form>
