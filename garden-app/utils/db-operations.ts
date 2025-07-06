@@ -449,3 +449,32 @@ export function getEventStats(event_id: number) {
     potluck_count: potluckCount,
   };
 }
+
+export function getUserById(id: number): User | null {
+  const db = getDatabase();
+  const result = db.query(
+    `SELECT * FROM users WHERE id = ?`,
+    [id],
+  );
+  
+  if (result.length === 0) return null;
+  return rowToUser(result[0] as unknown[]);
+}
+
+export function deleteEvent(id: number): boolean {
+  const db = getDatabase();
+  
+  try {
+    // Delete related records first (foreign key constraints)
+    db.query(`DELETE FROM potluck_items WHERE event_id = ?`, [id]);
+    db.query(`DELETE FROM rsvps WHERE event_id = ?`, [id]);
+    
+    // Delete the event
+    db.query(`DELETE FROM events WHERE id = ?`, [id]);
+    
+    return true;
+  } catch (error) {
+    console.error("Error deleting event:", error);
+    return false;
+  }
+}
