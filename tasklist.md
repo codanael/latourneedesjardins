@@ -19,10 +19,10 @@
   - [x] 2.2 Set up the basic project structure following Deno Fresh conventions.
   - [x] 2.3 Configure Fresh settings and dependencies in `deno.json`.
 
-- [ ] 3.0 Database Setup
-  - [ ] 3.1 Create SQLite database and configure connection in project.
-  - [ ] 3.2 Define and execute database schema for users, events, RSVPs, and potluck items.
-  - [ ] 3.3 Implement SQLite schema migration handling.
+- [x] 3.0 Database Setup
+  - [x] 3.1 Create SQLite database and configure connection in project.
+  - [x] 3.2 Define and execute database schema for users, events, RSVPs, and potluck items.
+  - [x] 3.3 Implement SQLite schema migration handling.
 
 - [ ] 4.0 Environment Configuration
   - [ ] 4.1 Set environment variables for development in `.env`.
