@@ -88,22 +88,23 @@
   - [x] 8.1 Implement calendar component to show events.
   - [x] 8.2 Add date range filtering capabilities in calendar view.
 
-- [ ] 9.0 Host Sign-Up
-  - [ ] 9.1 Create host sign-up form component.
-  - [ ] 9.2 Implement backend handlers for host sign-up submissions.
-  - [ ] 9.3 Configure admin review or automatic confirmation process for hosts.
+- [x] 9.0 Host Sign-Up
+  - [x] 9.1 Create host sign-up form component.
+  - [x] 9.2 Implement backend handlers for host sign-up submissions.
+  - [x] 9.3 Configure admin review or automatic confirmation process for hosts.
 
-- [ ] 10.0 Potluck Coordination
-   - [ ] 10.1 Design shared list component for potluck items.
+- [ ] 10.0 Security Measures
+   - [ ] 10.1 Implement user authentication with OAuth 2.0.
+   - [ ] 10.2 Implement a role authorization model
+   - [ ] 10.3 Ensure secure data handling and transmission.
+
+- [ ] 11.0 Potluck Coordination
+   - [ ] 11.1 Design shared list component for potluck items.
    - [ ] 10.2 Implement functionality for attendees to sign up for dishes.
 
-- [ ] 11.0 Weather Updates
-   - [ ] 11.1 Integrate OpenWeatherMap API into event pages.
-   - [ ] 11.2 Display weather forecast data for events.
-
-- [ ] 12.0 Security Measures
-   - [ ] 12.1 Implement user authentication with OAuth 2.0.
-   - [ ] 12.2 Ensure secure data handling and transmission.
+- [ ] 12.0 Weather Updates
+   - [ ] 12.1 Integrate OpenWeatherMap API into event pages.
+   - [ ] 12.2 Display weather forecast data for events.
 
 - [ ] 13.0 Performance Optimization
    - [ ] 13.1 Optimize resources for mobile viewing.

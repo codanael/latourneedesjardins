@@ -4,6 +4,7 @@
 
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $admin_hosts from "./routes/admin/hosts.tsx";
 import * as $api_events_id_rsvp from "./routes/api/events/[id]/rsvp.ts";
 import * as $api_hosts from "./routes/api/hosts.ts";
 import * as $api_hosts_id_events from "./routes/api/hosts/[id]/events.ts";
@@ -28,6 +29,7 @@ const manifest = {
   routes: {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/admin/hosts.tsx": $admin_hosts,
     "./routes/api/events/[id]/rsvp.ts": $api_events_id_rsvp,
     "./routes/api/hosts.ts": $api_hosts,
     "./routes/api/hosts/[id]/events.ts": $api_hosts_id_events,
