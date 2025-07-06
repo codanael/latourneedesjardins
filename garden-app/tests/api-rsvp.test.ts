@@ -42,6 +42,7 @@ describe("RSVP API", () => {
       theme: "Test Theme",
       max_attendees: 10,
       weather_location: "Test City",
+      special_instructions: "Test instructions",
     });
   });
 

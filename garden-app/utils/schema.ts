@@ -27,11 +27,19 @@ export function initializeDatabase() {
       theme TEXT,
       max_attendees INTEGER,
       weather_location TEXT,
+      special_instructions TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (host_id) REFERENCES users (id)
     )
   `);
+
+  // Add special_instructions column if it doesn't exist (for existing databases)
+  try {
+    db.query(`ALTER TABLE events ADD COLUMN special_instructions TEXT`);
+  } catch {
+    // Column already exists, ignore the error
+  }
 
   // RSVPs table
   db.query(`

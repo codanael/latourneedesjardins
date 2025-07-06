@@ -85,7 +85,7 @@
   - [x] 7.3 Develop feature for hosts to view attendee responses.
 
 - [ ] 8.0 Calendar Integration
-  - [ ] 8.1 Implement calendar component to show events.
+  - [x] 8.1 Implement calendar component to show events.
   - [ ] 8.2 Add date range filtering capabilities in calendar view.
 
 - [ ] 9.0 Host Sign-Up

@@ -108,10 +108,11 @@ function rowToEvent(row: unknown[]): Event {
     theme: row[7] as string,
     max_attendees: row[8] as number,
     weather_location: row[9] as string,
-    created_at: row[10] as string,
-    updated_at: row[11] as string,
-    host_name: (row[12] as string) || undefined,
-    host_email: (row[13] as string) || undefined,
+    special_instructions: row[10] as string,
+    created_at: row[11] as string,
+    updated_at: row[12] as string,
+    host_name: (row[13] as string) || undefined,
+    host_email: (row[14] as string) || undefined,
   };
 }
 
@@ -160,8 +161,8 @@ export function createEvent(
   const db = getDatabase();
   db.query(
     `
-    INSERT INTO events (title, description, date, time, location, host_id, theme, max_attendees, weather_location)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO events (title, description, date, time, location, host_id, theme, max_attendees, weather_location, special_instructions)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `,
     [
       eventData.title,
@@ -173,6 +174,7 @@ export function createEvent(
       eventData.theme,
       eventData.max_attendees,
       eventData.weather_location,
+      eventData.special_instructions,
     ],
   );
 

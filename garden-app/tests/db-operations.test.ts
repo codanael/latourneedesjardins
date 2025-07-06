@@ -89,6 +89,7 @@ describe("Database Operations", () => {
         theme: "Test Theme",
         max_attendees: 10,
         weather_location: "Test City, FR",
+        special_instructions: "Test instructions",
       };
 
       const event = createEvent(eventData);
@@ -118,6 +119,10 @@ describe("Database Operations", () => {
         time: "18:00",
         location: "Test Location",
         host_id: testUser.id,
+        theme: "Test Theme",
+        max_attendees: 10,
+        weather_location: "Test City",
+        special_instructions: "Test instructions",
       };
 
       const originalEvent = createEvent(eventData);
@@ -144,6 +149,10 @@ describe("Database Operations", () => {
         time: "18:00",
         location: "Location 1",
         host_id: testUser.id,
+        theme: "Theme 1",
+        max_attendees: 10,
+        weather_location: "City 1",
+        special_instructions: "Instructions 1",
       });
 
       createEvent({
@@ -153,6 +162,10 @@ describe("Database Operations", () => {
         time: "19:00",
         location: "Location 2",
         host_id: user2.id,
+        theme: "Theme 2",
+        max_attendees: 15,
+        weather_location: "City 2",
+        special_instructions: "Instructions 2",
       });
 
       const events = getAllEvents();
