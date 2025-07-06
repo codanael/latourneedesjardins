@@ -17,10 +17,13 @@
 ### Routes and Pages
 - `garden-app/routes/index.tsx` - Homepage with upcoming events display
 - `garden-app/routes/events/index.tsx` - All events listing page with RSVP counts
-- `garden-app/routes/events/[id].tsx` - Event detail page with participants and potluck items
+- `garden-app/routes/events/[id].tsx` - Event detail page with integrated RSVP functionality
 - `garden-app/routes/events/[id]/edit.tsx` - Event editing form with validation and success handling
 - `garden-app/routes/calendar.tsx` - Calendar view of events by month
 - `garden-app/routes/host.tsx` - Host sign-up form for creating events
+- `garden-app/routes/host/dashboard.tsx` - Host dashboard to view event statistics and attendee responses
+- `garden-app/routes/host/attendees/[id].tsx` - Detailed attendee view for hosts with participant management
+- `garden-app/routes/api/events/[id]/rsvp.ts` - RSVP API endpoint with full CRUD operations
 
 ### Components and Islands
 - `garden-app/components/Navigation.tsx` - Main navigation component
@@ -32,6 +35,7 @@
 ### Testing
 - `garden-app/tests/db-operations.test.ts` - Comprehensive database operations tests
 - `garden-app/tests/env.test.ts` - Environment configuration tests
+- `garden-app/tests/api-rsvp.test.ts` - Complete RSVP API endpoint testing with all scenarios
 
 ### Styling
 - `garden-app/static/styles.css` - Global CSS styles
@@ -75,10 +79,10 @@
   - [x] 6.2 Implement backend route handlers in Fresh for event operations.
   - [x] 6.3 Add frontend functionality to edit and update event details.
 
-- [ ] 7.0 RSVP System
-  - [ ] 7.1 Design RSVP UI elements in event detail page.
-  - [ ] 7.2 Implement backend handlers for RSVP storage and retrieval in SQLite.
-  - [ ] 7.3 Develop feature for hosts to view attendee responses.
+- [x] 7.0 RSVP System
+  - [x] 7.1 Design RSVP UI elements in event detail page.
+  - [x] 7.2 Implement backend handlers for RSVP storage and retrieval in SQLite.
+  - [x] 7.3 Develop feature for hosts to view attendee responses.
 
 - [ ] 8.0 Calendar Integration
   - [ ] 8.1 Implement calendar component to show events.

@@ -4,14 +4,18 @@ import {
   getEventById,
   getPotluckItemsByEvent,
   getRSVPsByEvent,
+  getUserByEmail,
+  getUserRSVP,
   PotluckItem,
   RSVP,
 } from "../../utils/db-operations.ts";
+import RSVPButton from "../../islands/RSVPButton.tsx";
 
 interface EventPageData {
   event: Event | null;
   rsvps: RSVP[];
   potluckItems: PotluckItem[];
+  currentUserRsvp: RSVP | null;
 }
 
 export const handler: Handlers<EventPageData> = {
@@ -31,12 +35,17 @@ export const handler: Handlers<EventPageData> = {
     const rsvps = getRSVPsByEvent(id);
     const potluckItems = getPotluckItemsByEvent(id);
 
-    return ctx.render({ event, rsvps, potluckItems });
+    // Get current user's RSVP (using demo user for now)
+    const demoEmail = "demo@example.com";
+    const user = getUserByEmail(demoEmail);
+    const currentUserRsvp = user ? getUserRSVP(id, user.id) : null;
+
+    return ctx.render({ event, rsvps, potluckItems, currentUserRsvp });
   },
 };
 
 export default function EventDetailPage({ data }: PageProps<EventPageData>) {
-  const { event, rsvps, potluckItems } = data;
+  const { event, rsvps, potluckItems, currentUserRsvp } = data;
 
   if (!event) {
     return (
@@ -119,12 +128,6 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
             <div class="flex flex-col justify-center">
               <div class="space-y-3">
                 <a
-                  href={`/events/${event.id}/rsvp`}
-                  class="block w-full bg-green-600 text-white text-center px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  Répondre (RSVP)
-                </a>
-                <a
                   href={`/events/${event.id}/potluck`}
                   class="block w-full bg-blue-500 text-white text-center px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
                 >
@@ -159,8 +162,16 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
           </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* RSVP List */}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* RSVP Section */}
+          <section class="bg-white rounded-lg shadow-md p-6 md:col-span-2 lg:col-span-1">
+            <RSVPButton
+              eventId={event.id}
+              currentResponse={currentUserRsvp?.response}
+            />
+          </section>
+
+          {/* Participants List */}
           <section class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-2xl font-semibold text-green-800 mb-4">
               Participants ({yesRsvps.length} confirmés)

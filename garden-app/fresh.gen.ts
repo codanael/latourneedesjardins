@@ -4,6 +4,7 @@
 
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $api_events_id_rsvp from "./routes/api/events/[id]/rsvp.ts";
 import * as $api_joke from "./routes/api/joke.ts";
 import * as $calendar from "./routes/calendar.tsx";
 import * as $events_id_ from "./routes/events/[id].tsx";
@@ -11,6 +12,8 @@ import * as $events_id_edit from "./routes/events/[id]/edit.tsx";
 import * as $events_index from "./routes/events/index.tsx";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $host from "./routes/host.tsx";
+import * as $host_attendees_id_ from "./routes/host/attendees/[id].tsx";
+import * as $host_dashboard from "./routes/host/dashboard.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $RSVPButton from "./islands/RSVPButton.tsx";
@@ -20,6 +23,7 @@ const manifest = {
   routes: {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/api/events/[id]/rsvp.ts": $api_events_id_rsvp,
     "./routes/api/joke.ts": $api_joke,
     "./routes/calendar.tsx": $calendar,
     "./routes/events/[id].tsx": $events_id_,
@@ -27,6 +31,8 @@ const manifest = {
     "./routes/events/index.tsx": $events_index,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/host.tsx": $host,
+    "./routes/host/attendees/[id].tsx": $host_attendees_id_,
+    "./routes/host/dashboard.tsx": $host_dashboard,
     "./routes/index.tsx": $index,
   },
   islands: {

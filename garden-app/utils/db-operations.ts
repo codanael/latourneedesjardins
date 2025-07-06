@@ -249,6 +249,24 @@ export function getEventById(id: number): Event | null {
   return rowToEvent(result[0] as unknown[]);
 }
 
+export function getEventsByHost(hostId: number): Event[] {
+  const db = getDatabase();
+  const result = db.query(
+    `
+    SELECT 
+      e.*,
+      u.name as host_name,
+      u.email as host_email
+    FROM events e
+    JOIN users u ON e.host_id = u.id
+    WHERE e.host_id = ?
+    ORDER BY e.date ASC
+  `,
+    [hostId],
+  );
+  return result.map((row) => rowToEvent(row as unknown[]));
+}
+
 export function updateEvent(
   id: number,
   eventData: Partial<
