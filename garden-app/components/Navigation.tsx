@@ -5,16 +5,23 @@ interface NavigationProps {
   user?: AuthenticatedUser | null;
 }
 
+interface NavItem {
+  href: string;
+  label: string;
+  icon: string;
+  highlight?: boolean;
+}
+
 export default function Navigation(
   { currentPath = "/", user }: NavigationProps,
 ) {
-  const baseNavItems = [
+  const baseNavItems: NavItem[] = [
     { href: "/", label: "Accueil", icon: "🏠" },
     { href: "/events", label: "Événements", icon: "🌻" },
     { href: "/calendar", label: "Calendrier", icon: "📅" },
   ];
 
-  const authNavItems = user
+  const authNavItems: NavItem[] = user
     ? [
       ...(user.host_status === "approved"
         ? [

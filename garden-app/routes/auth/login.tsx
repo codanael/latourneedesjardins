@@ -31,7 +31,10 @@ export const handler: Handlers<LoginData> = {
       hasMessage: !!message,
     });
 
-    return ctx.render({ error: error || undefined, message: message || undefined });
+    return ctx.render({
+      error: error || undefined,
+      message: message || undefined,
+    });
   },
 };
 

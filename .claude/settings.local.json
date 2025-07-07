@@ -10,7 +10,9 @@
       "Bash(timeout:*)",
       "Bash(ls:*)",
       "Bash(git restore:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(DENO_ENV=test deno test --allow-all)",
+      "Bash(DENO_ENV=test deno task test)"
     ],
     "deny": []
   }

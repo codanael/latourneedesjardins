@@ -1,6 +1,10 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Event, getAllEvents } from "../utils/db-operations.ts";
-import { getAuthenticatedUser } from "../utils/session.ts";
+import {
+  type AuthenticatedUser,
+  getAuthenticatedUser,
+} from "../utils/session.ts";
+import Navigation from "../components/Navigation.tsx";
 
 interface CalendarData {
   events: Event[];
@@ -8,6 +12,7 @@ interface CalendarData {
   currentYear: number;
   startDate?: string;
   endDate?: string;
+  user: AuthenticatedUser;
 }
 
 export const handler: Handlers<CalendarData> = {
@@ -64,12 +69,13 @@ export const handler: Handlers<CalendarData> = {
       currentYear,
       startDate,
       endDate,
+      user,
     });
   },
 };
 
 export default function CalendarPage({ data }: PageProps<CalendarData>) {
-  const { events, currentMonth, currentYear, startDate, endDate } = data;
+  const { events, currentMonth, currentYear, startDate, endDate, user } = data;
 
   const months = [
     "Janvier",
@@ -176,34 +182,7 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
         </header>
 
         {/* Navigation */}
-        <nav class="mb-8">
-          <div class="flex flex-wrap justify-center gap-4">
-            <a
-              href="/"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Accueil
-            </a>
-            <a
-              href="/events"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Événements
-            </a>
-            <a
-              href="/calendar"
-              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Calendrier
-            </a>
-            <a
-              href="/host"
-              class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
-            >
-              Devenir Hôte
-            </a>
-          </div>
-        </nav>
+        <Navigation currentPath="/calendar" user={user} />
 
         {/* Date Range Filter */}
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">

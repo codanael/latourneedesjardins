@@ -4,13 +4,22 @@ import {
   getAllEvents,
   getEventStats,
 } from "../../utils/db-operations.ts";
-import { getAuthenticatedUser } from "../../utils/session.ts";
+import {
+  type AuthenticatedUser,
+  getAuthenticatedUser,
+} from "../../utils/session.ts";
+import Navigation from "../../components/Navigation.tsx";
 
 interface EventWithStats extends Event {
   rsvp_count: number;
 }
 
-export const handler: Handlers<EventWithStats[]> = {
+interface EventsPageData {
+  events: EventWithStats[];
+  user: AuthenticatedUser;
+}
+
+export const handler: Handlers<EventsPageData> = {
   GET(req, ctx) {
     const user = getAuthenticatedUser(req);
 
@@ -40,13 +49,14 @@ export const handler: Handlers<EventWithStats[]> = {
       };
     });
 
-    return ctx.render(eventsWithStats);
+    return ctx.render({ events: eventsWithStats, user });
   },
 };
 
 export default function EventsPage(
-  { data: events }: PageProps<EventWithStats[]>,
+  { data }: PageProps<EventsPageData>,
 ) {
+  const { events, user } = data;
   return (
     <div class="min-h-screen bg-green-50">
       <div class="container mx-auto px-4 py-8">
@@ -61,34 +71,7 @@ export default function EventsPage(
         </header>
 
         {/* Navigation */}
-        <nav class="mb-8">
-          <div class="flex flex-wrap justify-center gap-4">
-            <a
-              href="/"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Accueil
-            </a>
-            <a
-              href="/events"
-              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              Événements
-            </a>
-            <a
-              href="/calendar"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Calendrier
-            </a>
-            <a
-              href="/host"
-              class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
-            >
-              Devenir Hôte
-            </a>
-          </div>
-        </nav>
+        <Navigation currentPath="/events" user={user} />
 
         {/* Events List */}
         <section>

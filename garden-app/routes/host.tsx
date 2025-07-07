@@ -1,7 +1,11 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { createEvent } from "../utils/db-operations.ts";
-import { getAuthenticatedUser } from "../utils/session.ts";
+import {
+  type AuthenticatedUser,
+  getAuthenticatedUser,
+} from "../utils/session.ts";
 import { isAutoApprovalEnabled } from "../utils/config.ts";
+import Navigation from "../components/Navigation.tsx";
 
 interface FormData {
   success?: boolean;
@@ -9,6 +13,7 @@ interface FormData {
   formValues?: Record<string, string>;
   autoApproved?: boolean;
   userStatus?: string;
+  user?: AuthenticatedUser;
 }
 
 export const handler: Handlers<FormData> = {
@@ -26,7 +31,7 @@ export const handler: Handlers<FormData> = {
       });
     }
 
-    return ctx.render({});
+    return ctx.render({ user });
   },
 
   async POST(req, ctx) {
@@ -45,8 +50,6 @@ export const handler: Handlers<FormData> = {
     const formData = await req.formData();
 
     const hostData = {
-      name: formData.get("name")?.toString() || "",
-      email: formData.get("email")?.toString() || "",
       phone: formData.get("phone")?.toString() || "",
       eventTitle: formData.get("eventTitle")?.toString() || "",
       eventDate: formData.get("eventDate")?.toString() || "",
@@ -69,19 +72,11 @@ export const handler: Handlers<FormData> = {
       // Enhanced validation
       const errors: string[] = [];
 
-      if (!hostData.name.trim()) errors.push("Le nom est requis");
-      if (!hostData.email.trim()) errors.push("L'email est requis");
       if (!hostData.eventTitle.trim()) {
         errors.push("Le titre de l'événement est requis");
       }
       if (!hostData.eventDate.trim()) errors.push("La date est requise");
       if (!hostData.location.trim()) errors.push("L'adresse est requise");
-
-      // Email format validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (hostData.email && !emailRegex.test(hostData.email)) {
-        errors.push("Format d'email invalide");
-      }
 
       // Date validation (must be in the future)
       if (hostData.eventDate) {
@@ -104,6 +99,7 @@ export const handler: Handlers<FormData> = {
         return ctx.render({
           error: errors.join(", "),
           formValues,
+          user,
         });
       }
 
@@ -146,13 +142,14 @@ export const handler: Handlers<FormData> = {
         error:
           "Une erreur est survenue lors de la création de l'événement. Veuillez réessayer.",
         formValues,
+        user,
       });
     }
   },
 };
 
 export default function HostPage({ data }: PageProps<FormData>) {
-  const { formValues = {} } = data;
+  const { formValues = {}, user } = data;
 
   if (data.success) {
     return (
@@ -224,40 +221,7 @@ export default function HostPage({ data }: PageProps<FormData>) {
         </header>
 
         {/* Navigation */}
-        <nav class="mb-8">
-          <div class="flex flex-wrap justify-center gap-4">
-            <a
-              href="/"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Accueil
-            </a>
-            <a
-              href="/events"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Événements
-            </a>
-            <a
-              href="/calendar"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Calendrier
-            </a>
-            <a
-              href="/host/dashboard"
-              class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors"
-            >
-              Tableau de bord hôte
-            </a>
-            <a
-              href="/host"
-              class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors"
-            >
-              Devenir Hôte
-            </a>
-          </div>
-        </nav>
+        {user && <Navigation currentPath="/host" user={user} />}
 
         <div class="max-w-4xl mx-auto">
           {/* Info Section */}
@@ -307,42 +271,28 @@ export default function HostPage({ data }: PageProps<FormData>) {
             )}
 
             <form method="POST" class="space-y-6">
-              {/* Host Information */}
-              <div>
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                  Vos informations
+              {/* User Information Display */}
+              <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">
+                  Organisateur
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      Nom complet *
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      Nom
                     </label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      value={formValues.name || ""}
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="Votre nom"
-                    />
+                    <p class="text-gray-900 font-medium">{user?.name}</p>
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      Email *
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                      Email
                     </label>
-                    <input
-                      type="email"
-                      name="email"
-                      required
-                      value={formValues.email || ""}
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="votre@email.com"
-                    />
+                    <p class="text-gray-900 font-medium">{user?.email}</p>
                   </div>
                 </div>
                 <div class="mt-4">
                   <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Téléphone
+                    Téléphone (optionnel)
                   </label>
                   <input
                     type="tel"
