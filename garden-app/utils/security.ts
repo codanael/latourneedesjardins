@@ -347,8 +347,8 @@ export function getSecurityEvents(limit: number = 100): SecurityEvent[] {
 export function validateSecurityConfig(): void {
   const requiredEnvVars = [
     "DATABASE_URL",
-    "OAUTH_GOOGLE_CLIENT_ID",
-    "OAUTH_GOOGLE_CLIENT_SECRET",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
   ];
   const missingVars = requiredEnvVars.filter((varName) =>
     !Deno.env.get(varName)
@@ -361,7 +361,7 @@ export function validateSecurityConfig(): void {
   }
 
   // Validate OAuth configuration
-  const googleClientId = Deno.env.get("OAUTH_GOOGLE_CLIENT_ID");
+  const googleClientId = Deno.env.get("GOOGLE_CLIENT_ID");
   if (googleClientId && !googleClientId.includes(".googleusercontent.com")) {
     console.warn("⚠️  Google OAuth Client ID format may be incorrect");
   }

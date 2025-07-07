@@ -118,8 +118,8 @@
 
 - [ ] 13.0 Performance Optimization
    - [x] 13.1 Optimize resources for mobile viewing.
-   - [ ] 13.2 Implement client-side caching for performance enhancement.
-   - [ ] 13.3 Implement server-side caching for weather forecast data to reduce costs.
+   - [x] 13.2 Implement client-side caching for performance enhancement.
+   - [x] 13.3 Implement server-side caching for weather forecast data to reduce costs.
 
 - [ ] 14.0 Testing and Quality Assurance
    - [ ] 14.1 Set up and configure Deno tests for components and routes.
