@@ -12,7 +12,8 @@ import {
   AuthenticatedUser,
   getAuthenticatedUser,
 } from "../../utils/session.ts";
-import { getWeatherForLocation, WeatherForecast } from "../../utils/weather.ts";
+import { getWeatherForLocation } from "../../utils/cached-weather.ts";
+import { WeatherForecast } from "../../utils/weather.ts";
 import RSVPButton from "../../islands/RSVPButton.tsx";
 import PotluckManager from "../../islands/PotluckManager.tsx";
 import Weather from "../../components/Weather.tsx";

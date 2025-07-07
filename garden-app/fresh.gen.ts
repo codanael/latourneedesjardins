@@ -7,6 +7,8 @@ import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
 import * as $admin_hosts from "./routes/admin/hosts.tsx";
 import * as $admin_security from "./routes/admin/security.tsx";
+import * as $api_events from "./routes/api/events.ts";
+import * as $api_events_id_details from "./routes/api/events/[id]/details.ts";
 import * as $api_events_id_potluck from "./routes/api/events/[id]/potluck.ts";
 import * as $api_events_id_potluck_itemId_ from "./routes/api/events/[id]/potluck/[itemId].ts";
 import * as $api_events_id_rsvp from "./routes/api/events/[id]/rsvp.ts";
@@ -14,6 +16,7 @@ import * as $api_hosts from "./routes/api/hosts.ts";
 import * as $api_hosts_id_events from "./routes/api/hosts/[id]/events.ts";
 import * as $api_hosts_status from "./routes/api/hosts/status.ts";
 import * as $api_hosts_validate from "./routes/api/hosts/validate.ts";
+import * as $api_users_id_rsvps from "./routes/api/users/[id]/rsvps.ts";
 import * as $auth_apple from "./routes/auth/apple.ts";
 import * as $auth_callback_apple from "./routes/auth/callback/apple.ts";
 import * as $auth_callback_google from "./routes/auth/callback/google.ts";
@@ -30,6 +33,8 @@ import * as $host_dashboard from "./routes/host/dashboard.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $profile from "./routes/profile.tsx";
 import * as $AttendeeActions from "./islands/AttendeeActions.tsx";
+import * as $CachedPotluckManager from "./islands/CachedPotluckManager.tsx";
+import * as $CachedRSVPButton from "./islands/CachedRSVPButton.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $HostFormValidator from "./islands/HostFormValidator.tsx";
 import * as $PotluckManager from "./islands/PotluckManager.tsx";
@@ -43,6 +48,8 @@ const manifest = {
     "./routes/_middleware.ts": $_middleware,
     "./routes/admin/hosts.tsx": $admin_hosts,
     "./routes/admin/security.tsx": $admin_security,
+    "./routes/api/events.ts": $api_events,
+    "./routes/api/events/[id]/details.ts": $api_events_id_details,
     "./routes/api/events/[id]/potluck.ts": $api_events_id_potluck,
     "./routes/api/events/[id]/potluck/[itemId].ts":
       $api_events_id_potluck_itemId_,
@@ -51,6 +58,7 @@ const manifest = {
     "./routes/api/hosts/[id]/events.ts": $api_hosts_id_events,
     "./routes/api/hosts/status.ts": $api_hosts_status,
     "./routes/api/hosts/validate.ts": $api_hosts_validate,
+    "./routes/api/users/[id]/rsvps.ts": $api_users_id_rsvps,
     "./routes/auth/apple.ts": $auth_apple,
     "./routes/auth/callback/apple.ts": $auth_callback_apple,
     "./routes/auth/callback/google.ts": $auth_callback_google,
@@ -69,6 +77,8 @@ const manifest = {
   },
   islands: {
     "./islands/AttendeeActions.tsx": $AttendeeActions,
+    "./islands/CachedPotluckManager.tsx": $CachedPotluckManager,
+    "./islands/CachedRSVPButton.tsx": $CachedRSVPButton,
     "./islands/Counter.tsx": $Counter,
     "./islands/HostFormValidator.tsx": $HostFormValidator,
     "./islands/PotluckManager.tsx": $PotluckManager,

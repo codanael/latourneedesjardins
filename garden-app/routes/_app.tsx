@@ -1,4 +1,5 @@
 import { type PageProps } from "$fresh/server.ts";
+import CacheProvider from "../components/CacheProvider.tsx";
 export default function App({ Component }: PageProps) {
   return (
     <html>
@@ -33,7 +34,9 @@ export default function App({ Component }: PageProps) {
         <link rel="stylesheet" href="/styles.css" />
       </head>
       <body class="overflow-x-hidden">
-        <Component />
+        <CacheProvider enableStats={false}>
+          <Component />
+        </CacheProvider>
       </body>
     </html>
   );

@@ -26,9 +26,19 @@ export function createTestRequest(
   if (user) {
     requestOptions.headers = {
       "x-test-user-email": user.email,
-      "Content-Type": "application/x-www-form-urlencoded",
       ...requestOptions.headers,
     };
+  }
+  
+  // Ensure Content-Type is set for form data if body is present
+  if (requestOptions.body && requestOptions.headers) {
+    const headers = requestOptions.headers as Record<string, string>;
+    if (!headers["Content-Type"]) {
+      requestOptions.headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        ...requestOptions.headers,
+      };
+    }
   }
 
   return new Request(url, requestOptions);
