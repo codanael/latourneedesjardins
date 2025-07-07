@@ -5,16 +5,38 @@ import {
   getEventsByHost,
   getUserById,
 } from "../../../../utils/db-operations.ts";
+import {
+  getAuthenticatedUser,
+  hasPermission,
+} from "../../../../utils/session.ts";
 
 export const handler: Handlers = {
   // GET /api/hosts/[id]/events - Get all events for a specific host
-  GET(_req, ctx) {
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication
+    if (!user) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     const hostId = parseInt(ctx.params.id);
 
     if (isNaN(hostId)) {
       return new Response(
         JSON.stringify({ error: "Invalid host ID" }),
         { status: 400, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    // Only allow users to access their own events or admins to access any events
+    if (user.id !== hostId && !hasPermission(req, "admin")) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { "Content-Type": "application/json" } },
       );
     }
 
@@ -64,6 +86,16 @@ export const handler: Handlers = {
 
   // DELETE /api/hosts/[id]/events?eventId=X - Delete a specific event for a host
   DELETE(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication
+    if (!user) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     const hostId = parseInt(ctx.params.id);
     const url = new URL(req.url);
     const eventId = parseInt(url.searchParams.get("eventId") || "");
@@ -72,6 +104,14 @@ export const handler: Handlers = {
       return new Response(
         JSON.stringify({ error: "Invalid host ID or event ID" }),
         { status: 400, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    // Only allow users to delete their own events or admins to delete any events
+    if (user.id !== hostId && !hasPermission(req, "admin")) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { "Content-Type": "application/json" } },
       );
     }
 

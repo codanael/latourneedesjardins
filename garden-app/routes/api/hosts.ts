@@ -5,10 +5,21 @@ import {
   getEventsByHost,
   getUserByEmail,
 } from "../../utils/db-operations.ts";
+import { getAuthenticatedUser, hasPermission } from "../../utils/session.ts";
 
 export const handler: Handlers = {
   // GET /api/hosts - Get host profile and events
   GET(req) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication for accessing host data
+    if (!user) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     const url = new URL(req.url);
     const email = url.searchParams.get("email");
 
@@ -19,9 +30,17 @@ export const handler: Handlers = {
       );
     }
 
+    // Only allow users to access their own data or admins to access any data
+    if (user.email !== email && !hasPermission(req, "admin")) {
+      return new Response(
+        JSON.stringify({ error: "Forbidden" }),
+        { status: 403, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     try {
-      const user = getUserByEmail(email);
-      if (!user) {
+      const targetUser = getUserByEmail(email);
+      if (!targetUser) {
         return new Response(
           JSON.stringify({ error: "Host not found" }),
           { status: 404, headers: { "Content-Type": "application/json" } },
@@ -29,15 +48,15 @@ export const handler: Handlers = {
       }
 
       // Get events hosted by this user
-      const hostedEvents = getEventsByHost(user.id);
+      const hostedEvents = getEventsByHost(targetUser.id);
 
       return new Response(
         JSON.stringify({
           host: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            created_at: user.created_at,
+            id: targetUser.id,
+            name: targetUser.name,
+            email: targetUser.email,
+            created_at: targetUser.created_at,
           },
           events: hostedEvents,
           stats: {
@@ -60,6 +79,24 @@ export const handler: Handlers = {
 
   // POST /api/hosts - Create new host and event
   async POST(req) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication for creating hosts and events
+    if (!user) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    // Only allow approved hosts or admins to create events
+    if (!hasPermission(req, "approved_host") && !hasPermission(req, "admin")) {
+      return new Response(
+        JSON.stringify({ error: "Host approval required" }),
+        { status: 403, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     try {
       const body = await req.json();
 

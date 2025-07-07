@@ -123,7 +123,17 @@ export const handler: Handlers = {
     }
   },
 
-  GET(_req, ctx) {
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication to view potluck items
+    if (!user) {
+      return new Response(
+        JSON.stringify({ error: "Authentication required" }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     try {
       const eventId = parseInt(ctx.params.id);
 

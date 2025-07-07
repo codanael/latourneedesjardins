@@ -1,5 +1,6 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { getHostsByStatus, User } from "../../utils/db-operations.ts";
+import { getAuthenticatedUser, hasPermission } from "../../utils/session.ts";
 
 interface HostAdminData {
   hosts: {
@@ -10,7 +11,19 @@ interface HostAdminData {
 }
 
 export const handler: Handlers<HostAdminData> = {
-  GET(_req, ctx) {
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require admin authentication
+    if (!user || !hasPermission(req, "admin")) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location": "/auth/login?message=Accès administrateur requis",
+        },
+      });
+    }
+
     try {
       const pendingHosts = getHostsByStatus("pending");
       const approvedHosts = getHostsByStatus("approved");

@@ -66,9 +66,6 @@ export const handler: Handlers<FormData> = {
       specialInstructions: sanitizeHtml(
         formData.get("specialInstructions")?.toString() || "",
       ),
-      weatherLocation: sanitizeInput(
-        formData.get("weatherLocation")?.toString() || "",
-      ),
     };
 
     // Convert to form values for re-display on error
@@ -132,7 +129,7 @@ export const handler: Handlers<FormData> = {
         host_id: user.id,
         theme: hostData.theme || "Garden Party",
         max_attendees: parseInt(hostData.maxAttendees),
-        weather_location: hostData.weatherLocation || hostData.location,
+        weather_location: hostData.location,
         special_instructions: hostData.specialInstructions,
       });
 
@@ -414,23 +411,6 @@ export default function HostPage({ data }: PageProps<FormData>) {
                         placeholder="15"
                       />
                     </div>
-                  </div>
-
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      Ville pour la météo (optionnel)
-                    </label>
-                    <input
-                      type="text"
-                      name="weatherLocation"
-                      value={formValues.weatherLocation || ""}
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="Paris, Lyon, Marseille..."
-                    />
-                    <p class="text-xs text-gray-500 mt-1">
-                      Si différent de l'adresse de l'événement, pour afficher la
-                      météo
-                    </p>
                   </div>
 
                   <div>

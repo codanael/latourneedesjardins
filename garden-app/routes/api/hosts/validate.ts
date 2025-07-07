@@ -1,9 +1,21 @@
 import { Handlers } from "$fresh/server.ts";
-import { getUserByEmail } from "../../../utils/db-operations.ts";
+import { isRateLimited } from "../../../utils/session.ts";
 
 export const handler: Handlers = {
   // POST /api/hosts/validate - Validate host registration data
   async POST(req) {
+    // Apply stricter rate limiting for validation endpoint
+    const clientIP = req.headers.get("x-forwarded-for") ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+
+    if (isRateLimited(`validate:${clientIP}`, 10, 60 * 1000)) { // 10 requests per minute
+      return new Response(
+        JSON.stringify({ error: "Too many validation requests" }),
+        { status: 429, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     try {
       const body = await req.json();
       const {
@@ -35,15 +47,8 @@ export const handler: Handlers = {
         errors.push("Format d'email invalide");
       }
 
-      // Check if email is already in use
-      if (email && emailRegex.test(email)) {
-        const existingUser = getUserByEmail(email);
-        if (existingUser) {
-          warnings.push(
-            "Cet email est déjà utilisé. L'événement sera ajouté à votre compte existant.",
-          );
-        }
-      }
+      // Note: We don't check email existence to prevent enumeration attacks
+      // The actual registration will handle existing emails appropriately
 
       // Phone validation (optional but should be valid if provided)
       if (phone && phone.trim()) {

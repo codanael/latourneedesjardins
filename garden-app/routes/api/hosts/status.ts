@@ -5,6 +5,7 @@ import {
   getUserByEmail,
   updateHostStatus,
 } from "../../../utils/db-operations.ts";
+import { getAuthenticatedUser, hasPermission } from "../../../utils/session.ts";
 
 interface HostStatus {
   id: number;
@@ -21,6 +22,15 @@ interface HostStatus {
 export const handler: Handlers = {
   // GET /api/hosts/status - Get all hosts with their status
   GET(req) {
+    const user = getAuthenticatedUser(req);
+
+    // Require admin authentication for viewing host statuses
+    if (!user || !hasPermission(req, "admin")) {
+      return new Response(
+        JSON.stringify({ error: "Admin access required" }),
+        { status: 403, headers: { "Content-Type": "application/json" } },
+      );
+    }
     const url = new URL(req.url);
     const statusFilter = url.searchParams.get("status") as
       | "approved"
@@ -90,6 +100,16 @@ export const handler: Handlers = {
 
   // POST /api/hosts/status - Update host status (for admin use)
   async POST(req) {
+    const user = getAuthenticatedUser(req);
+
+    // Require admin authentication for modifying host statuses
+    if (!user || !hasPermission(req, "admin")) {
+      return new Response(
+        JSON.stringify({ error: "Admin access required" }),
+        { status: 403, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     try {
       let email: string, action: string, adminNotes: string | undefined;
 
