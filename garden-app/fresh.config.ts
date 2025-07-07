@@ -3,4 +3,10 @@ import tailwindPlugin from "$fresh/plugins/tailwind.ts";
 
 export default defineConfig({
   plugins: [tailwindPlugin()],
+  build: {
+    target: ["chrome88", "firefox78", "safari14", "edge88"],
+  },
+  server: {
+    port: 8000,
+  },
 });

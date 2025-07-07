@@ -131,9 +131,10 @@ export default function EventsPage(
                           Voir détails
                         </a>
                         <a
-                          href={`/events/${event.id}/rsvp`}
+                          href={`/events/${event.id}#rsvp`}
                           class="inline-block bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors text-center"
                         >
+                          <span class="mr-1">✓</span>
                           RSVP
                         </a>
                       </div>

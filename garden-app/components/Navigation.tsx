@@ -3,6 +3,7 @@ import type { AuthenticatedUser } from "../utils/session.ts";
 interface NavigationProps {
   currentPath?: string;
   user?: AuthenticatedUser | null;
+  isMobile?: boolean;
 }
 
 interface NavItem {
@@ -10,10 +11,12 @@ interface NavItem {
   label: string;
   icon: string;
   highlight?: boolean;
+  adminOnly?: boolean;
+  hostOnly?: boolean;
 }
 
 export default function Navigation(
-  { currentPath = "/", user }: NavigationProps,
+  { currentPath = "/", user, isMobile = false }: NavigationProps,
 ) {
   const baseNavItems: NavItem[] = [
     { href: "/", label: "Accueil", icon: "🏠" },
@@ -25,12 +28,22 @@ export default function Navigation(
     ? [
       ...(user.host_status === "approved"
         ? [
-          { href: "/host/dashboard", label: "Tableau de bord", icon: "📊" },
+          {
+            href: "/host/dashboard",
+            label: "Tableau de bord",
+            icon: "📊",
+            hostOnly: true,
+          },
         ]
         : []),
       ...(user.role === "admin"
         ? [
-          { href: "/admin/security", label: "Sécurité", icon: "🔒" },
+          {
+            href: "/admin/security",
+            label: "Sécurité",
+            icon: "🔒",
+            adminOnly: true,
+          },
         ]
         : []),
       {
@@ -57,6 +70,33 @@ export default function Navigation(
     return false;
   };
 
+  // Mobile bottom navigation
+  if (isMobile) {
+    const mobileItems = navItems.filter((item) =>
+      !item.adminOnly && (!item.hostOnly || user?.host_status === "approved")
+    ).slice(0, 5); // Limit to 5 items for mobile
+
+    return (
+      <nav class="mobile-nav">
+        {mobileItems.map((item) => (
+          <a
+            key={item.href}
+            href={item.href}
+            class={`mobile-nav-item ${isActive(item.href) ? "active" : ""}`}
+          >
+            <span class="text-lg mb-1">{item.icon}</span>
+            <span class="text-xs leading-tight">
+              {item.label.length > 8
+                ? item.label.substring(0, 8) + "..."
+                : item.label}
+            </span>
+          </a>
+        ))}
+      </nav>
+    );
+  }
+
+  // Desktop/tablet navigation
   return (
     <nav class="mb-8">
       <div class="flex flex-wrap justify-center gap-2 md:gap-4">
@@ -64,14 +104,12 @@ export default function Navigation(
           <a
             key={item.href}
             href={item.href}
-            class={`px-3 md:px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${
+            class={`btn touch-manipulation ${
               isActive(item.href)
-                ? item.highlight
-                  ? "bg-yellow-500 text-white hover:bg-yellow-600"
-                  : "bg-green-600 text-white hover:bg-green-700"
+                ? item.highlight ? "btn-accent" : "btn-primary"
                 : item.highlight
-                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                : "bg-green-100 text-green-800 hover:bg-green-200"
+                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 active:bg-yellow-300"
+                : "btn-secondary"
             }`}
           >
             <span class="mr-1 md:mr-2">{item.icon}</span>

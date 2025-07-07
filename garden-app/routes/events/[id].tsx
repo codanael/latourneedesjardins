@@ -194,7 +194,7 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
           {/* Left Column */}
           <div class="space-y-8">
             {/* RSVP Section */}
-            <section class="bg-white rounded-lg shadow-md p-6">
+            <section id="rsvp" class="bg-white rounded-lg shadow-md p-6">
               <RSVPButton
                 eventId={event.id}
                 currentResponse={currentUserRsvp?.response}
