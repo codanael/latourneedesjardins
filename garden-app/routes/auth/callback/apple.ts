@@ -102,7 +102,7 @@ export const handler: Handlers = {
   },
 
   // Also handle GET requests for Apple OAuth (though POST is standard)
-  async GET(req) {
-    return this.POST(req);
+  GET(req, ctx) {
+    return this.POST(req, ctx);
   },
 };

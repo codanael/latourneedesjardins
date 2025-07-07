@@ -4,6 +4,7 @@ import {
   getEventById,
   updateEvent,
 } from "../../../utils/db-operations.ts";
+import { getAuthenticatedUser, hasPermission } from "../../../utils/session.ts";
 
 interface EditEventData {
   event: Event | null;
@@ -12,7 +13,20 @@ interface EditEventData {
 }
 
 export const handler: Handlers<EditEventData> = {
-  GET(_req, ctx) {
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour modifier un événement",
+        },
+      });
+    }
+
     const id = parseInt(ctx.params.id);
 
     if (isNaN(id)) {
@@ -23,12 +37,35 @@ export const handler: Handlers<EditEventData> = {
 
     if (!event) {
       return new Response("Event not found", { status: 404 });
+    }
+
+    // Check if user is the host of this event or an admin
+    if (event.host_id !== user.id && !hasPermission(req, "admin")) {
+      return new Response(
+        "Forbidden - Seuls les hôtes de l'événement peuvent le modifier",
+        {
+          status: 403,
+        },
+      );
     }
 
     return ctx.render({ event });
   },
 
   async POST(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour modifier un événement",
+        },
+      });
+    }
+
     const id = parseInt(ctx.params.id);
 
     if (isNaN(id)) {
@@ -39,6 +76,16 @@ export const handler: Handlers<EditEventData> = {
 
     if (!event) {
       return new Response("Event not found", { status: 404 });
+    }
+
+    // Check if user is the host of this event or an admin
+    if (event.host_id !== user.id && !hasPermission(req, "admin")) {
+      return new Response(
+        "Forbidden - Seuls les hôtes de l'événement peuvent le modifier",
+        {
+          status: 403,
+        },
+      );
     }
 
     const formData = await req.formData();

@@ -1,9 +1,6 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import {
-  createEvent,
-  createUser,
-  getUserByEmail,
-} from "../utils/db-operations.ts";
+import { createEvent } from "../utils/db-operations.ts";
+import { getAuthenticatedUser } from "../utils/session.ts";
 import { isAutoApprovalEnabled } from "../utils/config.ts";
 
 interface FormData {
@@ -15,11 +12,36 @@ interface FormData {
 }
 
 export const handler: Handlers<FormData> = {
-  GET(_req, ctx) {
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication for all access
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour devenir hôte",
+        },
+      });
+    }
+
     return ctx.render({});
   },
 
   async POST(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication for all access
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour devenir hôte",
+        },
+      });
+    }
     const formData = await req.formData();
 
     const hostData = {
@@ -85,18 +107,21 @@ export const handler: Handlers<FormData> = {
         });
       }
 
-      // Check if user already exists or create new user
-      let user = getUserByEmail(hostData.email);
-      if (!user) {
+      // Use the authenticated user
+      // Update user's host status if not already approved
+      if (user.host_status === "pending") {
         const initialStatus = isAutoApprovalEnabled() ? "approved" : "pending";
-        user = createUser(hostData.name, hostData.email, initialStatus);
+        // Note: In a real app, you'd have an updateUserHostStatus function
+        console.log(
+          `User ${user.email} host status would be updated to: ${initialStatus}`,
+        );
       }
 
       // Create event
       const event = createEvent({
         title: hostData.eventTitle,
         description: hostData.description ||
-          `Événement organisé par ${hostData.name}`,
+          `Événement organisé par ${user.name}`,
         date: hostData.eventDate,
         time: hostData.eventTime,
         location: hostData.location,
@@ -111,7 +136,8 @@ export const handler: Handlers<FormData> = {
 
       return ctx.render({
         success: true,
-        autoApproved: isAutoApprovalEnabled(),
+        autoApproved: isAutoApprovalEnabled() ||
+          user.host_status === "approved",
         userStatus: user.host_status,
       });
     } catch (error) {

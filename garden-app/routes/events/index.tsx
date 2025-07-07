@@ -4,13 +4,27 @@ import {
   getAllEvents,
   getEventStats,
 } from "../../utils/db-operations.ts";
+import { getAuthenticatedUser } from "../../utils/session.ts";
 
 interface EventWithStats extends Event {
   rsvp_count: number;
 }
 
 export const handler: Handlers<EventWithStats[]> = {
-  GET(_req, ctx) {
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication for all access
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour accéder à cette page",
+        },
+      });
+    }
+
     const events = getAllEvents();
 
     // Add RSVP counts to events

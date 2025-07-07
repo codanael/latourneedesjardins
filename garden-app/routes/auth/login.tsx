@@ -1,5 +1,5 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
-import { getAuthenticatedUser } from "../../utils/session.ts";
+import { getAuthenticatedUser, logSecurityEvent } from "../../utils/session.ts";
 
 interface LoginData {
   error?: string;
@@ -11,6 +11,9 @@ export const handler: Handlers<LoginData> = {
     // If user is already authenticated, redirect to home
     const user = getAuthenticatedUser(req);
     if (user) {
+      logSecurityEvent("login_page_access_while_authenticated", user, {
+        ip: req.headers.get("x-forwarded-for") || "unknown",
+      });
       return new Response("", {
         status: 302,
         headers: { "Location": "/" },
@@ -21,7 +24,14 @@ export const handler: Handlers<LoginData> = {
     const error = url.searchParams.get("error");
     const message = url.searchParams.get("message");
 
-    return ctx.render({ error, message });
+    // Log login page access
+    logSecurityEvent("login_page_access", null, {
+      ip: req.headers.get("x-forwarded-for") || "unknown",
+      hasError: !!error,
+      hasMessage: !!message,
+    });
+
+    return ctx.render({ error: error || undefined, message: message || undefined });
   },
 };
 

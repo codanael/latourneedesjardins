@@ -1,5 +1,6 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { Event, getAllEvents } from "../utils/db-operations.ts";
+import { getAuthenticatedUser } from "../utils/session.ts";
 
 interface CalendarData {
   events: Event[];
@@ -11,6 +12,19 @@ interface CalendarData {
 
 export const handler: Handlers<CalendarData> = {
   GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication for all access
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour accéder à cette page",
+        },
+      });
+    }
+
     const url = new URL(req.url);
     const currentDate = new Date();
     const currentMonth = parseInt(

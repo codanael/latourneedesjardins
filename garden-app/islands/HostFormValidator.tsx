@@ -20,7 +20,7 @@ export default function HostFormValidator(
     null,
   );
 
-  const validateForm = async (formData: FormData) => {
+  const _validateForm = async (formData: FormData) => {
     setIsValidating(true);
 
     try {

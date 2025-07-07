@@ -3,10 +3,8 @@ import {
   Event,
   getEventsByHost,
   getEventStats,
-  getRSVPsByEvent,
-  getUserByEmail,
-  RSVP,
 } from "../../utils/db-operations.ts";
+import { getAuthenticatedUser, hasPermission } from "../../utils/session.ts";
 
 interface EventWithStats extends Event {
   rsvp_stats: { response: string; count: number }[];
@@ -20,17 +18,32 @@ interface DashboardData {
 }
 
 export const handler: Handlers<DashboardData> = {
-  GET(_req, ctx) {
-    // For now, using demo user as host
-    // In a real app, this would come from the authenticated user session
-    const demoEmail = "demo@example.com";
-    const host = getUserByEmail(demoEmail);
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
 
-    if (!host) {
-      return new Response("Host not found", { status: 404 });
+    // Require authentication
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour accéder au tableau de bord",
+        },
+      });
     }
 
-    const events = getEventsByHost(host.id);
+    // Require approved host permissions
+    if (!hasPermission(req, "approved_host")) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/host?error=Vous devez être un hôte approuvé pour accéder à cette page",
+        },
+      });
+    }
+
+    const events = getEventsByHost(user.id);
     const eventsWithStats: EventWithStats[] = events.map((event) => {
       const stats = getEventStats(event.id);
       const totalRsvps = stats.rsvp_stats.reduce(
@@ -46,7 +59,7 @@ export const handler: Handlers<DashboardData> = {
       };
     });
 
-    return ctx.render({ events: eventsWithStats, hostName: host.name });
+    return ctx.render({ events: eventsWithStats, hostName: user.name });
   },
 };
 

@@ -4,11 +4,11 @@ import {
   getEventById,
   getPotluckItemsByEvent,
   getRSVPsByEvent,
-  getUserByEmail,
   getUserRSVP,
   PotluckItem,
   RSVP,
 } from "../../utils/db-operations.ts";
+import { getAuthenticatedUser } from "../../utils/session.ts";
 import RSVPButton from "../../islands/RSVPButton.tsx";
 
 interface EventPageData {
@@ -19,7 +19,20 @@ interface EventPageData {
 }
 
 export const handler: Handlers<EventPageData> = {
-  GET(_req, ctx) {
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication for all access
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour accéder à cette page",
+        },
+      });
+    }
+
     const id = parseInt(ctx.params.id);
 
     if (isNaN(id)) {
@@ -35,10 +48,8 @@ export const handler: Handlers<EventPageData> = {
     const rsvps = getRSVPsByEvent(id);
     const potluckItems = getPotluckItemsByEvent(id);
 
-    // Get current user's RSVP (using demo user for now)
-    const demoEmail = "demo@example.com";
-    const user = getUserByEmail(demoEmail);
-    const currentUserRsvp = user ? getUserRSVP(id, user.id) : null;
+    // Get current user's RSVP
+    const currentUserRsvp = getUserRSVP(id, user.id);
 
     return ctx.render({ event, rsvps, potluckItems, currentUserRsvp });
   },

@@ -3,9 +3,9 @@ import {
   Event,
   getEventById,
   getRSVPsByEvent,
-  getUserByEmail,
   RSVP,
 } from "../../../utils/db-operations.ts";
+import { getAuthenticatedUser, hasPermission } from "../../../utils/session.ts";
 
 interface AttendeesData {
   event: Event | null;
@@ -14,7 +14,30 @@ interface AttendeesData {
 }
 
 export const handler: Handlers<AttendeesData> = {
-  GET(_req, ctx) {
+  GET(req, ctx) {
+    const user = getAuthenticatedUser(req);
+
+    // Require authentication
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour voir les participants",
+        },
+      });
+    }
+
+    // Require approved host permissions
+    if (!hasPermission(req, "approved_host")) {
+      return new Response(
+        "Forbidden - Seuls les hôtes approuvés peuvent voir les participants",
+        {
+          status: 403,
+        },
+      );
+    }
+
     const eventId = parseInt(ctx.params.id);
 
     if (isNaN(eventId)) {
@@ -26,16 +49,16 @@ export const handler: Handlers<AttendeesData> = {
       return new Response("Event not found", { status: 404 });
     }
 
-    // Check if current user is the host
-    // For now, using demo user
-    const demoEmail = "demo@example.com";
-    const user = getUserByEmail(demoEmail);
-    const isHost = user ? user.id === event.host_id : false;
+    // Check if current user is the host of this specific event
+    const isHost = user.id === event.host_id;
 
-    if (!isHost) {
-      return new Response("Unauthorized - Only hosts can view attendees", {
-        status: 403,
-      });
+    if (!isHost && !hasPermission(req, "admin")) {
+      return new Response(
+        "Forbidden - Seuls les hôtes de cet événement peuvent voir les participants",
+        {
+          status: 403,
+        },
+      );
     }
 
     const rsvps = getRSVPsByEvent(eventId);
@@ -45,7 +68,7 @@ export const handler: Handlers<AttendeesData> = {
 };
 
 export default function AttendeesPage({ data }: PageProps<AttendeesData>) {
-  const { event, rsvps, isHost } = data;
+  const { event, rsvps } = data;
 
   if (!event) {
     return (

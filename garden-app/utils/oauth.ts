@@ -1,5 +1,5 @@
-import { getCookies, setCookie } from "$std/http/cookie.ts";
-import { decodeBase64, encodeBase64 } from "$std/encoding/base64.ts";
+import { getCookies } from "$std/http/cookie.ts";
+import { decodeBase64 } from "$std/encoding/base64.ts";
 
 export interface OAuthProvider {
   name: string;
@@ -177,7 +177,7 @@ async function getGoogleUserInfo(accessToken: string): Promise<OAuthUserInfo> {
 }
 
 // Apple user info (from ID token)
-async function getAppleUserInfo(idToken: string): Promise<OAuthUserInfo> {
+function getAppleUserInfo(idToken: string): OAuthUserInfo {
   try {
     // Validate input
     if (!idToken || typeof idToken !== "string") {

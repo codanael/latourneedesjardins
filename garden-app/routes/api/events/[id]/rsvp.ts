@@ -1,14 +1,24 @@
 import { Handlers } from "$fresh/server.ts";
 import {
   createOrUpdateRSVP,
-  createUser,
   getEventById,
-  getUserByEmail,
+  getUserRSVP,
 } from "../../../../utils/db-operations.ts";
+import { getAuthenticatedUser } from "../../../../utils/session.ts";
 
 export const handler: Handlers = {
   async POST(req, ctx) {
     try {
+      const user = getAuthenticatedUser(req);
+
+      // Require authentication for RSVP
+      if (!user) {
+        return new Response(
+          JSON.stringify({ error: "Authentication required" }),
+          { status: 401, headers: { "Content-Type": "application/json" } },
+        );
+      }
+
       const eventId = parseInt(ctx.params.id);
 
       if (isNaN(eventId)) {
@@ -36,15 +46,6 @@ export const handler: Handlers = {
           JSON.stringify({ error: "Invalid RSVP response" }),
           { status: 400, headers: { "Content-Type": "application/json" } },
         );
-      }
-
-      // For now, we'll create a demo user since we don't have authentication yet
-      // In a real app, this would come from the authenticated user session
-      const demoEmail = "demo@example.com";
-      let user = getUserByEmail(demoEmail);
-
-      if (!user) {
-        user = createUser("Utilisateur Demo", demoEmail);
       }
 
       // Create or update RSVP
@@ -77,8 +78,18 @@ export const handler: Handlers = {
     }
   },
 
-  async GET(_req, ctx) {
+  GET(req, ctx) {
     try {
+      const user = getAuthenticatedUser(req);
+
+      // Require authentication for RSVP retrieval
+      if (!user) {
+        return new Response(
+          JSON.stringify({ error: "Authentication required" }),
+          { status: 401, headers: { "Content-Type": "application/json" } },
+        );
+      }
+
       const eventId = parseInt(ctx.params.id);
 
       if (isNaN(eventId)) {
@@ -97,24 +108,7 @@ export const handler: Handlers = {
         );
       }
 
-      // For demo purposes, check the demo user's RSVP
-      const demoEmail = "demo@example.com";
-      const user = getUserByEmail(demoEmail);
-
-      if (!user) {
-        return new Response(
-          JSON.stringify({ rsvp: null }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          },
-        );
-      }
-
       // Get user's current RSVP for this event
-      const { getUserRSVP } = await import(
-        "../../../../utils/db-operations.ts"
-      );
       const userRsvp = getUserRSVP(eventId, user.id);
 
       return new Response(

@@ -8,13 +8,25 @@ import Navigation from "../components/Navigation.tsx";
 
 interface HomeData {
   events: Event[];
-  user: AuthenticatedUser | null;
+  user: AuthenticatedUser;
 }
 
 export const handler: Handlers<HomeData> = {
   GET(req, ctx) {
-    const upcomingEvents = getUpcomingEvents(6);
     const user = getAuthenticatedUser(req);
+
+    // Require authentication for all access
+    if (!user) {
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour accéder à cette page",
+        },
+      });
+    }
+
+    const upcomingEvents = getUpcomingEvents(6);
     return ctx.render({ events: upcomingEvents, user });
   },
 };

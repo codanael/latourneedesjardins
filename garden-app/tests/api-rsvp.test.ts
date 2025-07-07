@@ -12,6 +12,7 @@ import {
 } from "../utils/db-operations.ts";
 import { initializeDatabase } from "../utils/schema.ts";
 import { closeDatabase, getDatabase } from "../utils/database.ts";
+import { createTestRequest, createTestUser } from "./auth-helper.ts";
 
 // Test database setup
 let testDb: ReturnType<typeof getDatabase>;
@@ -19,19 +20,25 @@ let testEvent: any;
 let testUser: any;
 
 describe("RSVP API", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     // Initialize a clean database for each test
     initializeDatabase();
+
+    // Initialize sessions table for authentication
+    const { initializeSessionsTable } = await import("../utils/session.ts");
+    initializeSessionsTable();
+
     testDb = getDatabase();
 
     // Clear existing data
+    testDb.query("DELETE FROM sessions");
     testDb.query("DELETE FROM potluck_items");
     testDb.query("DELETE FROM rsvps");
     testDb.query("DELETE FROM events");
     testDb.query("DELETE FROM users");
 
     // Create test user and event
-    testUser = createUser("Test Host", "host@test.com");
+    testUser = createTestUser("host@test.com", "Test Host");
     testEvent = createEvent({
       title: "Test Event",
       description: "Test Description",
@@ -56,9 +63,10 @@ describe("RSVP API", () => {
       const formData = new FormData();
       formData.append("response", "yes");
 
-      const request = new Request("http://localhost/api/events/1/rsvp", {
+      const request = createTestRequest("http://localhost/api/events/1/rsvp", {
         method: "POST",
         body: formData,
+        user: testUser,
       });
 
       const ctx = {
