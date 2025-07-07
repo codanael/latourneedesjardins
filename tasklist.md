@@ -13,6 +13,7 @@
 - `garden-app/utils/db-operations.ts` - Complete CRUD operations for users, events, RSVPs, potluck items
 - `garden-app/utils/seed-data.ts` - Sample data seeding for development
 - `garden-app/utils/env.ts` - Environment variable validation utilities
+- `garden-app/utils/weather.ts` - Weather API integration with OpenWeatherMap
 
 ### Security Layer
 - `garden-app/utils/security.ts` - Security headers, XSS protection, rate limiting, input sanitization
@@ -29,13 +30,18 @@
 - `garden-app/routes/host/dashboard.tsx` - Host dashboard to view event statistics and attendee responses
 - `garden-app/routes/host/attendees/[id].tsx` - Detailed attendee view for hosts with participant management
 - `garden-app/routes/api/events/[id]/rsvp.ts` - RSVP API endpoint with full CRUD operations
+- `garden-app/routes/api/events/[id]/potluck.ts` - Potluck items API endpoint for adding and listing items
+- `garden-app/routes/api/events/[id]/potluck/[itemId].ts` - Individual potluck item API endpoint for deletion
 
 ### Components and Islands
 - `garden-app/components/Navigation.tsx` - Main navigation component
 - `garden-app/components/EventCard.tsx` - Reusable event display card
 - `garden-app/components/PageHeader.tsx` - Page header component
 - `garden-app/components/Button.tsx` - Styled button component
+- `garden-app/components/PotluckList.tsx` - Shared potluck list component for displaying items
+- `garden-app/components/Weather.tsx` - Weather display component with current and forecast data
 - `garden-app/islands/RSVPButton.tsx` - Interactive RSVP component with API integration
+- `garden-app/islands/PotluckManager.tsx` - Interactive potluck management component with add/remove functionality
 
 ### Testing
 - `garden-app/tests/db-operations.test.ts` - Comprehensive database operations tests
@@ -103,12 +109,11 @@
    - [x] 10.2 Implement a role authorization model
    - [x] 10.3 Ensure secure data handling and transmission.
 
-- [ ] 11.0 Potluck Coordination
-   - [ ] 11.1 Design shared list component for potluck items.
-   - [ ] 10.2 Implement functionality for attendees to sign up for dishes.
+- [x] 11.0 Potluck Coordination
+   - [x] 11.1 Design shared list component for potluck items.
 
 - [ ] 12.0 Weather Updates
-   - [ ] 12.1 Integrate OpenWeatherMap API into event pages.
+   - [x] 12.1 Integrate OpenWeatherMap API into event pages.
    - [ ] 12.2 Display weather forecast data for events.
 
 - [ ] 13.0 Performance Optimization

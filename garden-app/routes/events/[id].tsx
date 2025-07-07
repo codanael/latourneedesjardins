@@ -8,18 +8,26 @@ import {
   PotluckItem,
   RSVP,
 } from "../../utils/db-operations.ts";
-import { getAuthenticatedUser } from "../../utils/session.ts";
+import {
+  AuthenticatedUser,
+  getAuthenticatedUser,
+} from "../../utils/session.ts";
+import { getWeatherForLocation, WeatherForecast } from "../../utils/weather.ts";
 import RSVPButton from "../../islands/RSVPButton.tsx";
+import PotluckManager from "../../islands/PotluckManager.tsx";
+import Weather from "../../components/Weather.tsx";
 
 interface EventPageData {
   event: Event | null;
   rsvps: RSVP[];
   potluckItems: PotluckItem[];
   currentUserRsvp: RSVP | null;
+  currentUser: AuthenticatedUser;
+  weatherData: WeatherForecast | null;
 }
 
 export const handler: Handlers<EventPageData> = {
-  GET(req, ctx) {
+  async GET(req, ctx) {
     const user = getAuthenticatedUser(req);
 
     // Require authentication for all access
@@ -51,12 +59,29 @@ export const handler: Handlers<EventPageData> = {
     // Get current user's RSVP
     const currentUserRsvp = getUserRSVP(id, user.id);
 
-    return ctx.render({ event, rsvps, potluckItems, currentUserRsvp });
+    // Get weather data for event location
+    const weatherData = await getWeatherForLocation(event.location);
+
+    return ctx.render({
+      event,
+      rsvps,
+      potluckItems,
+      currentUserRsvp,
+      currentUser: user,
+      weatherData,
+    });
   },
 };
 
 export default function EventDetailPage({ data }: PageProps<EventPageData>) {
-  const { event, rsvps, potluckItems, currentUserRsvp } = data;
+  const {
+    event,
+    rsvps,
+    potluckItems,
+    currentUserRsvp,
+    currentUser,
+    weatherData,
+  } = data;
 
   if (!event) {
     return (
@@ -137,20 +162,12 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
             </div>
 
             <div class="flex flex-col justify-center">
-              <div class="space-y-3">
-                <a
-                  href={`/events/${event.id}/potluck`}
-                  class="block w-full bg-blue-500 text-white text-center px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  Gérer le Potluck
-                </a>
-                <a
-                  href={`/events/${event.id}/edit`}
-                  class="block w-full bg-orange-500 text-white text-center px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
-                >
-                  ✏️ Modifier l'événement
-                </a>
-              </div>
+              <a
+                href={`/events/${event.id}/edit`}
+                class="block w-full bg-orange-500 text-white text-center px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+              >
+                ✏️ Modifier l'événement
+              </a>
             </div>
           </div>
 
@@ -173,114 +190,75 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
           </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* RSVP Section */}
-          <section class="bg-white rounded-lg shadow-md p-6 md:col-span-2 lg:col-span-1">
-            <RSVPButton
-              eventId={event.id}
-              currentResponse={currentUserRsvp?.response}
-            />
-          </section>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left Column */}
+          <div class="space-y-8">
+            {/* RSVP Section */}
+            <section class="bg-white rounded-lg shadow-md p-6">
+              <RSVPButton
+                eventId={event.id}
+                currentResponse={currentUserRsvp?.response}
+              />
+            </section>
 
-          {/* Participants List */}
-          <section class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold text-green-800 mb-4">
-              Participants ({yesRsvps.length} confirmés)
-            </h2>
+            {/* Participants List */}
+            <section class="bg-white rounded-lg shadow-md p-6">
+              <h2 class="text-2xl font-semibold text-green-800 mb-4">
+                Participants ({yesRsvps.length} confirmés)
+              </h2>
 
-            <div class="space-y-4">
-              <div>
-                <h3 class="font-semibold text-green-700 mb-2">
-                  ✅ Confirmés ({yesRsvps.length})
-                </h3>
-                <div class="grid grid-cols-2 gap-2">
-                  {yesRsvps.map((rsvp) => (
-                    <div key={rsvp.id} class="bg-green-50 px-3 py-2 rounded">
-                      {rsvp.user_name}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {maybeRsvps.length > 0 && (
+              <div class="space-y-4">
                 <div>
-                  <h3 class="font-semibold text-yellow-700 mb-2">
-                    🤔 Peut-être ({maybeRsvps.length})
+                  <h3 class="font-semibold text-green-700 mb-2">
+                    ✅ Confirmés ({yesRsvps.length})
                   </h3>
                   <div class="grid grid-cols-2 gap-2">
-                    {maybeRsvps.map((rsvp) => (
-                      <div key={rsvp.id} class="bg-yellow-50 px-3 py-2 rounded">
+                    {yesRsvps.map((rsvp) => (
+                      <div key={rsvp.id} class="bg-green-50 px-3 py-2 rounded">
                         {rsvp.user_name}
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
-            </div>
-          </section>
 
-          {/* Potluck List */}
-          <section class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold text-green-800 mb-4">
-              Potluck ({potluckItems.length} contributions)
-            </h2>
-
-            <div class="space-y-4">
-              {potluckItems.length > 0
-                ? (
-                  <div class="space-y-3">
-                    {potluckItems.map((item) => (
-                      <div
-                        key={item.id}
-                        class="flex justify-between items-center bg-blue-50 px-4 py-3 rounded"
-                      >
-                        <div>
-                          <span class="font-medium">{item.item_name}</span>
-                          <span class="text-sm text-gray-600 ml-2">
-                            ({item.category})
-                          </span>
-                          {item.quantity > 1 && (
-                            <span class="text-sm text-gray-600 ml-2">
-                              x{item.quantity}
-                            </span>
-                          )}
+                {maybeRsvps.length > 0 && (
+                  <div>
+                    <h3 class="font-semibold text-yellow-700 mb-2">
+                      🤔 Peut-être ({maybeRsvps.length})
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2">
+                      {maybeRsvps.map((rsvp) => (
+                        <div
+                          key={rsvp.id}
+                          class="bg-yellow-50 px-3 py-2 rounded"
+                        >
+                          {rsvp.user_name}
                         </div>
-                        <div class="text-sm text-gray-600">
-                          {item.user_name}
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                )
-                : (
-                  <p class="text-gray-600 text-center py-4">
-                    Aucune contribution pour le moment
-                  </p>
                 )}
+              </div>
+            </section>
+          </div>
 
-              <a
-                href={`/events/${event.id}/potluck`}
-                class="block w-full bg-blue-500 text-white text-center px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Ajouter une contribution
-              </a>
-            </div>
-          </section>
+          {/* Right Column - Potluck List */}
+          <div>
+            <PotluckManager
+              eventId={event.id}
+              currentUserId={currentUser?.id}
+              initialItems={potluckItems}
+            />
+          </div>
         </div>
 
-        {/* Weather Widget Placeholder */}
-        <section class="mt-8 bg-white rounded-lg shadow-md p-6">
-          <h2 class="text-2xl font-semibold text-green-800 mb-4">
-            Météo prévue
-          </h2>
-          <div class="bg-blue-50 p-4 rounded-lg text-center">
-            <p class="text-gray-600">
-              🌤️ Widget météo à implémenter
-            </p>
-            <p class="text-sm text-gray-500 mt-2">
-              Les prévisions météo s'afficheront ici
-            </p>
-          </div>
+        {/* Weather Section */}
+        <section class="mt-8">
+          <Weather
+            weatherData={weatherData}
+            location={event.location}
+            eventDate={event.date}
+          />
         </section>
       </div>
     </div>

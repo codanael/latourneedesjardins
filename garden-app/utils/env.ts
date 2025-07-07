@@ -53,5 +53,5 @@ export function validateEnv() {
     }
   }
 
-  return errors.length === 0;
+  return env;
 }
