@@ -6,6 +6,7 @@ import {
 } from "../utils/session.ts";
 import { isAutoApprovalEnabled } from "../utils/config.ts";
 import Navigation from "../components/Navigation.tsx";
+import { sanitizeHtml, sanitizeInput } from "../utils/security.ts";
 
 interface FormData {
   success?: boolean;
@@ -50,17 +51,24 @@ export const handler: Handlers<FormData> = {
     const formData = await req.formData();
 
     const hostData = {
-      phone: formData.get("phone")?.toString() || "",
-      eventTitle: formData.get("eventTitle")?.toString() || "",
-      eventDate: formData.get("eventDate")?.toString() || "",
-      eventTime: formData.get("eventTime")?.toString() || "14:00",
-      location: formData.get("location")?.toString() || "",
-      description: formData.get("description")?.toString() || "",
-      theme: formData.get("theme")?.toString() || "",
-      maxAttendees: formData.get("maxAttendees")?.toString() || "15",
-      specialInstructions: formData.get("specialInstructions")?.toString() ||
-        "",
-      weatherLocation: formData.get("weatherLocation")?.toString() || "",
+      phone: sanitizeInput(formData.get("phone")?.toString() || ""),
+      eventTitle: sanitizeInput(formData.get("eventTitle")?.toString() || ""),
+      eventDate: sanitizeInput(formData.get("eventDate")?.toString() || ""),
+      eventTime: sanitizeInput(
+        formData.get("eventTime")?.toString() || "14:00",
+      ),
+      location: sanitizeInput(formData.get("location")?.toString() || ""),
+      description: sanitizeHtml(formData.get("description")?.toString() || ""),
+      theme: sanitizeInput(formData.get("theme")?.toString() || ""),
+      maxAttendees: sanitizeInput(
+        formData.get("maxAttendees")?.toString() || "15",
+      ),
+      specialInstructions: sanitizeHtml(
+        formData.get("specialInstructions")?.toString() || "",
+      ),
+      weatherLocation: sanitizeInput(
+        formData.get("weatherLocation")?.toString() || "",
+      ),
     };
 
     // Convert to form values for re-display on error

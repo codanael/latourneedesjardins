@@ -28,6 +28,11 @@ export default function Navigation(
           { href: "/host/dashboard", label: "Tableau de bord", icon: "📊" },
         ]
         : []),
+      ...(user.role === "admin"
+        ? [
+          { href: "/admin/security", label: "Sécurité", icon: "🔒" },
+        ]
+        : []),
       {
         href: "/host",
         label: user.host_status === "approved"

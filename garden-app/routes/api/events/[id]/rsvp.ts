@@ -5,6 +5,7 @@ import {
   getUserRSVP,
 } from "../../../../utils/db-operations.ts";
 import { getAuthenticatedUser } from "../../../../utils/session.ts";
+import { logSecurityEvent, sanitizeInput } from "../../../../utils/security.ts";
 
 export const handler: Handlers = {
   async POST(req, ctx) {
@@ -13,6 +14,17 @@ export const handler: Handlers = {
 
       // Require authentication for RSVP
       if (!user) {
+        // Log security event for unauthorized access attempt
+        logSecurityEvent({
+          type: "auth_failure",
+          ip: req.headers.get("x-forwarded-for") ||
+            req.headers.get("x-real-ip") || "unknown",
+          userAgent: req.headers.get("user-agent") || "unknown",
+          url: req.url,
+          timestamp: new Date(),
+          details: { endpoint: "rsvp_post" },
+        });
+
         return new Response(
           JSON.stringify({ error: "Authentication required" }),
           { status: 401, headers: { "Content-Type": "application/json" } },
@@ -38,7 +50,7 @@ export const handler: Handlers = {
       }
 
       const formData = await req.formData();
-      const response = formData.get("response") as string;
+      const response = sanitizeInput(formData.get("response") as string);
 
       // Validate response
       if (!response || !["yes", "no", "maybe"].includes(response)) {
@@ -84,6 +96,17 @@ export const handler: Handlers = {
 
       // Require authentication for RSVP retrieval
       if (!user) {
+        // Log security event for unauthorized access attempt
+        logSecurityEvent({
+          type: "auth_failure",
+          ip: req.headers.get("x-forwarded-for") ||
+            req.headers.get("x-real-ip") || "unknown",
+          userAgent: req.headers.get("user-agent") || "unknown",
+          url: req.url,
+          timestamp: new Date(),
+          details: { endpoint: "rsvp_get" },
+        });
+
         return new Response(
           JSON.stringify({ error: "Authentication required" }),
           { status: 401, headers: { "Content-Type": "application/json" } },

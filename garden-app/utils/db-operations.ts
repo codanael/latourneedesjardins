@@ -9,6 +9,7 @@ export interface User {
   host_status?: string;
   admin_notes?: string;
   confirmed_at?: string;
+  role?: string;
 }
 
 export interface Event {
