@@ -94,8 +94,8 @@
   - [x] 9.3 Configure admin review or automatic confirmation process for hosts.
 
 - [ ] 10.0 Security Measures
-   - [ ] 10.1 Implement user authentication with OAuth 2.0.
-   - [ ] 10.2 Implement a role authorization model
+   - [x] 10.1 Implement user authentication with OAuth 2.0.
+   - [x] 10.2 Implement a role authorization model
    - [ ] 10.3 Ensure secure data handling and transmission.
 
 - [ ] 11.0 Potluck Coordination
