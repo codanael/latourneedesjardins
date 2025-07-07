@@ -32,7 +32,7 @@ export class ClientCache {
   /**
    * Check if cache item is expired
    */
-  private isExpired(item: CacheItem<any>): boolean {
+  private isExpired(item: CacheItem<unknown>): boolean {
     return Date.now() - item.timestamp > item.ttl;
   }
 
@@ -260,7 +260,7 @@ export async function cachedFetch<T>(
 /**
  * Cache invalidation utilities
  */
-export function invalidateCache(pattern: string, cache: ClientCache): void {
+export function invalidateCache(pattern: string, _cache?: ClientCache): void {
   // This is a simple implementation - in a real app you might want more sophisticated pattern matching
   try {
     const keys = Object.keys(localStorage).filter((key) =>

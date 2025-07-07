@@ -32,7 +32,7 @@ export function validateEnv() {
   // Check for required environment variables in all environments
   const requiredEnvVars = [
     "DATABASE_URL",
-    "GOOGLE_CLIENT_ID", 
+    "GOOGLE_CLIENT_ID",
     "GOOGLE_CLIENT_SECRET",
   ];
   const missingVars = requiredEnvVars.filter((varName) =>
@@ -41,7 +41,7 @@ export function validateEnv() {
 
   if (missingVars.length > 0) {
     errors.push(
-      `Missing required environment variables: ${missingVars.join(", ")}`
+      `Missing required environment variables: ${missingVars.join(", ")}`,
     );
   }
 
@@ -66,7 +66,10 @@ export function validateEnv() {
   }
 
   // Format validation warnings
-  if (env.GOOGLE_CLIENT_ID && !env.GOOGLE_CLIENT_ID.includes(".googleusercontent.com")) {
+  if (
+    env.GOOGLE_CLIENT_ID &&
+    !env.GOOGLE_CLIENT_ID.includes(".googleusercontent.com")
+  ) {
     console.warn("⚠️  Google OAuth Client ID format may be incorrect");
   }
 

@@ -92,6 +92,7 @@ export default function CachedRSVPButton({
 
       <div class="flex flex-col sm:flex-row gap-2">
         <button
+          type="button"
           onClick={() => handleRSVP("yes")}
           disabled={isLoading.value}
           class={getButtonClass("yes")}
@@ -102,6 +103,7 @@ export default function CachedRSVPButton({
         </button>
 
         <button
+          type="button"
           onClick={() => handleRSVP("maybe")}
           disabled={isLoading.value}
           class={getButtonClass("maybe")}
@@ -112,6 +114,7 @@ export default function CachedRSVPButton({
         </button>
 
         <button
+          type="button"
           onClick={() => handleRSVP("no")}
           disabled={isLoading.value}
           class={getButtonClass("no")}

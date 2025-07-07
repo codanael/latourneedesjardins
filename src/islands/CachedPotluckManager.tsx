@@ -42,6 +42,7 @@ export default function CachedPotluckManager({
       user_name: "Vous", // Will be updated by server
       item_name: newItemName.value.trim(),
       category: newItemCategory.value,
+      quantity: 1, // Default quantity
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
@@ -125,6 +126,7 @@ export default function CachedPotluckManager({
         </h2>
         {currentUserId && (
           <button
+            type="button"
             onClick={() => showAddForm.value = !showAddForm.value}
             class="btn btn-primary text-sm"
             disabled={isLoading.value}
@@ -179,6 +181,7 @@ export default function CachedPotluckManager({
             </div>
             <div class="flex gap-2">
               <button
+                type="button"
                 onClick={addItem}
                 disabled={!newItemName.value.trim() || isLoading.value}
                 class="btn btn-primary flex-1"
@@ -186,6 +189,7 @@ export default function CachedPotluckManager({
                 {isLoading.value ? "Ajout..." : "Ajouter"}
               </button>
               <button
+                type="button"
                 onClick={() => {
                   showAddForm.value = false;
                   newItemName.value = "";
@@ -230,6 +234,7 @@ export default function CachedPotluckManager({
                       </div>
                       {item.user_id === currentUserId && (
                         <button
+                          type="button"
                           onClick={() => deleteItem(item.id)}
                           disabled={isLoading.value}
                           class="text-red-600 hover:text-red-800 p-1 rounded transition-colors"

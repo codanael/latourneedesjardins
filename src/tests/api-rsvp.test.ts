@@ -1,4 +1,3 @@
-// deno-lint-ignore-file no-explicit-any no-unused-vars
 import { assertEquals, assertExists } from "$std/assert/mod.ts";
 import { afterEach, beforeEach, describe, it } from "$std/testing/bdd.ts";
 import { handler } from "../routes/api/events/[id]/rsvp.ts";
@@ -13,11 +12,12 @@ import {
 import { initializeDatabase } from "../utils/schema.ts";
 import { closeDatabase, getDatabase } from "../utils/database.ts";
 import { createTestRequest, createTestUser } from "./auth-helper.ts";
+import type { FreshContext } from "$fresh/server.ts";
 
 // Test database setup
 let testDb: ReturnType<typeof getDatabase>;
-let testEvent: any;
-let testUser: any;
+let testEvent: Event;
+let testUser: User;
 
 describe("RSVP API", () => {
   beforeEach(async () => {
@@ -78,7 +78,10 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 200);
@@ -100,7 +103,10 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 200);
@@ -121,7 +127,10 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 200);
@@ -143,7 +152,7 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      await handler.POST!(request1, ctx as any);
+      await handler.POST!(request1, ctx as unknown as FreshContext);
 
       // Second RSVP (update)
       const formData2 = new FormData();
@@ -154,7 +163,10 @@ describe("RSVP API", () => {
         body: formData2,
       });
 
-      const response = await handler.POST!(request2, ctx as any);
+      const response = await handler.POST!(
+        request2,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 200);
@@ -180,7 +192,10 @@ describe("RSVP API", () => {
         params: { id: "invalid" },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 400);
@@ -200,7 +215,10 @@ describe("RSVP API", () => {
         params: { id: "999" },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 404);
@@ -220,7 +238,10 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 400);
@@ -240,7 +261,10 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 400);
@@ -258,7 +282,10 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      const response = await handler.GET!(request, ctx as any);
+      const response = await handler.GET!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 200);
@@ -279,14 +306,17 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      await handler.POST!(postRequest, ctx as any);
+      await handler.POST!(postRequest, ctx as unknown as FreshContext);
 
       // Then retrieve it
       const getRequest = new Request("http://localhost/api/events/1/rsvp", {
         method: "GET",
       });
 
-      const response = await handler.GET!(getRequest, ctx as any);
+      const response = await handler.GET!(
+        getRequest,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 200);
@@ -305,7 +335,10 @@ describe("RSVP API", () => {
         params: { id: "invalid" },
       };
 
-      const response = await handler.GET!(request, ctx as any);
+      const response = await handler.GET!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 400);
@@ -321,7 +354,10 @@ describe("RSVP API", () => {
         params: { id: "999" },
       };
 
-      const response = await handler.GET!(request, ctx as any);
+      const response = await handler.GET!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 404);
@@ -343,7 +379,10 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 200);
@@ -372,7 +411,10 @@ describe("RSVP API", () => {
         params: { id: testEvent.id.toString() },
       };
 
-      const response = await handler.POST!(request, ctx as any);
+      const response = await handler.POST!(
+        request,
+        ctx as unknown as FreshContext,
+      );
       const responseBody = await response.json();
 
       assertEquals(response.status, 200);

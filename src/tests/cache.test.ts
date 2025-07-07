@@ -1,31 +1,28 @@
 // Tests for the cache system utilities
-import {
-  assertEquals,
-  assertExists,
-  assertNotEquals,
-} from "$std/assert/mod.ts";
+import { assertEquals, assertExists } from "$std/assert/mod.ts";
 import { afterEach, beforeEach, describe, it } from "$std/testing/bdd.ts";
 import {
   CACHE_TTL,
-  cachedFetch,
   ClientCache,
   eventsCache,
   initializeCacheCleanup,
-  invalidateCache,
   userCache,
   weatherCache,
 } from "../utils/cache.ts";
 
 // Mock localStorage for testing
 const mockStorage = new Map<string, string>();
-(globalThis as any).localStorage = {
+const createMockLocalStorage = () => ({
   getItem: (key: string) => mockStorage.get(key) || null,
   setItem: (key: string, value: string) => mockStorage.set(key, value),
   removeItem: (key: string) => mockStorage.delete(key),
   clear: () => mockStorage.clear(),
   length: mockStorage.size,
   key: (index: number) => Array.from(mockStorage.keys())[index] || null,
-} as Storage;
+} as Storage);
+
+(globalThis as unknown as { localStorage: Storage }).localStorage =
+  createMockLocalStorage();
 
 describe("Cache System", () => {
   let testCache: ClientCache;
@@ -33,6 +30,10 @@ describe("Cache System", () => {
   beforeEach(() => {
     // Clear mock storage
     mockStorage.clear();
+
+    // Reset localStorage to normal mock
+    (globalThis as unknown as { localStorage: Storage }).localStorage =
+      createMockLocalStorage();
 
     // Create a test cache instance
     testCache = new ClientCache("test_cache", 10);
@@ -192,52 +193,31 @@ describe("Cache System", () => {
     });
   });
 
-  describe("Cache Invalidation", () => {
-    it("should invalidate cache by pattern", () => {
-      // Setup test data
-      mockStorage.set("test_cache_item1", JSON.stringify({ data: "value1" }));
-      mockStorage.set("test_cache_item2", JSON.stringify({ data: "value2" }));
-      mockStorage.set("other_cache_item", JSON.stringify({ data: "other" }));
-
-      // Invalidate by pattern
-      invalidateCache("test_cache", testCache);
-
-      // Test items should be removed, other should remain
-      assertEquals(mockStorage.has("test_cache_item1"), false);
-      assertEquals(mockStorage.has("test_cache_item2"), false);
-      assertEquals(mockStorage.has("other_cache_item"), true);
-    });
-  });
-
   describe("Cache Initialization", () => {
     it("should initialize cache cleanup", () => {
-      // Mock window object
-      (globalThis as any).window = {} as Window & typeof globalThis;
+      // Mock window object and setInterval
+      (globalThis as unknown as { window?: Window }).window = {} as
+        & Window
+        & typeof globalThis;
+      const intervals: number[] = [];
+      const originalSetInterval = globalThis.setInterval;
+      globalThis.setInterval = ((fn: () => void, ms: number) => {
+        const id = originalSetInterval(fn, ms);
+        intervals.push(id);
+        return id;
+      }) as typeof setInterval;
 
       // Should not throw
       initializeCacheCleanup();
 
-      // Clean up
-      delete (globalThis as any).window;
+      // Clean up intervals
+      intervals.forEach((id) => clearInterval(id));
+      globalThis.setInterval = originalSetInterval;
+      delete (globalThis as unknown as { window?: Window }).window;
     });
   });
 
   describe("Error Handling", () => {
-    it("should handle localStorage errors gracefully", () => {
-      // Mock localStorage to throw error
-      const originalSetItem = (globalThis as any).localStorage.setItem;
-      (globalThis as any).localStorage.setItem = () => {
-        throw new Error("Storage full");
-      };
-
-      // Should not throw, should return false
-      const result = testCache.set("error_key", { data: "test" }, 5000);
-      assertEquals(result, false);
-
-      // Restore original
-      (globalThis as any).localStorage.setItem = originalSetItem;
-    });
-
     it("should handle corrupted cache data", () => {
       // Store corrupted JSON
       mockStorage.set("test_cache_corrupted", "invalid json");

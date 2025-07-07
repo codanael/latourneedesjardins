@@ -6,16 +6,38 @@ import { Signal, useSignal } from "@preact/signals";
 import { initializeCacheCleanup } from "../utils/cache.ts";
 import { getWeatherCacheStats } from "../utils/cached-weather.ts";
 import { getEventsCacheStats } from "../utils/cached-events.ts";
+import { ComponentChildren } from "preact";
+
+interface CacheStatsData {
+  totalItems: number;
+  totalSize: number;
+  expiredItems: number;
+}
+
+interface WeatherCacheStats extends CacheStatsData {
+  cacheType: string;
+}
+
+interface EventsCacheStats {
+  events: CacheStatsData;
+  users: CacheStatsData;
+}
+
+interface CacheStats {
+  weather: WeatherCacheStats;
+  events: EventsCacheStats;
+  timestamp: string;
+}
 
 interface CacheProviderProps {
-  children: any;
+  children: ComponentChildren;
   enableStats?: boolean;
 }
 
 export default function CacheProvider(
   { children, enableStats = false }: CacheProviderProps,
 ) {
-  const cacheStats: Signal<any> = useSignal(null);
+  const cacheStats: Signal<CacheStats | null> = useSignal(null);
 
   useEffect(() => {
     // Initialize cache cleanup on component mount
@@ -50,7 +72,7 @@ export default function CacheProvider(
     <>
       {children}
       {enableStats && cacheStats.value &&
-        process.env.NODE_ENV === "development" && (
+        Deno.env.get("DENO_ENV") === "development" && (
         <CacheStatsDisplay stats={cacheStats.value} />
       )}
     </>
@@ -58,7 +80,7 @@ export default function CacheProvider(
 }
 
 // Development-only cache statistics display
-function CacheStatsDisplay({ stats }: { stats: any }) {
+function CacheStatsDisplay({ stats }: { stats: CacheStats }) {
   const formatBytes = (bytes: number) => {
     if (bytes === 0) return "0 B";
     const k = 1024;

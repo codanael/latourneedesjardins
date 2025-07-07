@@ -341,7 +341,6 @@ export function getSecurityEvents(limit: number = 100): SecurityEvent[] {
   return securityEvents.slice(-limit);
 }
 
-
 /**
  * Security middleware composer
  */

@@ -1,56 +1,56 @@
 ## Relevant Files
 
 ### Core Application Files
-- `garden-app/main.ts` - Application entry point with database initialization and seeding
-- `garden-app/fresh.config.ts` - Fresh framework configuration with Tailwind plugin
-- `garden-app/deno.json` - Deno configuration with dependencies and tasks including testing
-- `garden-app/.env` - Environment variables for database and API configurations
+- `src/main.ts` - Application entry point with database initialization and seeding
+- `src/fresh.config.ts` - Fresh framework configuration with Tailwind plugin
+- `src/deno.json` - Deno configuration with dependencies and tasks including testing
+- `src/.env` - Environment variables for database and API configurations
 
 ### Database Layer
-- `garden-app/utils/database.ts` - SQLite database connection singleton
-- `garden-app/utils/schema.ts` - Database schema initialization for all tables
-- `garden-app/utils/migrations.ts` - Database migration system with version tracking
-- `garden-app/utils/db-operations.ts` - Complete CRUD operations for users, events, RSVPs, potluck items
-- `garden-app/utils/seed-data.ts` - Sample data seeding for development
-- `garden-app/utils/env.ts` - Environment variable validation utilities
-- `garden-app/utils/weather.ts` - Weather API integration with OpenWeatherMap
+- `src/utils/database.ts` - SQLite database connection singleton
+- `src/utils/schema.ts` - Database schema initialization for all tables
+- `src/utils/migrations.ts` - Database migration system with version tracking
+- `src/utils/db-operations.ts` - Complete CRUD operations for users, events, RSVPs, potluck items
+- `src/utils/seed-data.ts` - Sample data seeding for development
+- `src/utils/env.ts` - Environment variable validation utilities
+- `src/utils/weather.ts` - Weather API integration with OpenWeatherMap
 
 ### Security Layer
-- `garden-app/utils/security.ts` - Security headers, XSS protection, rate limiting, input sanitization
-- `garden-app/routes/_middleware.ts` - Global security middleware for all routes
-- `garden-app/routes/admin/security.tsx` - Security monitoring dashboard for administrators
+- `src/utils/security.ts` - Security headers, XSS protection, rate limiting, input sanitization
+- `src/routes/_middleware.ts` - Global security middleware for all routes
+- `src/routes/admin/security.tsx` - Security monitoring dashboard for administrators
 
 ### Routes and Pages
-- `garden-app/routes/index.tsx` - Homepage with upcoming events display
-- `garden-app/routes/events/index.tsx` - All events listing page with RSVP counts
-- `garden-app/routes/events/[id].tsx` - Event detail page with integrated RSVP functionality
-- `garden-app/routes/events/[id]/edit.tsx` - Event editing form with validation and success handling
-- `garden-app/routes/calendar.tsx` - Calendar view of events by month
-- `garden-app/routes/host.tsx` - Host sign-up form for creating events
-- `garden-app/routes/host/dashboard.tsx` - Host dashboard to view event statistics and attendee responses
-- `garden-app/routes/host/attendees/[id].tsx` - Detailed attendee view for hosts with participant management
-- `garden-app/routes/api/events/[id]/rsvp.ts` - RSVP API endpoint with full CRUD operations
-- `garden-app/routes/api/events/[id]/potluck.ts` - Potluck items API endpoint for adding and listing items
-- `garden-app/routes/api/events/[id]/potluck/[itemId].ts` - Individual potluck item API endpoint for deletion
+- `src/routes/index.tsx` - Homepage with upcoming events display
+- `src/routes/events/index.tsx` - All events listing page with RSVP counts
+- `src/routes/events/[id].tsx` - Event detail page with integrated RSVP functionality
+- `src/routes/events/[id]/edit.tsx` - Event editing form with validation and success handling
+- `src/routes/calendar.tsx` - Calendar view of events by month
+- `src/routes/host.tsx` - Host sign-up form for creating events
+- `src/routes/host/dashboard.tsx` - Host dashboard to view event statistics and attendee responses
+- `src/routes/host/attendees/[id].tsx` - Detailed attendee view for hosts with participant management
+- `src/routes/api/events/[id]/rsvp.ts` - RSVP API endpoint with full CRUD operations
+- `src/routes/api/events/[id]/potluck.ts` - Potluck items API endpoint for adding and listing items
+- `src/routes/api/events/[id]/potluck/[itemId].ts` - Individual potluck item API endpoint for deletion
 
 ### Components and Islands
-- `garden-app/components/Navigation.tsx` - Main navigation component
-- `garden-app/components/EventCard.tsx` - Reusable event display card
-- `garden-app/components/PageHeader.tsx` - Page header component
-- `garden-app/components/Button.tsx` - Styled button component
-- `garden-app/components/PotluckList.tsx` - Shared potluck list component for displaying items
-- `garden-app/components/Weather.tsx` - Weather display component with current and forecast data
-- `garden-app/islands/RSVPButton.tsx` - Interactive RSVP component with API integration
-- `garden-app/islands/PotluckManager.tsx` - Interactive potluck management component with add/remove functionality
+- `src/components/Navigation.tsx` - Main navigation component
+- `src/components/EventCard.tsx` - Reusable event display card
+- `src/components/PageHeader.tsx` - Page header component
+- `src/components/Button.tsx` - Styled button component
+- `src/components/PotluckList.tsx` - Shared potluck list component for displaying items
+- `src/components/Weather.tsx` - Weather display component with current and forecast data
+- `src/islands/RSVPButton.tsx` - Interactive RSVP component with API integration
+- `src/islands/PotluckManager.tsx` - Interactive potluck management component with add/remove functionality
 
 ### Testing
-- `garden-app/tests/db-operations.test.ts` - Comprehensive database operations tests
-- `garden-app/tests/env.test.ts` - Environment configuration tests
-- `garden-app/tests/api-rsvp.test.ts` - Complete RSVP API endpoint testing with all scenarios
+- `src/tests/db-operations.test.ts` - Comprehensive database operations tests
+- `src/tests/env.test.ts` - Environment configuration tests
+- `src/tests/api-rsvp.test.ts` - Complete RSVP API endpoint testing with all scenarios
 
 ### Styling
-- `garden-app/static/styles.css` - Global CSS styles
-- `garden-app/tailwind.config.ts` - Tailwind CSS configuration
+- `src/static/styles.css` - Global CSS styles
+- `src/tailwind.config.ts` - Tailwind CSS configuration
 
 ### Notes
 - Use environment variables for sensitive configurations and API keys.

@@ -45,13 +45,16 @@ export const handler: Handlers = {
       }
 
       const db = getDatabase();
-      const rsvps = db.prepare(`
+      const rsvps = db.query(
+        `
         SELECT r.*, e.title as event_title, e.date as event_date
         FROM rsvps r
         JOIN events e ON r.event_id = e.id
         WHERE r.user_id = ?
         ORDER BY e.date DESC
-      `).all(requestedUserId);
+      `,
+        [requestedUserId],
+      );
 
       return new Response(
         JSON.stringify(rsvps),

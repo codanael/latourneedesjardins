@@ -1,7 +1,7 @@
 // Cached event data utilities for Garden App
 // Implements client-side caching for event data to reduce database load
 
-import { CACHE_TTL, cachedFetch, eventsCache, userCache } from "./cache.ts";
+import { CACHE_TTL, eventsCache, userCache } from "./cache.ts";
 import type { Event, PotluckItem, RSVP } from "./db-operations.ts";
 
 /**
@@ -47,7 +47,11 @@ export async function getCachedEventDetails(eventId: number): Promise<{
   const cacheKey = `event_details_${eventId}`;
 
   try {
-    const cached = eventsCache.get<any>(cacheKey);
+    const cached = eventsCache.get<{
+      event: Event | null;
+      rsvps: RSVP[];
+      potluckItems: PotluckItem[];
+    }>(cacheKey);
     if (cached) {
       return cached;
     }

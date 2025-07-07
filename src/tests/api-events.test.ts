@@ -4,13 +4,14 @@ import { afterEach, beforeEach, describe, it } from "$std/testing/bdd.ts";
 import { handler as eventsHandler } from "../routes/api/events.ts";
 import { handler as eventDetailsHandler } from "../routes/api/events/[id]/details.ts";
 import { createTestRequest, createTestUser } from "./auth-helper.ts";
-import { createEvent } from "../utils/db-operations.ts";
+import { createEvent, type Event, type User } from "../utils/db-operations.ts";
 import { initializeDatabase } from "../utils/schema.ts";
 import { closeDatabase } from "../utils/database.ts";
+import type { FreshContext } from "$fresh/server.ts";
 
 describe("Events API", () => {
-  let testUser: any;
-  let testEvent: any;
+  let testUser: User;
+  let testEvent: Event;
 
   beforeEach(async () => {
     // Set test environment
@@ -51,7 +52,7 @@ describe("Events API", () => {
         user: testUser,
       });
 
-      const response = await eventsHandler.GET!(request, {} as any);
+      const response = await eventsHandler.GET!(request, {} as FreshContext);
 
       assertEquals(response.status, 200);
 
@@ -62,7 +63,7 @@ describe("Events API", () => {
       assertEquals(events.length >= 1, true);
 
       // Check event structure
-      const event = events.find((e: any) => e.id === testEvent.id);
+      const event = events.find((e: Event) => e.id === testEvent.id);
       assertExists(event);
       assertEquals(event.title, "API Test Event");
       assertEquals(event.location, "Test Location");
@@ -74,7 +75,7 @@ describe("Events API", () => {
         method: "GET",
       });
 
-      const response = await eventsHandler.GET!(request, {} as any);
+      const response = await eventsHandler.GET!(request, {} as FreshContext);
 
       assertEquals(response.status, 401);
 
@@ -88,7 +89,7 @@ describe("Events API", () => {
         user: testUser,
       });
 
-      const response = await eventsHandler.GET!(request, {} as any);
+      const response = await eventsHandler.GET!(request, {} as FreshContext);
 
       assertEquals(response.status, 200);
       assertEquals(
@@ -108,8 +109,8 @@ describe("Events API", () => {
         },
       );
 
-      const ctx = { params: { id: testEvent.id.toString() } };
-      const response = await eventDetailsHandler.GET!(request, ctx as any);
+      const ctx = { params: { id: testEvent.id.toString() } } as FreshContext;
+      const response = await eventDetailsHandler.GET!(request, ctx);
 
       assertEquals(response.status, 200);
 
@@ -132,8 +133,8 @@ describe("Events API", () => {
         },
       );
 
-      const ctx = { params: { id: testEvent.id.toString() } };
-      const response = await eventDetailsHandler.GET!(request, ctx as any);
+      const ctx = { params: { id: testEvent.id.toString() } } as FreshContext;
+      const response = await eventDetailsHandler.GET!(request, ctx);
 
       assertEquals(response.status, 401);
     });
@@ -148,7 +149,10 @@ describe("Events API", () => {
       );
 
       const ctx = { params: { id: "invalid" } };
-      const response = await eventDetailsHandler.GET!(request, ctx as any);
+      const response = await eventDetailsHandler.GET!(
+        request,
+        ctx as unknown as FreshContext,
+      );
 
       assertEquals(response.status, 400);
 
@@ -166,7 +170,10 @@ describe("Events API", () => {
       );
 
       const ctx = { params: { id: "99999" } };
-      const response = await eventDetailsHandler.GET!(request, ctx as any);
+      const response = await eventDetailsHandler.GET!(
+        request,
+        ctx as unknown as FreshContext,
+      );
 
       assertEquals(response.status, 404);
 
@@ -183,8 +190,8 @@ describe("Events API", () => {
         },
       );
 
-      const ctx = { params: { id: testEvent.id.toString() } };
-      const response = await eventDetailsHandler.GET!(request, ctx as any);
+      const ctx = { params: { id: testEvent.id.toString() } } as FreshContext;
+      const response = await eventDetailsHandler.GET!(request, ctx);
 
       assertEquals(response.status, 200);
       assertEquals(
