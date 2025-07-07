@@ -341,37 +341,6 @@ export function getSecurityEvents(limit: number = 100): SecurityEvent[] {
   return securityEvents.slice(-limit);
 }
 
-/**
- * Validate and sanitize environment variables
- */
-export function validateSecurityConfig(): void {
-  const requiredEnvVars = [
-    "DATABASE_URL",
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_CLIENT_SECRET",
-  ];
-  const missingVars = requiredEnvVars.filter((varName) =>
-    !Deno.env.get(varName)
-  );
-
-  if (missingVars.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missingVars.join(", ")}`,
-    );
-  }
-
-  // Validate OAuth configuration
-  const googleClientId = Deno.env.get("GOOGLE_CLIENT_ID");
-  if (googleClientId && !googleClientId.includes(".googleusercontent.com")) {
-    console.warn("⚠️  Google OAuth Client ID format may be incorrect");
-  }
-
-  // Validate database URL
-  const dbUrl = Deno.env.get("DATABASE_URL");
-  if (dbUrl && !dbUrl.startsWith("sqlite:")) {
-    console.warn("⚠️  Database URL should use sqlite: protocol");
-  }
-}
 
 /**
  * Security middleware composer

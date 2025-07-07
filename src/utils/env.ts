@@ -17,6 +17,10 @@ export const env = {
   JWT_SECRET: Deno.env.get("JWT_SECRET") || "",
   SESSION_SECRET: Deno.env.get("SESSION_SECRET") || "",
 
+  // OAuth
+  GOOGLE_CLIENT_ID: Deno.env.get("GOOGLE_CLIENT_ID") || "",
+  GOOGLE_CLIENT_SECRET: Deno.env.get("GOOGLE_CLIENT_SECRET") || "",
+
   // CORS
   CORS_ORIGIN: Deno.env.get("CORS_ORIGIN") || "http://localhost:8000",
 };
@@ -25,6 +29,23 @@ export const env = {
 export function validateEnv() {
   const errors: string[] = [];
 
+  // Check for required environment variables in all environments
+  const requiredEnvVars = [
+    "DATABASE_URL",
+    "GOOGLE_CLIENT_ID", 
+    "GOOGLE_CLIENT_SECRET",
+  ];
+  const missingVars = requiredEnvVars.filter((varName) =>
+    !Deno.env.get(varName)
+  );
+
+  if (missingVars.length > 0) {
+    errors.push(
+      `Missing required environment variables: ${missingVars.join(", ")}`
+    );
+  }
+
+  // Production-specific validation
   if (env.DENO_ENV === "production") {
     if (!env.JWT_SECRET || env.JWT_SECRET.includes("change_in_production")) {
       errors.push("JWT_SECRET must be set in production");
@@ -44,6 +65,16 @@ export function validateEnv() {
     }
   }
 
+  // Format validation warnings
+  if (env.GOOGLE_CLIENT_ID && !env.GOOGLE_CLIENT_ID.includes(".googleusercontent.com")) {
+    console.warn("⚠️  Google OAuth Client ID format may be incorrect");
+  }
+
+  if (env.DATABASE_URL && !env.DATABASE_URL.startsWith("sqlite:")) {
+    console.warn("⚠️  Database URL should use sqlite: protocol");
+  }
+
+  // Handle validation errors
   if (errors.length > 0) {
     console.error("Environment validation failed:");
     errors.forEach((error) => console.error(`  - ${error}`));

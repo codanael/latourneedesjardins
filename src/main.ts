@@ -14,11 +14,9 @@ import { runMigrations } from "./utils/migrations.ts";
 import { validateEnv } from "./utils/env.ts";
 import { seedDatabase } from "./utils/seed-data.ts";
 import { getAllEvents } from "./utils/db-operations.ts";
-import { validateSecurityConfig } from "./utils/security.ts";
 
-// Validate environment variables and security configuration
+// Validate environment variables
 validateEnv();
-validateSecurityConfig();
 
 // Initialize database on startup
 initializeDatabase();
