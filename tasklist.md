@@ -112,9 +112,9 @@
 - [x] 11.0 Potluck Coordination
    - [x] 11.1 Design shared list component for potluck items.
 
-- [ ] 12.0 Weather Updates
+- [x] 12.0 Weather Updates
    - [x] 12.1 Integrate OpenWeatherMap API into event pages.
-   - [ ] 12.2 Display weather forecast data for events.
+   - [x] 12.2 Display weather forecast data for events.
 
 - [ ] 13.0 Performance Optimization
    - [ ] 13.1 Optimize resources for mobile viewing.
