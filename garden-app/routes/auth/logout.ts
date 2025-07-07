@@ -21,8 +21,9 @@ export const handler: Handlers = {
     return response;
   },
 
-  POST(req) {
+  POST(req, ctx) {
     // Same logic for POST requests
-    return this.GET(req);
+    return this.GET?.(req, ctx) ||
+      new Response("Method not supported", { status: 405 });
   },
 };

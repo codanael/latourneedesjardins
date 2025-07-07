@@ -107,5 +107,5 @@ export function initializeDatabase() {
   // Initialize sessions table for OAuth authentication
   initializeSessionsTable();
 
-  console.log("Database schema initialized successfully");
+  // Database schema initialized successfully
 }

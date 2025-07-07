@@ -6,6 +6,7 @@ import {
   RSVP,
 } from "../../../utils/db-operations.ts";
 import { getAuthenticatedUser, hasPermission } from "../../../utils/session.ts";
+import AttendeeActions from "../../../islands/AttendeeActions.tsx";
 
 interface AttendeesData {
   event: Event | null;
@@ -217,46 +218,11 @@ export default function AttendeesPage({ data }: PageProps<AttendeesData>) {
           <h3 class="text-lg font-semibold text-gray-800 mb-4">
             Actions
           </h3>
-          <div class="flex flex-wrap gap-4">
-            <button
-              type="button"
-              onclick="window.print()"
-              class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-            >
-              📄 Imprimer la liste
-            </button>
-            <button
-              type="button"
-              onclick="copyEmailList()"
-              class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
-            >
-              📧 Copier les emails
-            </button>
-          </div>
+          <AttendeeActions
+            emails={yesRsvps.map((rsvp: RSVP) => rsvp.user_email || "")}
+          />
         </div>
       </div>
-
-      {/* Hidden email list for copying */}
-      <div id="email-list" class="hidden">
-        {yesRsvps.map((rsvp) => rsvp.user_name).join(", ")}
-      </div>
-
-      <script>
-        {`
-          function copyEmailList() {
-            const emailList = document.getElementById('email-list');
-            if (emailList) {
-              navigator.clipboard.writeText(emailList.textContent)
-                .then(() => {
-                  alert('Liste des participants copiée dans le presse-papiers!');
-                })
-                .catch(() => {
-                  alert('Erreur lors de la copie');
-                });
-            }
-          }
-        `}
-      </script>
     </div>
   );
 }

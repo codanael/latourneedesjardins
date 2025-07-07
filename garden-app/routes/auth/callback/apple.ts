@@ -103,6 +103,7 @@ export const handler: Handlers = {
 
   // Also handle GET requests for Apple OAuth (though POST is standard)
   GET(req, ctx) {
-    return this.POST(req, ctx);
+    return this.POST?.(req, ctx) ||
+      new Response("Method not supported", { status: 405 });
   },
 };

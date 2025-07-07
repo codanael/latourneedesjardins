@@ -4,14 +4,16 @@
 
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $_middleware from "./routes/_middleware.ts";
 import * as $admin_hosts from "./routes/admin/hosts.tsx";
 import * as $admin_security from "./routes/admin/security.tsx";
+import * as $api_events_id_potluck from "./routes/api/events/[id]/potluck.ts";
+import * as $api_events_id_potluck_itemId_ from "./routes/api/events/[id]/potluck/[itemId].ts";
 import * as $api_events_id_rsvp from "./routes/api/events/[id]/rsvp.ts";
 import * as $api_hosts from "./routes/api/hosts.ts";
 import * as $api_hosts_id_events from "./routes/api/hosts/[id]/events.ts";
 import * as $api_hosts_status from "./routes/api/hosts/status.ts";
 import * as $api_hosts_validate from "./routes/api/hosts/validate.ts";
-import * as $api_joke from "./routes/api/joke.ts";
 import * as $auth_apple from "./routes/auth/apple.ts";
 import * as $auth_callback_apple from "./routes/auth/callback/apple.ts";
 import * as $auth_callback_google from "./routes/auth/callback/google.ts";
@@ -22,14 +24,15 @@ import * as $calendar from "./routes/calendar.tsx";
 import * as $events_id_ from "./routes/events/[id].tsx";
 import * as $events_id_edit from "./routes/events/[id]/edit.tsx";
 import * as $events_index from "./routes/events/index.tsx";
-import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $host from "./routes/host.tsx";
 import * as $host_attendees_id_ from "./routes/host/attendees/[id].tsx";
 import * as $host_dashboard from "./routes/host/dashboard.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $profile from "./routes/profile.tsx";
+import * as $AttendeeActions from "./islands/AttendeeActions.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $HostFormValidator from "./islands/HostFormValidator.tsx";
+import * as $PotluckManager from "./islands/PotluckManager.tsx";
 import * as $RSVPButton from "./islands/RSVPButton.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
@@ -37,14 +40,17 @@ const manifest = {
   routes: {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/_middleware.ts": $_middleware,
     "./routes/admin/hosts.tsx": $admin_hosts,
     "./routes/admin/security.tsx": $admin_security,
+    "./routes/api/events/[id]/potluck.ts": $api_events_id_potluck,
+    "./routes/api/events/[id]/potluck/[itemId].ts":
+      $api_events_id_potluck_itemId_,
     "./routes/api/events/[id]/rsvp.ts": $api_events_id_rsvp,
     "./routes/api/hosts.ts": $api_hosts,
     "./routes/api/hosts/[id]/events.ts": $api_hosts_id_events,
     "./routes/api/hosts/status.ts": $api_hosts_status,
     "./routes/api/hosts/validate.ts": $api_hosts_validate,
-    "./routes/api/joke.ts": $api_joke,
     "./routes/auth/apple.ts": $auth_apple,
     "./routes/auth/callback/apple.ts": $auth_callback_apple,
     "./routes/auth/callback/google.ts": $auth_callback_google,
@@ -55,7 +61,6 @@ const manifest = {
     "./routes/events/[id].tsx": $events_id_,
     "./routes/events/[id]/edit.tsx": $events_id_edit,
     "./routes/events/index.tsx": $events_index,
-    "./routes/greet/[name].tsx": $greet_name_,
     "./routes/host.tsx": $host,
     "./routes/host/attendees/[id].tsx": $host_attendees_id_,
     "./routes/host/dashboard.tsx": $host_dashboard,
@@ -63,8 +68,10 @@ const manifest = {
     "./routes/profile.tsx": $profile,
   },
   islands: {
+    "./islands/AttendeeActions.tsx": $AttendeeActions,
     "./islands/Counter.tsx": $Counter,
     "./islands/HostFormValidator.tsx": $HostFormValidator,
+    "./islands/PotluckManager.tsx": $PotluckManager,
     "./islands/RSVPButton.tsx": $RSVPButton,
   },
   baseUrl: import.meta.url,

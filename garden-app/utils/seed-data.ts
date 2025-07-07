@@ -47,7 +47,7 @@ export function seedDatabase() {
         weather_location: "Paris,FR",
       },
       {
-        title: "Barbecue au Jardin Secret LOL",
+        title: "Barbecue au Jardin Secret",
         description:
           "Venez découvrir mon petit coin de paradis avec barbecue géant! Menu spécial grillades et salades fraîches du jardin.",
         date: "2024-07-22",

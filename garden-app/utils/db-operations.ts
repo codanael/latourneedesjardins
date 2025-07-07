@@ -35,6 +35,7 @@ export interface RSVP {
   event_id: number;
   user_id: number;
   user_name?: string;
+  user_email?: string;
   response: "yes" | "no" | "maybe";
   created_at: string;
   updated_at: string;
@@ -140,6 +141,7 @@ function rowToRSVP(row: unknown[]): RSVP {
     created_at: row[4] as string,
     updated_at: row[5] as string,
     user_name: (row[6] as string) || undefined,
+    user_email: (row[7] as string) || undefined,
   };
 }
 
@@ -342,7 +344,8 @@ export function getRSVPsByEvent(event_id: number): RSVP[] {
     `
     SELECT 
       r.*,
-      u.name as user_name
+      u.name as user_name,
+      u.email as user_email
     FROM rsvps r
     JOIN users u ON r.user_id = u.id
     WHERE r.event_id = ?
@@ -359,7 +362,8 @@ export function getUserRSVP(event_id: number, user_id: number): RSVP | null {
     `
     SELECT 
       r.*,
-      u.name as user_name
+      u.name as user_name,
+      u.email as user_email
     FROM rsvps r
     JOIN users u ON r.user_id = u.id
     WHERE r.event_id = ? AND r.user_id = ?
