@@ -13,10 +13,10 @@ export const handler: Handlers = {
     if (!user) {
       return new Response(
         JSON.stringify({ error: "Authentication required" }),
-        { 
-          status: 401, 
-          headers: { "Content-Type": "application/json" } 
-        }
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -26,10 +26,10 @@ export const handler: Handlers = {
       if (isNaN(requestedUserId)) {
         return new Response(
           JSON.stringify({ error: "Invalid user ID" }),
-          { 
-            status: 400, 
-            headers: { "Content-Type": "application/json" } 
-          }
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          },
         );
       }
 
@@ -37,10 +37,10 @@ export const handler: Handlers = {
       if (requestedUserId !== user.id && user.role !== "admin") {
         return new Response(
           JSON.stringify({ error: "Access denied" }),
-          { 
-            status: 403, 
-            headers: { "Content-Type": "application/json" } 
-          }
+          {
+            status: 403,
+            headers: { "Content-Type": "application/json" },
+          },
         );
       }
 
@@ -55,22 +55,22 @@ export const handler: Handlers = {
 
       return new Response(
         JSON.stringify(rsvps),
-        { 
-          status: 200, 
-          headers: { 
+        {
+          status: 200,
+          headers: {
             "Content-Type": "application/json",
-            "Cache-Control": "private, max-age=60" // 1 minute
-          } 
-        }
+            "Cache-Control": "private, max-age=60", // 1 minute
+          },
+        },
       );
     } catch (error) {
       console.error("Failed to fetch user RSVPs:", error);
       return new Response(
         JSON.stringify({ error: "Failed to fetch user RSVPs" }),
-        { 
-          status: 500, 
-          headers: { "Content-Type": "application/json" } 
-        }
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
   },

@@ -13,7 +13,12 @@
       "Bash(grep:*)",
       "Bash(DENO_ENV=test deno test --allow-all)",
       "Bash(DENO_ENV=test deno task test)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(find:*)",
+      "Bash(DENO_ENV=test deno test tests/api-rsvp.test.ts --allow-all)",
+      "Bash(DENO_ENV=test deno test tests/auth.test.ts --allow-all)",
+      "Bash(DENO_ENV=test deno test tests/cache.test.ts --allow-all)",
+      "Bash(DENO_ENV=test deno test tests/api-events.test.ts --allow-all)"
     ],
     "deny": []
   }

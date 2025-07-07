@@ -1,15 +1,19 @@
 // Tests for the cache system utilities
-import { assertEquals, assertExists, assertNotEquals } from "$std/assert/mod.ts";
+import {
+  assertEquals,
+  assertExists,
+  assertNotEquals,
+} from "$std/assert/mod.ts";
 import { afterEach, beforeEach, describe, it } from "$std/testing/bdd.ts";
-import { 
-  ClientCache, 
-  weatherCache, 
-  eventsCache, 
-  userCache, 
+import {
   CACHE_TTL,
   cachedFetch,
+  ClientCache,
+  eventsCache,
+  initializeCacheCleanup,
   invalidateCache,
-  initializeCacheCleanup
+  userCache,
+  weatherCache,
 } from "../utils/cache.ts";
 
 // Mock localStorage for testing
@@ -29,7 +33,7 @@ describe("Cache System", () => {
   beforeEach(() => {
     // Clear mock storage
     mockStorage.clear();
-    
+
     // Create a test cache instance
     testCache = new ClientCache("test_cache", 10);
   });
@@ -68,7 +72,7 @@ describe("Cache System", () => {
       testCache.set(key, testData, ttl);
 
       // Wait for expiration
-      await new Promise(resolve => setTimeout(resolve, 20));
+      await new Promise((resolve) => setTimeout(resolve, 20));
 
       // Should return null for expired data
       const retrieved = testCache.get(key);
@@ -116,7 +120,7 @@ describe("Cache System", () => {
       testCache.set("stats_key2", { data: "value2" }, 5000);
 
       const stats = testCache.getStats();
-      
+
       assertEquals(stats.totalItems, 2);
       assertEquals(stats.expiredItems, 0);
       assertEquals(typeof stats.totalSize, "number");
@@ -126,19 +130,19 @@ describe("Cache System", () => {
     it("should handle cleanup", async () => {
       // Store expired item
       testCache.set("expired_key", { data: "expired" }, 1);
-      
+
       // Store valid item
       testCache.set("valid_key", { data: "valid" }, 5000);
 
       // Wait for first item to expire
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       // Run cleanup
       testCache.cleanup();
 
       // Valid item should still exist
       assertExists(testCache.get("valid_key"));
-      
+
       // Expired item should be cleaned up
       assertEquals(testCache.get("expired_key"), null);
     });
@@ -178,8 +182,11 @@ describe("Cache System", () => {
     it("should have reasonable TTL values", () => {
       // Weather coordinates should have longest TTL
       assertEquals(CACHE_TTL.WEATHER_COORDS > CACHE_TTL.WEATHER_FORECAST, true);
-      assertEquals(CACHE_TTL.WEATHER_FORECAST > CACHE_TTL.WEATHER_CURRENT, true);
-      
+      assertEquals(
+        CACHE_TTL.WEATHER_FORECAST > CACHE_TTL.WEATHER_CURRENT,
+        true,
+      );
+
       // RSVP data should have shortest TTL (most dynamic)
       assertEquals(CACHE_TTL.RSVP_DATA < CACHE_TTL.EVENT_DETAILS, true);
     });
@@ -206,10 +213,10 @@ describe("Cache System", () => {
     it("should initialize cache cleanup", () => {
       // Mock window object
       (globalThis as any).window = {} as Window & typeof globalThis;
-      
+
       // Should not throw
       initializeCacheCleanup();
-      
+
       // Clean up
       delete (globalThis as any).window;
     });

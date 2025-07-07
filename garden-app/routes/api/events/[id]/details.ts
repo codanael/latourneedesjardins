@@ -18,10 +18,10 @@ export const handler: Handlers = {
     if (!user) {
       return new Response(
         JSON.stringify({ error: "Authentication required" }),
-        { 
-          status: 401, 
-          headers: { "Content-Type": "application/json" } 
-        }
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -31,10 +31,10 @@ export const handler: Handlers = {
       if (isNaN(id)) {
         return new Response(
           JSON.stringify({ error: "Invalid event ID" }),
-          { 
-            status: 400, 
-            headers: { "Content-Type": "application/json" } 
-          }
+          {
+            status: 400,
+            headers: { "Content-Type": "application/json" },
+          },
         );
       }
 
@@ -43,10 +43,10 @@ export const handler: Handlers = {
       if (!event) {
         return new Response(
           JSON.stringify({ error: "Event not found" }),
-          { 
-            status: 404, 
-            headers: { "Content-Type": "application/json" } 
-          }
+          {
+            status: 404,
+            headers: { "Content-Type": "application/json" },
+          },
         );
       }
 
@@ -63,22 +63,22 @@ export const handler: Handlers = {
 
       return new Response(
         JSON.stringify(eventDetails),
-        { 
-          status: 200, 
-          headers: { 
+        {
+          status: 200,
+          headers: {
             "Content-Type": "application/json",
-            "Cache-Control": "private, max-age=120" // 2 minutes
-          } 
-        }
+            "Cache-Control": "private, max-age=120", // 2 minutes
+          },
+        },
       );
     } catch (error) {
       console.error("Failed to fetch event details:", error);
       return new Response(
         JSON.stringify({ error: "Failed to fetch event details" }),
-        { 
-          status: 500, 
-          headers: { "Content-Type": "application/json" } 
-        }
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
   },

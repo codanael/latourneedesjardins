@@ -32,10 +32,10 @@ export const handler: Handlers = {
     if (!user) {
       return new Response(
         JSON.stringify({ error: "Authentication required" }),
-        { 
-          status: 401, 
-          headers: { "Content-Type": "application/json" } 
-        }
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -57,22 +57,22 @@ export const handler: Handlers = {
 
       return new Response(
         JSON.stringify(eventsWithStats),
-        { 
-          status: 200, 
-          headers: { 
+        {
+          status: 200,
+          headers: {
             "Content-Type": "application/json",
-            "Cache-Control": "private, max-age=300" // 5 minutes
-          } 
-        }
+            "Cache-Control": "private, max-age=300", // 5 minutes
+          },
+        },
       );
     } catch (error) {
       console.error("Failed to fetch events:", error);
       return new Response(
         JSON.stringify({ error: "Failed to fetch events" }),
-        { 
-          status: 500, 
-          headers: { "Content-Type": "application/json" } 
-        }
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
       );
     }
   },

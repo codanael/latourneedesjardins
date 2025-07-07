@@ -11,10 +11,10 @@ interface CachedPotluckManagerProps {
   initialItems: PotluckItem[];
 }
 
-export default function CachedPotluckManager({ 
-  eventId, 
-  currentUserId, 
-  initialItems 
+export default function CachedPotluckManager({
+  eventId,
+  currentUserId,
+  initialItems,
 }: CachedPotluckManagerProps) {
   const items: Signal<PotluckItem[]> = useSignal(initialItems);
   const isLoading: Signal<boolean> = useSignal(false);
@@ -61,17 +61,17 @@ export default function CachedPotluckManager({
         // Clear form
         newItemName.value = "";
         showAddForm.value = false;
-        
+
         // In a real implementation, you'd want to refresh the data
         // For now, we'll keep the optimistic update
       } else {
         // Remove the optimistic item on failure
-        items.value = items.value.filter(item => item.id !== tempId);
+        items.value = items.value.filter((item) => item.id !== tempId);
         error.value = "Erreur lors de l'ajout de l'article";
       }
     } catch (err) {
       // Remove the optimistic item on error
-      items.value = items.value.filter(item => item.id !== tempId);
+      items.value = items.value.filter((item) => item.id !== tempId);
       error.value = "Erreur de connexion";
       console.error("Add potluck item failed:", err);
     } finally {
@@ -83,17 +83,19 @@ export default function CachedPotluckManager({
     if (!currentUserId) return;
 
     // Find the item to delete
-    const itemToDelete = items.value.find(item => item.id === itemId);
+    const itemToDelete = items.value.find((item) => item.id === itemId);
     if (!itemToDelete || itemToDelete.user_id !== currentUserId) return;
 
     // Optimistic update
     const originalItems = items.value;
-    items.value = items.value.filter(item => item.id !== itemId);
+    items.value = items.value.filter((item) => item.id !== itemId);
     isLoading.value = true;
     error.value = null;
 
     try {
-      const success = await updatePotluckWithCache(eventId, "delete", { id: itemId });
+      const success = await updatePotluckWithCache(eventId, "delete", {
+        id: itemId,
+      });
 
       if (!success) {
         // Revert optimistic update on failure
@@ -110,9 +112,9 @@ export default function CachedPotluckManager({
     }
   };
 
-  const groupedItems = categories.map(category => ({
+  const groupedItems = categories.map((category) => ({
     ...category,
-    items: items.value.filter(item => item.category === category.value),
+    items: items.value.filter((item) => item.category === category.value),
   }));
 
   return (
@@ -150,7 +152,8 @@ export default function CachedPotluckManager({
               <input
                 type="text"
                 value={newItemName.value}
-                onInput={(e) => newItemName.value = (e.target as HTMLInputElement).value}
+                onInput={(e) =>
+                  newItemName.value = (e.target as HTMLInputElement).value}
                 placeholder="Ex: Salade de quinoa"
                 class="form-input"
                 disabled={isLoading.value}
@@ -162,11 +165,12 @@ export default function CachedPotluckManager({
               </label>
               <select
                 value={newItemCategory.value}
-                onChange={(e) => newItemCategory.value = (e.target as HTMLSelectElement).value}
+                onChange={(e) =>
+                  newItemCategory.value = (e.target as HTMLSelectElement).value}
                 class="form-input"
                 disabled={isLoading.value}
               >
-                {categories.map(category => (
+                {categories.map((category) => (
                   <option key={category.value} value={category.value}>
                     {category.label}
                   </option>
@@ -198,7 +202,7 @@ export default function CachedPotluckManager({
       )}
 
       <div class="space-y-4">
-        {groupedItems.map(category => (
+        {groupedItems.map((category) => (
           <div key={category.value}>
             <h3 class="font-medium text-gray-800 mb-2 flex items-center">
               <span class="mr-2">{category.emoji}</span>
@@ -207,36 +211,42 @@ export default function CachedPotluckManager({
                 {category.items.length}
               </span>
             </h3>
-            
-            {category.items.length > 0 ? (
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {category.items.map(item => (
-                  <div 
-                    key={item.id} 
-                    class="flex items-center justify-between bg-gray-50 rounded-lg p-3"
-                  >
-                    <div class="flex-1">
-                      <p class="font-medium text-gray-900">{item.item_name}</p>
-                      <p class="text-sm text-gray-600">Par {item.user_name}</p>
+
+            {category.items.length > 0
+              ? (
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {category.items.map((item) => (
+                    <div
+                      key={item.id}
+                      class="flex items-center justify-between bg-gray-50 rounded-lg p-3"
+                    >
+                      <div class="flex-1">
+                        <p class="font-medium text-gray-900">
+                          {item.item_name}
+                        </p>
+                        <p class="text-sm text-gray-600">
+                          Par {item.user_name}
+                        </p>
+                      </div>
+                      {item.user_id === currentUserId && (
+                        <button
+                          onClick={() => deleteItem(item.id)}
+                          disabled={isLoading.value}
+                          class="text-red-600 hover:text-red-800 p-1 rounded transition-colors"
+                          aria-label={`Supprimer ${item.item_name}`}
+                        >
+                          <span class="text-sm">🗑️</span>
+                        </button>
+                      )}
                     </div>
-                    {item.user_id === currentUserId && (
-                      <button
-                        onClick={() => deleteItem(item.id)}
-                        disabled={isLoading.value}
-                        class="text-red-600 hover:text-red-800 p-1 rounded transition-colors"
-                        aria-label={`Supprimer ${item.item_name}`}
-                      >
-                        <span class="text-sm">🗑️</span>
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p class="text-gray-500 text-sm italic">
-                Aucun article dans cette catégorie
-              </p>
-            )}
+                  ))}
+                </div>
+              )
+              : (
+                <p class="text-gray-500 text-sm italic">
+                  Aucun article dans cette catégorie
+                </p>
+              )}
           </div>
         ))}
       </div>

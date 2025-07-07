@@ -23,7 +23,7 @@ describe("RSVP API", () => {
   beforeEach(async () => {
     // Set test environment
     Deno.env.set("DENO_ENV", "test");
-    
+
     // Initialize a clean database for each test
     initializeDatabase();
 

@@ -3,7 +3,7 @@ import { assertEquals, assertExists } from "$std/assert/mod.ts";
 import { afterEach, beforeEach, describe, it } from "$std/testing/bdd.ts";
 import { handler as eventsHandler } from "../routes/api/events.ts";
 import { handler as eventDetailsHandler } from "../routes/api/events/[id]/details.ts";
-import { createTestUser, createTestRequest } from "./auth-helper.ts";
+import { createTestRequest, createTestUser } from "./auth-helper.ts";
 import { createEvent } from "../utils/db-operations.ts";
 import { initializeDatabase } from "../utils/schema.ts";
 import { closeDatabase } from "../utils/database.ts";
@@ -15,10 +15,10 @@ describe("Events API", () => {
   beforeEach(async () => {
     // Set test environment
     Deno.env.set("DENO_ENV", "test");
-    
+
     // Initialize clean database
     initializeDatabase();
-    
+
     // Initialize sessions table
     const { initializeSessionsTable } = await import("../utils/session.ts");
     initializeSessionsTable();
@@ -52,15 +52,15 @@ describe("Events API", () => {
       });
 
       const response = await eventsHandler.GET!(request, {} as any);
-      
+
       assertEquals(response.status, 200);
-      
+
       const events = await response.json();
-      
+
       assertExists(events);
       assertEquals(Array.isArray(events), true);
       assertEquals(events.length >= 1, true);
-      
+
       // Check event structure
       const event = events.find((e: any) => e.id === testEvent.id);
       assertExists(event);
@@ -75,9 +75,9 @@ describe("Events API", () => {
       });
 
       const response = await eventsHandler.GET!(request, {} as any);
-      
+
       assertEquals(response.status, 401);
-      
+
       const error = await response.json();
       assertEquals(error.error, "Authentication required");
     });
@@ -89,87 +89,108 @@ describe("Events API", () => {
       });
 
       const response = await eventsHandler.GET!(request, {} as any);
-      
+
       assertEquals(response.status, 200);
-      assertEquals(response.headers.get("Cache-Control"), "private, max-age=300");
+      assertEquals(
+        response.headers.get("Cache-Control"),
+        "private, max-age=300",
+      );
     });
   });
 
   describe("GET /api/events/[id]/details", () => {
     it("should return event details for authenticated user", async () => {
-      const request = createTestRequest(`http://localhost/api/events/${testEvent.id}/details`, {
-        method: "GET",
-        user: testUser,
-      });
+      const request = createTestRequest(
+        `http://localhost/api/events/${testEvent.id}/details`,
+        {
+          method: "GET",
+          user: testUser,
+        },
+      );
 
       const ctx = { params: { id: testEvent.id.toString() } };
       const response = await eventDetailsHandler.GET!(request, ctx as any);
-      
+
       assertEquals(response.status, 200);
-      
+
       const details = await response.json();
-      
+
       assertExists(details.event);
       assertExists(details.rsvps);
       assertExists(details.potluckItems);
       assertEquals(details.currentUserRsvp, null); // No RSVP yet
-      
+
       assertEquals(details.event.id, testEvent.id);
       assertEquals(details.event.title, "API Test Event");
     });
 
     it("should return 401 for unauthenticated requests", async () => {
-      const request = createTestRequest(`http://localhost/api/events/${testEvent.id}/details`, {
-        method: "GET",
-      });
+      const request = createTestRequest(
+        `http://localhost/api/events/${testEvent.id}/details`,
+        {
+          method: "GET",
+        },
+      );
 
       const ctx = { params: { id: testEvent.id.toString() } };
       const response = await eventDetailsHandler.GET!(request, ctx as any);
-      
+
       assertEquals(response.status, 401);
     });
 
     it("should return 400 for invalid event ID", async () => {
-      const request = createTestRequest("http://localhost/api/events/invalid/details", {
-        method: "GET",
-        user: testUser,
-      });
+      const request = createTestRequest(
+        "http://localhost/api/events/invalid/details",
+        {
+          method: "GET",
+          user: testUser,
+        },
+      );
 
       const ctx = { params: { id: "invalid" } };
       const response = await eventDetailsHandler.GET!(request, ctx as any);
-      
+
       assertEquals(response.status, 400);
-      
+
       const error = await response.json();
       assertEquals(error.error, "Invalid event ID");
     });
 
     it("should return 404 for non-existent event", async () => {
-      const request = createTestRequest("http://localhost/api/events/99999/details", {
-        method: "GET",
-        user: testUser,
-      });
+      const request = createTestRequest(
+        "http://localhost/api/events/99999/details",
+        {
+          method: "GET",
+          user: testUser,
+        },
+      );
 
       const ctx = { params: { id: "99999" } };
       const response = await eventDetailsHandler.GET!(request, ctx as any);
-      
+
       assertEquals(response.status, 404);
-      
+
       const error = await response.json();
       assertEquals(error.error, "Event not found");
     });
 
     it("should include appropriate cache headers", async () => {
-      const request = createTestRequest(`http://localhost/api/events/${testEvent.id}/details`, {
-        method: "GET",
-        user: testUser,
-      });
+      const request = createTestRequest(
+        `http://localhost/api/events/${testEvent.id}/details`,
+        {
+          method: "GET",
+          user: testUser,
+        },
+      );
 
       const ctx = { params: { id: testEvent.id.toString() } };
       const response = await eventDetailsHandler.GET!(request, ctx as any);
-      
+
       assertEquals(response.status, 200);
-      assertEquals(response.headers.get("Cache-Control"), "private, max-age=120");
+      assertEquals(
+        response.headers.get("Cache-Control"),
+        "private, max-age=120",
+      );
     });
   });
 });

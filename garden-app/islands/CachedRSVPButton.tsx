@@ -9,11 +9,13 @@ interface CachedRSVPButtonProps {
   currentResponse?: "yes" | "no" | "maybe";
 }
 
-export default function CachedRSVPButton({ 
-  eventId, 
-  currentResponse 
+export default function CachedRSVPButton({
+  eventId,
+  currentResponse,
 }: CachedRSVPButtonProps) {
-  const response: Signal<"yes" | "no" | "maybe" | undefined> = useSignal(currentResponse);
+  const response: Signal<"yes" | "no" | "maybe" | undefined> = useSignal(
+    currentResponse,
+  );
   const isLoading: Signal<boolean> = useSignal(false);
   const error: Signal<string | null> = useSignal(null);
 
@@ -26,7 +28,7 @@ export default function CachedRSVPButton({
 
     try {
       const success = await updateRSVPWithCache(eventId, newResponse);
-      
+
       if (!success) {
         // Revert optimistic update on failure
         response.value = previousResponse;
@@ -43,7 +45,8 @@ export default function CachedRSVPButton({
   };
 
   const getButtonClass = (buttonResponse: "yes" | "no" | "maybe") => {
-    const baseClass = "btn flex-1 justify-center inline-flex transition-all duration-200";
+    const baseClass =
+      "btn flex-1 justify-center inline-flex transition-all duration-200";
     const isSelected = response.value === buttonResponse;
     const isDisabled = isLoading.value;
 
@@ -54,20 +57,20 @@ export default function CachedRSVPButton({
     switch (buttonResponse) {
       case "yes":
         return `${baseClass} ${
-          isSelected 
-            ? "bg-green-600 text-white hover:bg-green-700" 
+          isSelected
+            ? "bg-green-600 text-white hover:bg-green-700"
             : "bg-green-100 text-green-800 hover:bg-green-200"
         }`;
       case "maybe":
         return `${baseClass} ${
-          isSelected 
-            ? "bg-yellow-600 text-white hover:bg-yellow-700" 
+          isSelected
+            ? "bg-yellow-600 text-white hover:bg-yellow-700"
             : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
         }`;
       case "no":
         return `${baseClass} ${
-          isSelected 
-            ? "bg-red-600 text-white hover:bg-red-700" 
+          isSelected
+            ? "bg-red-600 text-white hover:bg-red-700"
             : "bg-red-100 text-red-800 hover:bg-red-200"
         }`;
       default:
@@ -122,7 +125,7 @@ export default function CachedRSVPButton({
       {response.value && (
         <div class="text-sm text-gray-600 text-center">
           <p>
-            Votre réponse: {" "}
+            Votre réponse:{"  "}
             <span class="font-medium">
               {response.value === "yes" && "✅ Oui, je participe"}
               {response.value === "maybe" && "🤔 Peut-être"}

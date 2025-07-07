@@ -12,7 +12,9 @@ interface CacheProviderProps {
   enableStats?: boolean;
 }
 
-export default function CacheProvider({ children, enableStats = false }: CacheProviderProps) {
+export default function CacheProvider(
+  { children, enableStats = false }: CacheProviderProps,
+) {
   const cacheStats: Signal<any> = useSignal(null);
 
   useEffect(() => {
@@ -47,7 +49,8 @@ export default function CacheProvider({ children, enableStats = false }: CachePr
   return (
     <>
       {children}
-      {enableStats && cacheStats.value && process.env.NODE_ENV === "development" && (
+      {enableStats && cacheStats.value &&
+        process.env.NODE_ENV === "development" && (
         <CacheStatsDisplay stats={cacheStats.value} />
       )}
     </>
@@ -67,30 +70,39 @@ function CacheStatsDisplay({ stats }: { stats: any }) {
   return (
     <div class="fixed bottom-4 right-4 bg-black bg-opacity-80 text-white text-xs p-3 rounded-lg max-w-xs">
       <div class="font-bold mb-2">🗄️ Cache Stats</div>
-      
+
       <div class="space-y-1">
         <div>
-          <strong>Weather:</strong> {stats.weather.totalItems} items, {formatBytes(stats.weather.totalSize)}
+          <strong>Weather:</strong> {stats.weather.totalItems} items,{" "}
+          {formatBytes(stats.weather.totalSize)}
           {stats.weather.expiredItems > 0 && (
-            <span class="text-yellow-300"> ({stats.weather.expiredItems} expired)</span>
+            <span class="text-yellow-300">
+              ({stats.weather.expiredItems} expired)
+            </span>
           )}
         </div>
-        
+
         <div>
-          <strong>Events:</strong> {stats.events.events.totalItems} items, {formatBytes(stats.events.events.totalSize)}
+          <strong>Events:</strong> {stats.events.events.totalItems} items,{" "}
+          {formatBytes(stats.events.events.totalSize)}
           {stats.events.events.expiredItems > 0 && (
-            <span class="text-yellow-300"> ({stats.events.events.expiredItems} expired)</span>
+            <span class="text-yellow-300">
+              ({stats.events.events.expiredItems} expired)
+            </span>
           )}
         </div>
-        
+
         <div>
-          <strong>Users:</strong> {stats.events.users.totalItems} items, {formatBytes(stats.events.users.totalSize)}
+          <strong>Users:</strong> {stats.events.users.totalItems} items,{" "}
+          {formatBytes(stats.events.users.totalSize)}
           {stats.events.users.expiredItems > 0 && (
-            <span class="text-yellow-300"> ({stats.events.users.expiredItems} expired)</span>
+            <span class="text-yellow-300">
+              ({stats.events.users.expiredItems} expired)
+            </span>
           )}
         </div>
       </div>
-      
+
       <div class="text-gray-300 mt-2 text-xs">
         Updated: {new Date(stats.timestamp).toLocaleTimeString()}
       </div>

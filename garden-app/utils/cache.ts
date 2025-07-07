@@ -52,7 +52,7 @@ export class ClientCache {
 
       // Clean up old items if we exceed maxItems
       this.cleanup();
-      
+
       return true;
     } catch (error) {
       console.warn("Cache set failed:", error);
@@ -105,11 +105,11 @@ export class ClientCache {
    */
   clear(): boolean {
     try {
-      const keys = Object.keys(localStorage).filter(key => 
+      const keys = Object.keys(localStorage).filter((key) =>
         key.startsWith(this.keyPrefix)
       );
-      
-      keys.forEach(key => localStorage.removeItem(key));
+
+      keys.forEach((key) => localStorage.removeItem(key));
       return true;
     } catch (error) {
       console.warn("Cache clear failed:", error);
@@ -122,12 +122,12 @@ export class ClientCache {
    */
   cleanup(): void {
     try {
-      const cacheKeys = Object.keys(localStorage).filter(key => 
+      const cacheKeys = Object.keys(localStorage).filter((key) =>
         key.startsWith(this.keyPrefix)
       );
 
       // Remove expired items
-      cacheKeys.forEach(key => {
+      cacheKeys.forEach((key) => {
         try {
           const item = JSON.parse(localStorage.getItem(key) || "");
           if (this.isExpired(item)) {
@@ -140,21 +140,22 @@ export class ClientCache {
       });
 
       // Enforce maxItems limit
-      const remainingKeys = Object.keys(localStorage).filter(key => 
+      const remainingKeys = Object.keys(localStorage).filter((key) =>
         key.startsWith(this.keyPrefix)
       );
 
       if (remainingKeys.length > this.maxItems) {
         // Sort by timestamp and remove oldest items
-        const items = remainingKeys.map(key => ({
+        const items = remainingKeys.map((key) => ({
           key,
-          timestamp: JSON.parse(localStorage.getItem(key) || "{}").timestamp || 0
+          timestamp: JSON.parse(localStorage.getItem(key) || "{}").timestamp ||
+            0,
         }));
 
         items.sort((a, b) => a.timestamp - b.timestamp);
-        
+
         const itemsToRemove = items.slice(0, items.length - this.maxItems);
-        itemsToRemove.forEach(item => localStorage.removeItem(item.key));
+        itemsToRemove.forEach((item) => localStorage.removeItem(item.key));
       }
     } catch (error) {
       console.warn("Cache cleanup failed:", error);
@@ -170,14 +171,14 @@ export class ClientCache {
     expiredItems: number;
   } {
     try {
-      const cacheKeys = Object.keys(localStorage).filter(key => 
+      const cacheKeys = Object.keys(localStorage).filter((key) =>
         key.startsWith(this.keyPrefix)
       );
 
       let totalSize = 0;
       let expiredItems = 0;
 
-      cacheKeys.forEach(key => {
+      cacheKeys.forEach((key) => {
         const value = localStorage.getItem(key);
         if (value) {
           totalSize += value.length;
@@ -228,7 +229,7 @@ export async function cachedFetch<T>(
   cacheKey: string,
   ttl: number,
   cache: ClientCache = eventsCache,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<T | null> {
   // Try to get from cache first
   const cached = cache.get<T>(cacheKey);
@@ -239,16 +240,16 @@ export async function cachedFetch<T>(
   try {
     // Fetch from network
     const response = await fetch(url, options);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
-    
+
     // Store in cache
     cache.set(cacheKey, data, ttl);
-    
+
     return data;
   } catch (error) {
     console.warn(`Cached fetch failed for ${url}:`, error);
@@ -262,11 +263,11 @@ export async function cachedFetch<T>(
 export function invalidateCache(pattern: string, cache: ClientCache): void {
   // This is a simple implementation - in a real app you might want more sophisticated pattern matching
   try {
-    const keys = Object.keys(localStorage).filter(key => 
+    const keys = Object.keys(localStorage).filter((key) =>
       key.includes(pattern)
     );
-    
-    keys.forEach(key => localStorage.removeItem(key));
+
+    keys.forEach((key) => localStorage.removeItem(key));
   } catch (error) {
     console.warn("Cache invalidation failed:", error);
   }

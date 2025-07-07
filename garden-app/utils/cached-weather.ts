@@ -1,21 +1,21 @@
 // Cached weather utilities for Garden App
 // Implements client-side caching for weather data to reduce API calls and improve performance
 
-import { 
-  type WeatherData, 
-  type WeatherForecast, 
-  type LocationCoords,
-  getLocationCoords as _getLocationCoords,
+import {
   getCurrentWeather as _getCurrentWeather,
-  getWeatherForecast as _getWeatherForecast
+  getLocationCoords as _getLocationCoords,
+  getWeatherForecast as _getWeatherForecast,
+  type LocationCoords,
+  type WeatherData,
+  type WeatherForecast,
 } from "./weather.ts";
-import { weatherCache, CACHE_TTL } from "./cache.ts";
+import { CACHE_TTL, weatherCache } from "./cache.ts";
 
 /**
  * Generate cache key for location coordinates
  */
 function getLocationCoordsKey(location: string): string {
-  return `coords_${location.toLowerCase().replace(/[^a-z0-9]/g, '_')}`;
+  return `coords_${location.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
 }
 
 /**
@@ -40,7 +40,7 @@ export async function getLocationCoords(
   location: string,
 ): Promise<LocationCoords | null> {
   const cacheKey = getLocationCoordsKey(location);
-  
+
   // Try cache first
   const cached = weatherCache.get<LocationCoords>(cacheKey);
   if (cached) {
@@ -49,12 +49,12 @@ export async function getLocationCoords(
 
   // Fetch from API
   const coords = await _getLocationCoords(location);
-  
+
   // Cache the result (even if null, to avoid repeated failed requests)
   if (coords) {
     weatherCache.set(cacheKey, coords, CACHE_TTL.WEATHER_COORDS);
   }
-  
+
   return coords;
 }
 
@@ -67,7 +67,7 @@ export async function getCurrentWeather(
   lon: number,
 ): Promise<WeatherData | null> {
   const cacheKey = getCurrentWeatherKey(lat, lon);
-  
+
   // Try cache first
   const cached = weatherCache.get<WeatherData>(cacheKey);
   if (cached) {
@@ -76,12 +76,12 @@ export async function getCurrentWeather(
 
   // Fetch from API
   const weather = await _getCurrentWeather(lat, lon);
-  
+
   // Cache the result
   if (weather) {
     weatherCache.set(cacheKey, weather, CACHE_TTL.WEATHER_CURRENT);
   }
-  
+
   return weather;
 }
 
@@ -94,7 +94,7 @@ export async function getWeatherForecast(
   lon: number,
 ): Promise<WeatherData[]> {
   const cacheKey = getWeatherForecastKey(lat, lon);
-  
+
   // Try cache first
   const cached = weatherCache.get<WeatherData[]>(cacheKey);
   if (cached) {
@@ -103,12 +103,12 @@ export async function getWeatherForecast(
 
   // Fetch from API
   const forecast = await _getWeatherForecast(lat, lon);
-  
+
   // Cache the result
   if (forecast && forecast.length > 0) {
     weatherCache.set(cacheKey, forecast, CACHE_TTL.WEATHER_FORECAST);
   }
-  
+
   return forecast;
 }
 
@@ -152,24 +152,26 @@ export async function getWeatherForLocation(
  */
 export async function preloadWeatherData(locations: string[]): Promise<void> {
   const uniqueLocations = [...new Set(locations)];
-  
+
   try {
     // Preload coordinates for all locations in parallel
-    const coordsPromises = uniqueLocations.map(location => getLocationCoords(location));
+    const coordsPromises = uniqueLocations.map((location) =>
+      getLocationCoords(location)
+    );
     const coordsResults = await Promise.allSettled(coordsPromises);
-    
+
     // Get valid coordinates
     const validCoords = coordsResults
       .map((result, index) => ({
         location: uniqueLocations[index],
-        coords: result.status === 'fulfilled' ? result.value : null
+        coords: result.status === "fulfilled" ? result.value : null,
       }))
-      .filter(item => item.coords !== null);
+      .filter((item) => item.coords !== null);
 
     // Preload weather data for all valid coordinates
-    const weatherPromises = validCoords.flatMap(item => [
+    const weatherPromises = validCoords.flatMap((item) => [
       getCurrentWeather(item.coords!.lat, item.coords!.lon),
-      getWeatherForecast(item.coords!.lat, item.coords!.lon)
+      getWeatherForecast(item.coords!.lat, item.coords!.lon),
     ]);
 
     await Promise.allSettled(weatherPromises);
@@ -186,7 +188,7 @@ export function invalidateWeatherCache(location?: string): void {
   if (location) {
     const locationKey = getLocationCoordsKey(location);
     weatherCache.delete(locationKey);
-    
+
     // We can't easily invalidate by coordinates without knowing them,
     // but location cache invalidation will force a fresh fetch
   } else {
@@ -201,6 +203,6 @@ export function invalidateWeatherCache(location?: string): void {
 export function getWeatherCacheStats() {
   return {
     ...weatherCache.getStats(),
-    cacheType: 'weather'
+    cacheType: "weather",
   };
 }
