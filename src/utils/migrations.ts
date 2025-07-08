@@ -25,31 +25,6 @@ const migrations: Migration[] = [
       db.query(`DROP TABLE IF EXISTS migrations`);
     },
   },
-  {
-    version: 2,
-    description: "Add special_instructions to events table",
-    up: (db) => {
-      try {
-        db.query(`
-          ALTER TABLE events 
-          ADD COLUMN special_instructions TEXT
-        `);
-        console.log("Added special_instructions column to events table");
-      } catch (error) {
-        // Column might already exist, which is fine
-        console.log(
-          "special_instructions column already exists or error:",
-          error,
-        );
-      }
-    },
-    down: (_db) => {
-      // SQLite doesn't support DROP COLUMN, so we'll leave it
-      console.log(
-        "Rollback: Cannot remove column in SQLite, leaving special_instructions",
-      );
-    },
-  },
 ];
 
 export function getCurrentVersion(): number {

@@ -7,6 +7,7 @@ export default defineConfig({
     target: ["chrome88", "firefox78", "safari14", "edge88"],
   },
   server: {
+    hostname: "0.0.0.0",
     port: 8000,
   },
 });

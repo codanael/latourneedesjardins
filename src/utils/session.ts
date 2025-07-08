@@ -166,6 +166,7 @@ export function getAuthenticatedUser(req: Request): AuthenticatedUser | null {
         host_status: (userRow[5] as string) || "pending",
         admin_notes: (userRow[6] as string) || undefined,
         confirmed_at: (userRow[7] as string) || undefined,
+        role: (userRow[8] as string) || "user",
       };
 
       return {
@@ -215,6 +216,7 @@ export function getAuthenticatedUser(req: Request): AuthenticatedUser | null {
     host_status: (userRow[5] as string) || "pending",
     admin_notes: (userRow[6] as string) || undefined,
     confirmed_at: (userRow[7] as string) || undefined,
+    role: (userRow[8] as string) || "user",
   };
 
   return {
@@ -231,43 +233,50 @@ export function isAuthenticated(req: Request): boolean {
 // Check if user has specific role or permission
 export function hasPermission(
   req: Request,
-  permission: "admin" | "host" | "approved_host" | "pending_host" | "user",
+  permission: "admin" | "approved_host" | "pending_host" | "user",
 ): boolean {
   const user = getAuthenticatedUser(req);
   if (!user) return false;
 
   switch (permission) {
     case "admin":
-      // Check if user is admin - more sophisticated logic
-      return user.email.includes("admin@") ||
-        user.host_status === "admin" ||
-        isUserAdmin(user);
-    case "host":
-      // Any user who has applied to be a host (approved or pending)
-      return ["approved", "pending", "admin"].includes(user.host_status || "");
+      // Check if user has admin role
+      return user.role === "admin";
     case "approved_host":
-      // Only approved hosts and admins
-      return user.host_status === "approved" || hasPermission(req, "admin");
+      // Only approved hosts and admins can create events
+      return user.host_status === "approved" || user.role === "admin";
     case "pending_host":
       // Only pending hosts (for review purposes)
       return user.host_status === "pending";
     case "user":
-      return true; // All authenticated users have basic user permissions
+      // Only approved hosts and admins can see events and interact with the app
+      return user.host_status === "approved" || user.role === "admin";
     default:
       return false;
   }
 }
 
-// Helper function to determine if a user is an admin
-function isUserAdmin(user: AuthenticatedUser): boolean {
-  // Define admin email patterns or user IDs
-  const adminEmails = [
-    "admin@example.com",
-    "admin@latourneedesjardins.fr",
-    // Add more admin emails here
-  ];
+// Helper functions for role management (to be implemented as needed)
+export function updateUserRole(userId: number, role: string): boolean {
+  const db = getDatabase();
+  try {
+    db.query(`UPDATE users SET role = ? WHERE id = ?`, [role, userId]);
+    return true;
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    return false;
+  }
+}
 
-  return adminEmails.includes(user.email.toLowerCase());
+export function updateUserHostStatus(userId: number, status: string): boolean {
+  const db = getDatabase();
+  try {
+    db.query(`UPDATE users SET host_status = ? WHERE id = ?`, [status, userId]);
+    return true;
+  } catch (error) {
+    console.error("Error updating user host status:", error);
+    return false;
+  }
 }
 
 // Enhanced permission checking with event-specific permissions
@@ -404,7 +413,7 @@ export function requireAuth(
 
 // Middleware helper for requiring specific permissions
 export function requirePermission(
-  permission: "admin" | "host" | "user",
+  permission: "admin" | "approved_host" | "user",
   handler: (
     req: Request,
     user: AuthenticatedUser,
@@ -415,12 +424,24 @@ export function requirePermission(
     if (!user) {
       return new Response("", {
         status: 302,
-        headers: { "Location": "/auth/login" },
+        headers: {
+          "Location":
+            "/auth/login?message=Vous devez vous connecter pour accéder à cette page",
+        },
       });
     }
 
     if (!hasPermission(req, permission)) {
-      return new Response("Forbidden", { status: 403 });
+      if (user.host_status === "pending") {
+        return new Response("", {
+          status: 302,
+          headers: {
+            "Location":
+              "/auth/login?message=Votre compte est en attente d'approbation",
+          },
+        });
+      }
+      return new Response("Accès interdit", { status: 403 });
     }
 
     return handler(req, user);

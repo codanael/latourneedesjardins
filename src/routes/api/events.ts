@@ -3,7 +3,6 @@
 
 import { Handlers } from "$fresh/server.ts";
 import { getAllEvents, getEventStats } from "../../utils/db-operations.ts";
-import { getAuthenticatedUser } from "../../utils/session.ts";
 
 interface EventWithStats {
   id: number;
@@ -25,19 +24,8 @@ interface EventWithStats {
 }
 
 export const handler: Handlers = {
-  GET(req) {
-    const user = getAuthenticatedUser(req);
-
-    // Require authentication
-    if (!user) {
-      return new Response(
-        JSON.stringify({ error: "Authentication required" }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    }
+  GET(_req) {
+    // Authentication and permissions handled by middleware
 
     try {
       const events = getAllEvents();

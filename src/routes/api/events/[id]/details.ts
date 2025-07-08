@@ -12,18 +12,9 @@ import { getAuthenticatedUser } from "../../../../utils/session.ts";
 
 export const handler: Handlers = {
   GET(req, ctx) {
-    const user = getAuthenticatedUser(req);
+    const user = getAuthenticatedUser(req)!; // Guaranteed by middleware
 
-    // Require authentication
-    if (!user) {
-      return new Response(
-        JSON.stringify({ error: "Authentication required" }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    }
+    // Authentication and permissions handled by middleware
 
     try {
       const id = parseInt(ctx.params.id);

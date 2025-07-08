@@ -5,6 +5,7 @@ export const env = {
   // Application
   DENO_ENV: Deno.env.get("DENO_ENV") || "development",
   PORT: Number(Deno.env.get("PORT")) || 8000,
+  HOSTNAME: Deno.env.get("HOSTNMAE") || "0.0.0.0",
   APP_NAME: Deno.env.get("APP_NAME") || "La Tournée des Jardins",
   APP_VERSION: Deno.env.get("APP_VERSION") || "1.0.0",
 
@@ -71,10 +72,6 @@ export function validateEnv() {
     !env.GOOGLE_CLIENT_ID.includes(".googleusercontent.com")
   ) {
     console.warn("⚠️  Google OAuth Client ID format may be incorrect");
-  }
-
-  if (env.DATABASE_URL && !env.DATABASE_URL.startsWith("sqlite:")) {
-    console.warn("⚠️  Database URL should use sqlite: protocol");
   }
 
   // Handle validation errors

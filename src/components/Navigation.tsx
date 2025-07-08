@@ -18,15 +18,24 @@ interface NavItem {
 export default function Navigation(
   { currentPath = "/", user, isMobile = false }: NavigationProps,
 ) {
-  const baseNavItems: NavItem[] = [
-    { href: "/", label: "Accueil", icon: "🏠" },
-    { href: "/events", label: "Événements", icon: "🌻" },
-    { href: "/calendar", label: "Calendrier", icon: "📅" },
-  ];
+  // Check user permissions
+  const isAdmin = user?.role === "admin";
+  const isApproved = user?.host_status === "approved" || isAdmin;
+  const isPending = user?.host_status === "pending";
+
+  const baseNavItems: NavItem[] = isApproved
+    ? [
+      { href: "/", label: "Accueil", icon: "🏠" },
+      { href: "/events", label: "Événements", icon: "🌻" },
+      { href: "/calendar", label: "Calendrier", icon: "📅" },
+    ]
+    : [
+      { href: "/", label: "Accueil", icon: "🏠" },
+    ];
 
   const authNavItems: NavItem[] = user
     ? [
-      ...(user.host_status === "approved"
+      ...(isApproved
         ? [
           {
             href: "/host/dashboard",
@@ -36,7 +45,7 @@ export default function Navigation(
           },
         ]
         : []),
-      ...(user.host_status === "admin"
+      ...(isAdmin
         ? [
           {
             href: "/admin/security",
@@ -44,21 +53,44 @@ export default function Navigation(
             icon: "🔒",
             adminOnly: true,
           },
+          {
+            href: "/admin/hosts",
+            label: "Gestion des hôtes",
+            icon: "👥",
+            adminOnly: true,
+          },
         ]
         : []),
-      {
-        href: "/host",
-        label: user.host_status === "approved"
-          ? "Nouvel événement"
-          : "Devenir Hôte",
-        icon: "🌱",
-        highlight: true,
-      },
+      ...(isApproved
+        ? [
+          {
+            href: "/host",
+            label: "Nouvel événement",
+            icon: "🌱",
+            highlight: true,
+          },
+        ]
+        : isPending
+        ? [
+          {
+            href: "#",
+            label: "En attente d'approbation",
+            icon: "⏳",
+            highlight: false,
+          },
+        ]
+        : [
+          {
+            href: "/host",
+            label: "Devenir Hôte",
+            icon: "🌱",
+            highlight: true,
+          },
+        ]),
       { href: "/profile", label: "Profil", icon: "👤" },
       { href: "/auth/logout", label: "Déconnexion", icon: "🚪" },
     ]
     : [
-      { href: "/host", label: "Devenir Hôte", icon: "🌱", highlight: true },
       { href: "/auth/login", label: "Connexion", icon: "🔑" },
     ];
 

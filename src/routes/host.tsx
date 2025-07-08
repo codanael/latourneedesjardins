@@ -20,35 +20,17 @@ interface FormData {
 
 export const handler: Handlers<FormData> = {
   GET(req, ctx) {
-    const user = getAuthenticatedUser(req);
+    const user = getAuthenticatedUser(req)!; // Guaranteed by middleware
 
-    // Require authentication for all access
-    if (!user) {
-      return new Response("", {
-        status: 302,
-        headers: {
-          "Location":
-            "/auth/login?message=Vous devez vous connecter pour devenir hôte",
-        },
-      });
-    }
+    // Authentication and permissions handled by middleware
 
     return ctx.render({ user });
   },
 
   async POST(req, ctx) {
-    const user = getAuthenticatedUser(req);
+    const user = getAuthenticatedUser(req)!; // Guaranteed by middleware
 
-    // Require authentication for all access
-    if (!user) {
-      return new Response("", {
-        status: 302,
-        headers: {
-          "Location":
-            "/auth/login?message=Vous devez vous connecter pour devenir hôte",
-        },
-      });
-    }
+    // Authentication and permissions handled by middleware
     const formData = await req.formData();
 
     const hostData = {

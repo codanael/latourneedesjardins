@@ -64,7 +64,7 @@ export const handler: Handlers = {
       // Check if user exists or create new user
       let user = getUserByEmail(userInfo.email);
       if (!user) {
-        user = createUser(userInfo.name, userInfo.email, "approved"); // OAuth users are auto-approved
+        user = createUser(userInfo.name, userInfo.email, "pending");
       }
 
       // Create session

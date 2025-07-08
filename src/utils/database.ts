@@ -4,7 +4,7 @@ let db: DB | null = null;
 
 export function getDatabase(): DB {
   if (!db) {
-    db = new DB("./database.sqlite");
+    db = new DB(Deno.env.get("DATABASE_URL"));
   }
   return db;
 }

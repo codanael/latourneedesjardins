@@ -78,6 +78,13 @@ export function initializeDatabase() {
     // Column already exists, ignore the error
   }
 
+  // Add role column to users table if it doesn't exist
+  try {
+    db.query(`ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'`);
+  } catch {
+    // Column already exists, ignore the error
+  }
+
   // RSVPs table
   db.query(`
     CREATE TABLE IF NOT EXISTS rsvps (

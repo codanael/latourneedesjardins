@@ -21,18 +21,9 @@ interface EventsPageData {
 
 export const handler: Handlers<EventsPageData> = {
   GET(req, ctx) {
-    const user = getAuthenticatedUser(req);
+    const user = getAuthenticatedUser(req)!; // Guaranteed by middleware
 
-    // Require authentication for all access
-    if (!user) {
-      return new Response("", {
-        status: 302,
-        headers: {
-          "Location":
-            "/auth/login?message=Vous devez vous connecter pour accéder à cette page",
-        },
-      });
-    }
+    // Authentication and permissions handled by middleware
 
     const events = getAllEvents();
 

@@ -1,4 +1,5 @@
 import { FreshContext } from "$fresh/server.ts";
+import { getAuthenticatedUser, hasPermission } from "../utils/session.ts";
 
 // Extend globalThis type for rate limiting
 declare global {
@@ -9,7 +10,123 @@ declare global {
 
 export async function handler(req: Request, ctx: FreshContext) {
   const url = new URL(req.url);
+
   const isProduction = Deno.env.get("ENVIRONMENT") === "production";
+
+  // Authentication and permission checking
+  const user = getAuthenticatedUser(req);
+
+  console.log(
+    `Request received: ${req.method} ${url.pathname} ${user?.name || "anon"} ${
+      req.headers.get("user-agent")
+    }`,
+  );
+
+  // Define routes that don't require authentication
+  const publicRoutes = [
+    "/auth/login",
+    "/auth/google",
+    "/auth/apple",
+    "/auth/callback/google",
+    "/auth/callback/apple",
+    "/auth/logout",
+    "/_fresh/",
+    "/static/",
+    "/favicon.ico",
+  ];
+
+  // Define routes that require approved user status
+  const approvedRoutes = [
+    "/events",
+    "/calendar",
+    "/host/dashboard",
+  ];
+
+  // Define routes that require admin status
+  const adminRoutes = [
+    "/admin/",
+  ];
+
+  // Check if this is a public route or static asset
+  const isPublicRoute = publicRoutes.some((route) =>
+    url.pathname.startsWith(route)
+  );
+  const isStaticAsset = url.pathname.startsWith("/_fresh/") ||
+    url.pathname.startsWith("/static/") ||
+    url.pathname.endsWith(".css") ||
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".ico") ||
+    url.pathname.endsWith(".png") ||
+    url.pathname.endsWith(".jpg") ||
+    url.pathname.endsWith(".svg") ||
+    url.pathname.endsWith(".woff") ||
+    url.pathname.endsWith(".woff2");
+
+  if (!isPublicRoute && !isStaticAsset) {
+    // Require authentication for all non-public routes
+    if (!user) {
+      if (url.pathname.startsWith("/api/")) {
+        return new Response(
+          JSON.stringify({ error: "Authentication required" }),
+          { status: 401, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      return new Response("", {
+        status: 302,
+        headers: {
+          "Location": "/auth/login?message=" +
+            encodeURIComponent(
+              "Vous devez vous connecter pour accéder à cette page",
+            ),
+        },
+      });
+    }
+
+    // Check admin routes
+    if (adminRoutes.some((route) => url.pathname.startsWith(route))) {
+      if (!hasPermission(req, "admin")) {
+        if (url.pathname.startsWith("/api/")) {
+          return new Response(
+            JSON.stringify({ error: "Admin access required" }),
+            { status: 403, headers: { "Content-Type": "application/json" } },
+          );
+        }
+        return new Response("", {
+          status: 302,
+          headers: { "Location": "/" },
+        });
+      }
+    } // Check approved user routes (except home page and host page which handle their own logic)
+    else if (approvedRoutes.some((route) => url.pathname.startsWith(route))) {
+      if (!hasPermission(req, "user")) {
+        if (url.pathname.startsWith("/api/")) {
+          return new Response(
+            JSON.stringify({ error: "Account pending approval" }),
+            { status: 403, headers: { "Content-Type": "application/json" } },
+          );
+        }
+        return new Response("", {
+          status: 302,
+          headers: { "Location": "/" },
+        });
+      }
+    } // Check host creation permission
+    else if (url.pathname === "/host" && req.method === "GET") {
+      if (!hasPermission(req, "approved_host")) {
+        return new Response("", {
+          status: 302,
+          headers: { "Location": "/" },
+        });
+      }
+    } else if (url.pathname === "/host" && req.method === "POST") {
+      if (!hasPermission(req, "approved_host")) {
+        return new Response("", {
+          status: 302,
+          headers: { "Location": "/" },
+        });
+      }
+    }
+  }
 
   // HTTPS redirect (only in production)
   if (isProduction && url.protocol === "http:") {
@@ -137,6 +254,5 @@ export async function handler(req: Request, ctx: FreshContext) {
       }
     }
   }
-
   return response;
 }

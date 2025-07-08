@@ -19,7 +19,8 @@
       "Bash(DENO_ENV=test deno test tests/auth.test.ts --allow-all)",
       "Bash(DENO_ENV=test deno test tests/cache.test.ts --allow-all)",
       "Bash(DENO_ENV=test deno test tests/api-events.test.ts --allow-all)",
-      "WebFetch(domain:docs.deno.com)"
+      "WebFetch(domain:docs.deno.com)",
+      "WebFetch(domain:nominatim.org)"
     ],
     "deny": []
   }
