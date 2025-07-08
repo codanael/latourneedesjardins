@@ -36,7 +36,7 @@ export default function Navigation(
           },
         ]
         : []),
-      ...(user.role === "admin"
+      ...(user.host_status === "admin"
         ? [
           {
             href: "/admin/security",

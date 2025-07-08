@@ -48,11 +48,11 @@ export const handler: Handlers = {
         );
       }
 
-      const formData = await req.formData();
-      const itemName = sanitizeInput(formData.get("item_name") as string);
-      const category = sanitizeInput(formData.get("category") as string);
-      const quantity = parseInt(formData.get("quantity") as string) || 1;
-      const notes = sanitizeInput(formData.get("notes") as string);
+      const requestData = await req.json();
+      const itemName = sanitizeInput(requestData.item_name as string);
+      const category = sanitizeInput(requestData.category as string);
+      const quantity = parseInt(requestData.quantity as string) || 1;
+      const notes = sanitizeInput(requestData.notes as string);
 
       // Validate required fields
       if (!itemName || !category) {
@@ -64,13 +64,11 @@ export const handler: Handlers = {
 
       // Validate category
       const validCategories = [
-        "appetizer",
-        "main",
-        "side",
+        "entrée",
+        "plat",
         "dessert",
-        "drinks",
-        "bread",
-        "other",
+        "boisson",
+        "autre",
       ];
       if (!validCategories.includes(category)) {
         return new Response(

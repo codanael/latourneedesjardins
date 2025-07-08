@@ -5,6 +5,7 @@ import {
   getEventStats,
 } from "../../utils/db-operations.ts";
 import { getAuthenticatedUser, hasPermission } from "../../utils/session.ts";
+import MobileLayout from "../../components/MobileLayout.tsx";
 
 interface EventWithStats extends Event {
   rsvp_stats: { response: string; count: number }[];
@@ -15,6 +16,7 @@ interface EventWithStats extends Event {
 interface DashboardData {
   events: EventWithStats[];
   hostName: string;
+  user: ReturnType<typeof getAuthenticatedUser>;
 }
 
 export const handler: Handlers<DashboardData> = {
@@ -59,75 +61,49 @@ export const handler: Handlers<DashboardData> = {
       };
     });
 
-    return ctx.render({ events: eventsWithStats, hostName: user.name });
+    return ctx.render({ events: eventsWithStats, hostName: user.name, user });
   },
 };
 
 export default function HostDashboard({ data }: PageProps<DashboardData>) {
-  const { events, hostName } = data;
+  const { events, hostName, user } = data;
 
   return (
-    <div class="min-h-screen bg-green-50">
-      <div class="container mx-auto px-4 py-8">
-        {/* Navigation */}
-        <nav class="mb-8">
-          <div class="flex flex-wrap justify-center gap-4">
-            <a
-              href="/"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Accueil
-            </a>
-            <a
-              href="/events"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Tous les événements
-            </a>
-            <a
-              href="/host"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Créer un événement
-            </a>
-          </div>
-        </nav>
-
-        {/* Header */}
-        <header class="bg-white rounded-lg shadow-md p-8 mb-8">
-          <h1 class="text-3xl font-bold text-green-800 mb-2">
-            Tableau de bord - {hostName}
-          </h1>
-          <p class="text-gray-600">
-            Gérez vos événements et consultez les réponses des participants
-          </p>
-        </header>
-
-        {/* Events Dashboard */}
-        <div class="space-y-6">
-          {events.length === 0
-            ? (
-              <div class="bg-white rounded-lg shadow-md p-8 text-center">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">
-                  Aucun événement
-                </h2>
-                <p class="text-gray-600 mb-6">
-                  Vous n'avez pas encore créé d'événement.
-                </p>
-                <a
-                  href="/host"
-                  class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  Créer votre premier événement
-                </a>
-              </div>
-            )
-            : (
-              events.map((event) => <EventCard key={event.id} event={event} />)
-            )}
-        </div>
+    <MobileLayout
+      user={user}
+      currentPath="/host/dashboard"
+      title={`Tableau de bord - ${hostName}`}
+    >
+      <div class="mb-4">
+        <p class="text-gray-600 text-center">
+          Gérez vos événements et consultez les réponses des participants
+        </p>
       </div>
-    </div>
+
+      {/* Events Dashboard */}
+      <div class="space-y-6">
+        {events.length === 0
+          ? (
+            <div class="bg-white rounded-lg shadow-md p-8 text-center">
+              <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+                Aucun événement
+              </h2>
+              <p class="text-gray-600 mb-6">
+                Vous n'avez pas encore créé d'événement.
+              </p>
+              <a
+                href="/host"
+                class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Créer votre premier événement
+              </a>
+            </div>
+          )
+          : (
+            events.map((event) => <EventCard key={event.id} event={event} />)
+          )}
+      </div>
+    </MobileLayout>
   );
 }
 

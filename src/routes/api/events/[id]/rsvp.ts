@@ -49,8 +49,8 @@ export const handler: Handlers = {
         );
       }
 
-      const formData = await req.formData();
-      const response = sanitizeInput(formData.get("response") as string);
+      const requestData = await req.json();
+      const response = sanitizeInput(requestData.response as string);
 
       // Validate response
       if (!response || !["yes", "no", "maybe"].includes(response)) {

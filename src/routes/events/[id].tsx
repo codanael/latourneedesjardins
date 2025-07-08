@@ -14,9 +14,10 @@ import {
 } from "../../utils/session.ts";
 import { getWeatherForLocation } from "../../utils/cached-weather.ts";
 import { WeatherForecast } from "../../utils/weather.ts";
-import RSVPButton from "../../islands/RSVPButton.tsx";
-import PotluckManager from "../../islands/PotluckManager.tsx";
+import CachedPotluckManager from "../../islands/CachedPotluckManager.tsx";
+import ParticipantsList from "../../islands/ParticipantsList.tsx";
 import Weather from "../../components/Weather.tsx";
+import CachedRSVPButton from "../../islands/CachedRSVPButton.tsx";
 
 interface EventPageData {
   event: Event | null;
@@ -98,9 +99,6 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
       </div>
     );
   }
-
-  const yesRsvps = rsvps.filter((r) => r.response === "yes");
-  const maybeRsvps = rsvps.filter((r) => r.response === "maybe");
 
   return (
     <div class="min-h-screen bg-green-50">
@@ -196,56 +194,22 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
           <div class="space-y-8">
             {/* RSVP Section */}
             <section id="rsvp" class="bg-white rounded-lg shadow-md p-6">
-              <RSVPButton
+              <CachedRSVPButton
                 eventId={event.id}
                 currentResponse={currentUserRsvp?.response}
               />
             </section>
 
             {/* Participants List */}
-            <section class="bg-white rounded-lg shadow-md p-6">
-              <h2 class="text-2xl font-semibold text-green-800 mb-4">
-                Participants ({yesRsvps.length} confirmés)
-              </h2>
-
-              <div class="space-y-4">
-                <div>
-                  <h3 class="font-semibold text-green-700 mb-2">
-                    ✅ Confirmés ({yesRsvps.length})
-                  </h3>
-                  <div class="grid grid-cols-2 gap-2">
-                    {yesRsvps.map((rsvp) => (
-                      <div key={rsvp.id} class="bg-green-50 px-3 py-2 rounded">
-                        {rsvp.user_name}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {maybeRsvps.length > 0 && (
-                  <div>
-                    <h3 class="font-semibold text-yellow-700 mb-2">
-                      🤔 Peut-être ({maybeRsvps.length})
-                    </h3>
-                    <div class="grid grid-cols-2 gap-2">
-                      {maybeRsvps.map((rsvp) => (
-                        <div
-                          key={rsvp.id}
-                          class="bg-yellow-50 px-3 py-2 rounded"
-                        >
-                          {rsvp.user_name}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </section>
+            <ParticipantsList
+              eventId={event.id}
+              initialParticipants={rsvps}
+            />
           </div>
 
           {/* Right Column - Potluck List */}
           <div>
-            <PotluckManager
+            <CachedPotluckManager
               eventId={event.id}
               currentUserId={currentUser?.id}
               initialItems={potluckItems}

@@ -105,29 +105,6 @@ export default function Home({ data }: PageProps<HomeData>) {
             </div>
           )}
       </section>
-
-      {/* Quick Actions */}
-      <section class="text-center">
-        <h2 class="text-xl sm:text-2xl font-semibold text-green-800 mb-4">
-          Actions Rapides
-        </h2>
-        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-md mx-auto">
-          <a
-            href="/events"
-            class="btn bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 flex-1 justify-center inline-flex"
-          >
-            <span class="mr-2">📋</span>
-            Tous les événements
-          </a>
-          <a
-            href="/calendar"
-            class="btn bg-purple-500 text-white hover:bg-purple-600 active:bg-purple-700 flex-1 justify-center inline-flex"
-          >
-            <span class="mr-2">📅</span>
-            Calendrier
-          </a>
-        </div>
-      </section>
     </MobileLayout>
   );
 }

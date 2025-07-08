@@ -37,8 +37,7 @@ import * as $CachedPotluckManager from "./islands/CachedPotluckManager.tsx";
 import * as $CachedRSVPButton from "./islands/CachedRSVPButton.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $HostFormValidator from "./islands/HostFormValidator.tsx";
-import * as $PotluckManager from "./islands/PotluckManager.tsx";
-import * as $RSVPButton from "./islands/RSVPButton.tsx";
+import * as $ParticipantsList from "./islands/ParticipantsList.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -81,8 +80,7 @@ const manifest = {
     "./islands/CachedRSVPButton.tsx": $CachedRSVPButton,
     "./islands/Counter.tsx": $Counter,
     "./islands/HostFormValidator.tsx": $HostFormValidator,
-    "./islands/PotluckManager.tsx": $PotluckManager,
-    "./islands/RSVPButton.tsx": $RSVPButton,
+    "./islands/ParticipantsList.tsx": $ParticipantsList,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

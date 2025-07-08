@@ -67,7 +67,7 @@ export const handler: Handlers = {
           status: 200,
           headers: {
             "Content-Type": "application/json",
-            "Cache-Control": "private, max-age=120", // 2 minutes
+            "Cache-Control": "no-cache, no-store, must-revalidate", // Disable caching for real-time updates
           },
         },
       );

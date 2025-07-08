@@ -33,6 +33,13 @@ export default function CachedRSVPButton({
         // Revert optimistic update on failure
         response.value = previousResponse;
         error.value = "Erreur lors de la mise à jour de votre RSVP";
+      } else {
+        // Dispatch event to notify other components
+        globalThis.dispatchEvent(
+          new CustomEvent("rsvp-updated", {
+            detail: { eventId, response: newResponse },
+          }),
+        );
       }
     } catch (err) {
       // Revert optimistic update on error
