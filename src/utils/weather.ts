@@ -168,6 +168,82 @@ export async function getWeatherForLocation(
   }
 }
 
+// Get complete weather data using coordinates (preferred method)
+export async function getWeatherForCoordinates(
+  lat: number,
+  lon: number,
+): Promise<WeatherForecast | null> {
+  try {
+    const [current, forecast] = await Promise.all([
+      getCurrentWeather(lat, lon),
+      getWeatherForecast(lat, lon),
+    ]);
+
+    if (!current) {
+      return null;
+    }
+
+    return {
+      current,
+      forecast,
+    };
+  } catch (error) {
+    console.error("Error fetching weather for coordinates:", error);
+    return null;
+  }
+}
+
+// Get weather data for an event (coordinates first, then fallback to location)
+export async function getWeatherForEvent(
+  event: {
+    latitude?: number;
+    longitude?: number;
+    weather_location?: string;
+    location: string;
+  },
+): Promise<WeatherForecast | null> {
+  try {
+    // Priority 1: Use stored coordinates if available
+    if (event.latitude && event.longitude) {
+      const result = await getWeatherForCoordinates(
+        event.latitude,
+        event.longitude,
+      );
+      if (result) {
+        return result;
+      }
+    }
+
+    // Priority 2: Try weather_location if available
+    if (event.weather_location) {
+      // Check if weather_location is coordinates (lat,lon format)
+      const coordsMatch = event.weather_location.match(
+        /^(-?\d+\.?\d*),(-?\d+\.?\d*)$/,
+      );
+      if (coordsMatch) {
+        const lat = parseFloat(coordsMatch[1]);
+        const lon = parseFloat(coordsMatch[2]);
+        const result = await getWeatherForCoordinates(lat, lon);
+        if (result) {
+          return result;
+        }
+      } else {
+        // Try as location string
+        const result = await getWeatherForLocation(event.weather_location);
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    // Priority 3: Fallback to main location
+    return await getWeatherForLocation(event.location);
+  } catch (error) {
+    console.error("Error fetching weather for event:", error);
+    return null;
+  }
+}
+
 // Get weather icon URL
 export function getWeatherIconUrl(iconCode: string): string {
   return `https://openweathermap.org/img/wn/${iconCode}@2x.png`;

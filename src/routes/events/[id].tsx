@@ -12,7 +12,7 @@ import {
   AuthenticatedUser,
   getAuthenticatedUser,
 } from "../../utils/session.ts";
-import { getWeatherForLocation } from "../../utils/cached-weather.ts";
+import { getWeatherForEvent } from "../../utils/cached-weather.ts";
 import { WeatherForecast } from "../../utils/weather.ts";
 import CachedPotluckManager from "../../islands/CachedPotluckManager.tsx";
 import ParticipantsList from "../../islands/ParticipantsList.tsx";
@@ -61,8 +61,8 @@ export const handler: Handlers<EventPageData> = {
     // Get current user's RSVP
     const currentUserRsvp = getUserRSVP(id, user.id);
 
-    // Get weather data for event location
-    const weatherData = await getWeatherForLocation(event.location);
+    // Get weather data for event using coordinates if available
+    const weatherData = await getWeatherForEvent(event);
 
     return ctx.render({
       event,

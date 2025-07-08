@@ -26,6 +26,8 @@ export interface Event {
   max_attendees?: number;
   weather_location?: string;
   special_instructions?: string;
+  latitude?: number;
+  longitude?: number;
   created_at: string;
   updated_at: string;
 }
@@ -124,10 +126,12 @@ function rowToEvent(row: unknown[]): Event {
     max_attendees: row[8] as number,
     weather_location: row[9] as string,
     special_instructions: row[10] as string,
-    created_at: row[11] as string,
-    updated_at: row[12] as string,
-    host_name: (row[13] as string) || undefined,
-    host_email: (row[14] as string) || undefined,
+    latitude: row[11] as number,
+    longitude: row[12] as number,
+    created_at: row[13] as string,
+    updated_at: row[14] as string,
+    host_name: (row[15] as string) || undefined,
+    host_email: (row[16] as string) || undefined,
   };
 }
 
@@ -177,8 +181,8 @@ export function createEvent(
   const db = getDatabase();
   db.query(
     `
-    INSERT INTO events (title, description, date, time, location, host_id, theme, max_attendees, weather_location, special_instructions)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO events (title, description, date, time, location, host_id, theme, max_attendees, weather_location, special_instructions, latitude, longitude)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `,
     [
       eventData.title,
@@ -191,6 +195,8 @@ export function createEvent(
       eventData.max_attendees,
       eventData.weather_location,
       eventData.special_instructions,
+      eventData.latitude,
+      eventData.longitude,
     ],
   );
 

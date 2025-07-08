@@ -7,6 +7,7 @@ import {
 import { isAutoApprovalEnabled } from "../utils/config.ts";
 import Navigation from "../components/Navigation.tsx";
 import { sanitizeHtml, sanitizeInput } from "../utils/security.ts";
+import AddressValidator from "../islands/AddressValidator.tsx";
 
 interface FormData {
   success?: boolean;
@@ -66,11 +67,19 @@ export const handler: Handlers<FormData> = {
       specialInstructions: sanitizeHtml(
         formData.get("specialInstructions")?.toString() || "",
       ),
+      latitude: formData.get("latitude")
+        ? parseFloat(formData.get("latitude")?.toString() || "0")
+        : undefined,
+      longitude: formData.get("longitude")
+        ? parseFloat(formData.get("longitude")?.toString() || "0")
+        : undefined,
     };
 
     // Convert to form values for re-display on error
     const formValues = Object.fromEntries(
-      Object.entries(hostData).map(([key, value]) => [key, value.toString()]),
+      Object.entries(hostData).map((
+        [key, value],
+      ) => [key, value?.toString() || ""]),
     );
 
     try {
@@ -129,8 +138,12 @@ export const handler: Handlers<FormData> = {
         host_id: user.id,
         theme: hostData.theme || "Garden Party",
         max_attendees: parseInt(hostData.maxAttendees),
-        weather_location: hostData.location,
+        weather_location: hostData.latitude && hostData.longitude
+          ? `${hostData.latitude},${hostData.longitude}`
+          : hostData.location,
         special_instructions: hostData.specialInstructions,
+        latitude: hostData.latitude,
+        longitude: hostData.longitude,
       });
 
       console.log("New host event created:", { user, event });
@@ -356,18 +369,15 @@ export default function HostPage({ data }: PageProps<FormData>) {
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      Adresse *
-                    </label>
-                    <textarea
+                    <AddressValidator
+                      onAddressSelected={(address, lat, lon) => {
+                        // This will be handled by the form submission
+                        console.log("Address selected:", address, lat, lon);
+                      }}
+                      initialValue={formValues.location || ""}
                       name="location"
                       required
-                      rows={2}
-                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                      placeholder="123 Rue des Jardins, 75001 Paris"
-                    >
-                      {formValues.location || ""}
-                    </textarea>
+                    />
                   </div>
 
                   <div>

@@ -5,6 +5,7 @@ import {
   getCurrentWeather as _getCurrentWeather,
   getLocationCoords as _getLocationCoords,
   getWeatherForecast as _getWeatherForecast,
+  getWeatherForEvent as _getWeatherForEvent,
   type LocationCoords,
   type WeatherData,
   type WeatherForecast,
@@ -142,6 +143,71 @@ export async function getWeatherForLocation(
     };
   } catch (error) {
     console.error("Error fetching cached weather for location:", error);
+    return null;
+  }
+}
+
+/**
+ * Cached version of getWeatherForEvent
+ * Prioritizes coordinates over location text with intelligent caching
+ */
+export async function getWeatherForEvent(
+  event: {
+    latitude?: number;
+    longitude?: number;
+    weather_location?: string;
+    location: string;
+  },
+): Promise<WeatherForecast | null> {
+  try {
+    // Priority 1: Use stored coordinates if available
+    if (event.latitude && event.longitude) {
+      const [current, forecast] = await Promise.all([
+        getCurrentWeather(event.latitude, event.longitude),
+        getWeatherForecast(event.latitude, event.longitude),
+      ]);
+
+      if (current) {
+        return {
+          current,
+          forecast,
+        };
+      }
+    }
+
+    // Priority 2: Try weather_location if available
+    if (event.weather_location) {
+      // Check if weather_location is coordinates (lat,lon format)
+      const coordsMatch = event.weather_location.match(
+        /^(-?\d+\.?\d*),(-?\d+\.?\d*)$/,
+      );
+      if (coordsMatch) {
+        const lat = parseFloat(coordsMatch[1]);
+        const lon = parseFloat(coordsMatch[2]);
+        const [current, forecast] = await Promise.all([
+          getCurrentWeather(lat, lon),
+          getWeatherForecast(lat, lon),
+        ]);
+
+        if (current) {
+          return {
+            current,
+            forecast,
+          };
+        }
+      } else {
+        // Try as location string
+        const result = await getWeatherForLocation(event.weather_location);
+        if (result) {
+          return result;
+        }
+      }
+    }
+
+    // Priority 3: Fallback to main location
+    return await getWeatherForLocation(event.location);
+  } catch (error) {
+    console.error("Error fetching cached weather for event:", error);
     return null;
   }
 }

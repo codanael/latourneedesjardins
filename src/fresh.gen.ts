@@ -12,6 +12,7 @@ import * as $api_events_id_details from "./routes/api/events/[id]/details.ts";
 import * as $api_events_id_potluck from "./routes/api/events/[id]/potluck.ts";
 import * as $api_events_id_potluck_itemId_ from "./routes/api/events/[id]/potluck/[itemId].ts";
 import * as $api_events_id_rsvp from "./routes/api/events/[id]/rsvp.ts";
+import * as $api_geocode from "./routes/api/geocode.ts";
 import * as $api_hosts from "./routes/api/hosts.ts";
 import * as $api_hosts_id_events from "./routes/api/hosts/[id]/events.ts";
 import * as $api_hosts_status from "./routes/api/hosts/status.ts";
@@ -32,6 +33,7 @@ import * as $host_attendees_id_ from "./routes/host/attendees/[id].tsx";
 import * as $host_dashboard from "./routes/host/dashboard.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $profile from "./routes/profile.tsx";
+import * as $AddressValidator from "./islands/AddressValidator.tsx";
 import * as $AttendeeActions from "./islands/AttendeeActions.tsx";
 import * as $CachedPotluckManager from "./islands/CachedPotluckManager.tsx";
 import * as $CachedRSVPButton from "./islands/CachedRSVPButton.tsx";
@@ -53,6 +55,7 @@ const manifest = {
     "./routes/api/events/[id]/potluck/[itemId].ts":
       $api_events_id_potluck_itemId_,
     "./routes/api/events/[id]/rsvp.ts": $api_events_id_rsvp,
+    "./routes/api/geocode.ts": $api_geocode,
     "./routes/api/hosts.ts": $api_hosts,
     "./routes/api/hosts/[id]/events.ts": $api_hosts_id_events,
     "./routes/api/hosts/status.ts": $api_hosts_status,
@@ -75,6 +78,7 @@ const manifest = {
     "./routes/profile.tsx": $profile,
   },
   islands: {
+    "./islands/AddressValidator.tsx": $AddressValidator,
     "./islands/AttendeeActions.tsx": $AttendeeActions,
     "./islands/CachedPotluckManager.tsx": $CachedPotluckManager,
     "./islands/CachedRSVPButton.tsx": $CachedRSVPButton,

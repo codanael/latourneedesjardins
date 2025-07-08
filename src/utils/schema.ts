@@ -29,6 +29,8 @@ export function initializeDatabase() {
       max_attendees INTEGER,
       weather_location TEXT,
       special_instructions TEXT,
+      latitude REAL,
+      longitude REAL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (host_id) REFERENCES users (id)
@@ -38,6 +40,19 @@ export function initializeDatabase() {
   // Add special_instructions column if it doesn't exist (for existing databases)
   try {
     db.query(`ALTER TABLE events ADD COLUMN special_instructions TEXT`);
+  } catch {
+    // Column already exists, ignore the error
+  }
+
+  // Add latitude/longitude columns if they don't exist (for existing databases)
+  try {
+    db.query(`ALTER TABLE events ADD COLUMN latitude REAL`);
+  } catch {
+    // Column already exists, ignore the error
+  }
+
+  try {
+    db.query(`ALTER TABLE events ADD COLUMN longitude REAL`);
   } catch {
     // Column already exists, ignore the error
   }
