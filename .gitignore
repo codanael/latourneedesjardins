@@ -1,3 +1,2 @@
-garden-app/database.sqlite
-garden-app/database.sqlite
-garden-app/.env.production
+src/database.sqlite
+src/.env.production
