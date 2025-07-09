@@ -182,8 +182,12 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
                   <div class="flex items-center bg-gray-50 p-3 rounded-lg">
                     <span class="mr-3 text-lg text-green-600">👥</span>
                     <div>
-                      <div class="font-medium text-gray-800">Places disponibles</div>
-                      <div class="text-sm text-gray-600">{event.max_attendees} participants max</div>
+                      <div class="font-medium text-gray-800">
+                        Places disponibles
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {event.max_attendees} participants max
+                      </div>
                     </div>
                   </div>
                 )}

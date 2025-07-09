@@ -82,17 +82,24 @@ export default function ParticipantsList(
             </h3>
             <span class="badge-success">{yesRsvps.length}</span>
           </div>
-          {yesRsvps.length > 0 ? (
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {yesRsvps.map((rsvp) => (
-                <div key={rsvp.id} class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 px-3 py-2 rounded-lg text-sm font-medium text-green-800">
-                  {rsvp.user_name || "Utilisateur anonyme"}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p class="text-gray-500 italic text-sm">Aucun participant confirmé</p>
-          )}
+          {yesRsvps.length > 0
+            ? (
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {yesRsvps.map((rsvp) => (
+                  <div
+                    key={rsvp.id}
+                    class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 px-3 py-2 rounded-lg text-sm font-medium text-green-800"
+                  >
+                    {rsvp.user_name || "Utilisateur anonyme"}
+                  </div>
+                ))}
+              </div>
+            )
+            : (
+              <p class="text-gray-500 italic text-sm">
+                Aucun participant confirmé
+              </p>
+            )}
         </div>
 
         {maybeRsvps.length > 0 && (

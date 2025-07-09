@@ -213,10 +213,12 @@ export default function Weather(
                 )}
               </>
             )
-            : <li class="flex items-center">
-              <span class="mr-2">🌤️</span>
-              Consultez la météo la veille de l'événement
-            </li>}
+            : (
+              <li class="flex items-center">
+                <span class="mr-2">🌤️</span>
+                Consultez la météo la veille de l'événement
+              </li>
+            )}
         </ul>
       </div>
     </div>

@@ -8,7 +8,6 @@ import { isAutoApprovalEnabled } from "../utils/config.ts";
 import MobileLayout from "../components/MobileLayout.tsx";
 import { sanitizeHtml, sanitizeInput } from "../utils/security.ts";
 import AddressValidator from "../islands/AddressValidator.tsx";
-import HostFormValidator from "../islands/HostFormValidator.tsx";
 
 interface FormData {
   success?: boolean;
@@ -220,184 +219,188 @@ export default function HostPage({ data }: PageProps<FormData>) {
         </p>
       </div>
 
-          {/* Form */}
-          <section class="card-elevated animate-slide-up">
-            <h2 class="text-2xl font-semibold text-green-800 mb-6">
-              Organisez votre événement
-            </h2>
+      {/* Form */}
+      <section class="card-elevated animate-slide-up">
+        <h2 class="text-2xl font-semibold text-green-800 mb-6">
+          Organisez votre événement
+        </h2>
 
-            {data.error && (
-              <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-lg">
-                <p class="text-red-700">{data.error}</p>
+        {data.error && (
+          <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-lg">
+            <p class="text-red-700">{data.error}</p>
+          </div>
+        )}
+
+        <form method="POST" class="space-y-6">
+          {/* User Information Display */}
+          <div class="bg-garden-gradient border border-green-200 rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+              Organisateur
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label">
+                  Nom
+                </label>
+                <p class="text-gray-900 font-medium bg-white p-3 rounded-lg shadow-inner-soft">
+                  {user?.name}
+                </p>
               </div>
-            )}
+              <div>
+                <label class="form-label">
+                  Email
+                </label>
+                <p class="text-gray-900 font-medium bg-white p-3 rounded-lg shadow-inner-soft">
+                  {user?.email}
+                </p>
+              </div>
+            </div>
+            <div class="form-group mt-4">
+              <label class="form-label">
+                Téléphone (optionnel)
+              </label>
+              <input
+                type="tel"
+                name="phone"
+                value={formValues.phone || ""}
+                class="form-input md:w-1/2"
+                placeholder="01 23 45 67 89"
+              />
+            </div>
+          </div>
 
-            <form method="POST" class="space-y-6">
-              {/* User Information Display */}
-              <div class="bg-garden-gradient border border-green-200 rounded-lg p-6 mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                  Organisateur
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label class="form-label">
-                      Nom
-                    </label>
-                    <p class="text-gray-900 font-medium bg-white p-3 rounded-lg shadow-inner-soft">{user?.name}</p>
-                  </div>
-                  <div>
-                    <label class="form-label">
-                      Email
-                    </label>
-                    <p class="text-gray-900 font-medium bg-white p-3 rounded-lg shadow-inner-soft">{user?.email}</p>
-                  </div>
-                </div>
-                <div class="form-group mt-4">
+          {/* Event Information */}
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+              Détails de l'événement
+            </h3>
+            <div class="space-y-6">
+              <div class="form-group">
+                <label class="form-label">
+                  Titre de l'événement *
+                </label>
+                <input
+                  type="text"
+                  name="eventTitle"
+                  required
+                  value={formValues.eventTitle || ""}
+                  class="form-input"
+                  placeholder="Garden Party chez..."
+                />
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group">
                   <label class="form-label">
-                    Téléphone (optionnel)
+                    Date *
                   </label>
                   <input
-                    type="tel"
-                    name="phone"
-                    value={formValues.phone || ""}
-                    class="form-input md:w-1/2"
-                    placeholder="01 23 45 67 89"
+                    type="date"
+                    name="eventDate"
+                    required
+                    value={formValues.eventDate || ""}
+                    class="form-input"
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    Heure
+                  </label>
+                  <input
+                    type="time"
+                    name="eventTime"
+                    value={formValues.eventTime || "14:00"}
+                    class="form-input"
                   />
                 </div>
               </div>
 
-              {/* Event Information */}
               <div>
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                  Détails de l'événement
-                </h3>
-                <div class="space-y-6">
-                  <div class="form-group">
-                    <label class="form-label">
-                      Titre de l'événement *
-                    </label>
-                    <input
-                      type="text"
-                      name="eventTitle"
-                      required
-                      value={formValues.eventTitle || ""}
-                      class="form-input"
-                      placeholder="Garden Party chez..."
-                    />
-                  </div>
+                <AddressValidator
+                  onAddressSelected={(address, lat, lon) => {
+                    // This will be handled by the form submission
+                    console.log("Address selected:", address, lat, lon);
+                  }}
+                  initialValue={formValues.location || ""}
+                  name="location"
+                  required
+                />
+              </div>
 
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                      <label class="form-label">
-                        Date *
-                      </label>
-                      <input
-                        type="date"
-                        name="eventDate"
-                        required
-                        value={formValues.eventDate || ""}
-                        class="form-input"
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">
-                        Heure
-                      </label>
-                      <input
-                        type="time"
-                        name="eventTime"
-                        value={formValues.eventTime || "14:00"}
-                        class="form-input"
-                      />
-                    </div>
-                  </div>
+              <div class="form-group">
+                <label class="form-label">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  rows={4}
+                  class="form-textarea"
+                  placeholder="Décrivez votre jardin, l'ambiance prévue, ce qui rend votre événement spécial..."
+                >
+                  {formValues.description || ""}
+                </textarea>
+              </div>
 
-                  <div>
-                    <AddressValidator
-                      onAddressSelected={(address, lat, lon) => {
-                        // This will be handled by the form submission
-                        console.log("Address selected:", address, lat, lon);
-                      }}
-                      initialValue={formValues.location || ""}
-                      name="location"
-                      required
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">
-                      Description
-                    </label>
-                    <textarea
-                      name="description"
-                      rows={4}
-                      class="form-textarea"
-                      placeholder="Décrivez votre jardin, l'ambiance prévue, ce qui rend votre événement spécial..."
-                    >
-                      {formValues.description || ""}
-                    </textarea>
-                  </div>
-
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                      <label class="form-label">
-                        Thème (optionnel)
-                      </label>
-                      <input
-                        type="text"
-                        name="theme"
-                        value={formValues.theme || ""}
-                        class="form-input"
-                        placeholder="Potluck, Barbecue, Brunch..."
-                      />
-                    </div>
-                    <div class="form-group">
-                      <label class="form-label">
-                        Nombre max de participants
-                      </label>
-                      <input
-                        type="number"
-                        name="maxAttendees"
-                        min="1"
-                        max="100"
-                        value={formValues.maxAttendees || "15"}
-                        class="form-input"
-                        placeholder="15"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label class="form-label">
-                      Instructions spéciales
-                    </label>
-                    <textarea
-                      name="specialInstructions"
-                      rows={3}
-                      class="form-textarea"
-                      placeholder="Apportez vos couverts, parking disponible, accès PMR..."
-                    >
-                      {formValues.specialInstructions || ""}
-                    </textarea>
-                  </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label class="form-label">
+                    Thème (optionnel)
+                  </label>
+                  <input
+                    type="text"
+                    name="theme"
+                    value={formValues.theme || ""}
+                    class="form-input"
+                    placeholder="Potluck, Barbecue, Brunch..."
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    Nombre max de participants
+                  </label>
+                  <input
+                    type="number"
+                    name="maxAttendees"
+                    min="1"
+                    max="100"
+                    value={formValues.maxAttendees || "15"}
+                    class="form-input"
+                    placeholder="15"
+                  />
                 </div>
               </div>
 
-              <div class="pt-6 border-t border-gray-200">
-                <button
-                  type="submit"
-                  class="btn btn-primary w-full text-lg font-semibold py-4"
+              <div class="form-group">
+                <label class="form-label">
+                  Instructions spéciales
+                </label>
+                <textarea
+                  name="specialInstructions"
+                  rows={3}
+                  class="form-textarea"
+                  placeholder="Apportez vos couverts, parking disponible, accès PMR..."
                 >
-                  <span class="mr-2">🌱</span>
-                  Créer mon événement
-                </button>
-                <p class="text-sm text-gray-600 mt-4 text-center leading-relaxed">
-                  En créant cet événement, vous acceptez d'accueillir les
-                  participants dans votre jardin
-                </p>
+                  {formValues.specialInstructions || ""}
+                </textarea>
               </div>
-            </form>
-          </section>
+            </div>
+          </div>
+
+          <div class="pt-6 border-t border-gray-200">
+            <button
+              type="submit"
+              class="btn btn-primary w-full text-lg font-semibold py-4"
+            >
+              <span class="mr-2">🌱</span>
+              Créer mon événement
+            </button>
+            <p class="text-sm text-gray-600 mt-4 text-center leading-relaxed">
+              En créant cet événement, vous acceptez d'accueillir les
+              participants dans votre jardin
+            </p>
+          </div>
+        </form>
+      </section>
     </MobileLayout>
   );
 }

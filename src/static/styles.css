@@ -36,31 +36,36 @@
   }
 
   .btn-primary {
-    @apply btn bg-gradient-to-r from-green-600 to-green-700 text-white 
-      hover:from-green-700 hover:to-green-800 active:from-green-800 active:to-green-900;
+    @apply btn bg-gradient-to-r from-green-600 to-green-700 text-white
+      hover:from-green-700 hover:to-green-800 active:from-green-800
+      active:to-green-900;
     @apply shadow-garden hover:shadow-garden-lg;
   }
 
   .btn-secondary {
-    @apply btn bg-gradient-to-r from-green-50 to-green-100 text-green-800 
-      hover:from-green-100 hover:to-green-200 active:from-green-200 active:to-green-300;
+    @apply btn bg-gradient-to-r from-green-50 to-green-100 text-green-800
+      hover:from-green-100 hover:to-green-200 active:from-green-200
+      active:to-green-300;
     @apply border border-green-200 hover:border-green-300;
   }
 
   .btn-accent {
-    @apply btn bg-gradient-to-r from-accent-500 to-accent-600 text-white 
-      hover:from-accent-600 hover:to-accent-700 active:from-accent-700 active:to-accent-800;
+    @apply btn bg-gradient-to-r from-accent-500 to-accent-600 text-white
+      hover:from-accent-600 hover:to-accent-700 active:from-accent-700
+      active:to-accent-800;
     @apply shadow-accent hover:shadow-accent;
   }
 
   .btn-ghost {
-    @apply btn bg-transparent text-green-700 hover:bg-green-50 active:bg-green-100;
+    @apply btn bg-transparent text-green-700 hover:bg-green-50
+      active:bg-green-100;
     @apply border border-green-200 hover:border-green-300;
   }
 
   .card {
     @apply bg-white rounded-xl shadow-soft p-4 sm:p-6;
-    @apply transform transition-all duration-200 hover:scale-[1.02] hover:shadow-soft-lg;
+    @apply transform transition-all duration-200 hover:scale-[1.02]
+      hover:shadow-soft-lg;
     @apply border border-gray-100 hover:border-green-200;
     @apply relative overflow-hidden;
   }
@@ -75,10 +80,15 @@
   }
 
   .mobile-nav {
-    @apply fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200;
+    @apply fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t
+      border-gray-200;
     @apply flex justify-center items-center z-50 safe-area-inset-bottom;
     @apply shadow-soft-lg min-h-[70px] px-2;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(248, 250, 252, 0.95) 100%
+    );
   }
 
   .mobile-nav-item {
@@ -130,27 +140,27 @@
     .container {
       @apply px-3;
     }
-    
+
     .card-elevated {
       @apply mx-0 rounded-2xl;
     }
-    
+
     .btn {
       @apply text-base py-3 px-4;
     }
-    
+
     .mobile-nav {
       @apply px-1;
     }
-    
+
     .mobile-nav-item {
       @apply px-2 py-3 text-xs;
     }
-    
+
     .mobile-nav-item span:first-child {
       @apply text-base;
     }
-    
+
     .mobile-nav-item span:last-child {
       @apply text-xs leading-tight;
     }
@@ -243,7 +253,8 @@
 
   /* Badge styles */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs
+      font-medium;
   }
 
   .badge-primary {

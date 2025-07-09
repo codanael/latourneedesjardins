@@ -71,7 +71,7 @@ export default function EventsPage(
                   key={event.id}
                   event={event}
                   variant="detailed"
-                  showRsvpCount={true}
+                  showRSVPCount
                 />
               ))}
             </div>

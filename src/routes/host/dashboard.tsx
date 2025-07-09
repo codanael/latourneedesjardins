@@ -90,7 +90,8 @@ export default function HostDashboard({ data }: PageProps<DashboardData>) {
                 Aucun événement
               </h2>
               <p class="text-gray-600 mb-6 leading-relaxed">
-                Vous n'avez pas encore créé d'événement. Commencez par partager votre jardin avec la communauté !
+                Vous n'avez pas encore créé d'événement. Commencez par partager
+                votre jardin avec la communauté !
               </p>
               <a
                 href="/host"
@@ -136,8 +137,7 @@ function EventCard({ event }: { event: EventWithStats }) {
           <div class="flex flex-wrap gap-3 text-sm text-gray-600">
             <span class="flex items-center bg-gray-50 px-3 py-1 rounded-lg">
               <span class="mr-2 text-green-600">📅</span>
-              {new Date(event.date).toLocaleDateString("fr-FR")} à{" "}
-              {event.time}
+              {new Date(event.date).toLocaleDateString("fr-FR")} à {event.time}
             </span>
             <span class="flex items-center bg-gray-50 px-3 py-1 rounded-lg">
               <span class="mr-2 text-green-600">📍</span>

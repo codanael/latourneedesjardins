@@ -5,7 +5,7 @@ interface Event {
   date: string;
   time?: string;
   location: string;
-  host_name: string;
+  host_name?: string;
   theme?: string;
   rsvp_count?: number;
   max_attendees?: number;
@@ -74,7 +74,9 @@ export default function EventCard(
           </p>
           <p class="flex items-center">
             <span class="mr-2 flex-shrink-0 text-green-600">🌱</span>
-            <span class="truncate font-medium">{event.host_name}</span>
+            <span class="truncate font-medium">
+              {event.host_name || "Hôte inconnu"}
+            </span>
           </p>
         </div>
 
@@ -145,7 +147,7 @@ export default function EventCard(
                 )}
               </div>
             </div>
-            
+
             <div class="flex items-start text-gray-600 text-sm sm:text-base bg-white p-3 rounded-lg shadow-inner-soft">
               <span class="mr-3 mt-0.5 flex-shrink-0 text-lg">📍</span>
               <div class="flex-1 break-words leading-tight">
@@ -153,12 +155,12 @@ export default function EventCard(
                 <div class="text-sm">{event.location}</div>
               </div>
             </div>
-            
+
             <div class="flex items-center text-gray-600 text-sm sm:text-base bg-white p-3 rounded-lg shadow-inner-soft">
               <span class="mr-3 flex-shrink-0 text-lg">🌱</span>
               <div>
                 <div class="font-medium text-gray-800">Hôte</div>
-                <div class="text-sm">{event.host_name}</div>
+                <div class="text-sm">{event.host_name || "Hôte inconnu"}</div>
               </div>
             </div>
           </div>
@@ -174,7 +176,9 @@ export default function EventCard(
                     <div class="text-sm">
                       {showRSVPCount ? (event.rsvp_count || 0) : ""}
                       {event.max_attendees
-                        ? `${showRSVPCount ? "/" : "Max "}${event.max_attendees}`
+                        ? `${
+                          showRSVPCount ? "/" : "Max "
+                        }${event.max_attendees}`
                         : ""} participants
                     </div>
                   </div>
@@ -200,7 +204,9 @@ export default function EventCard(
             >
               <span class="mr-2">👁️</span>
               Voir détails
-              {isUpcoming && <span class="ml-2 text-xs opacity-75">(+ RSVP)</span>}
+              {isUpcoming && (
+                <span class="ml-2 text-xs opacity-75">(+ RSVP)</span>
+              )}
             </a>
           </div>
         )}
