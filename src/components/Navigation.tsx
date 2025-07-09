@@ -97,6 +97,12 @@ export default function Navigation(
       ...(isAdmin
         ? [
           {
+            href: "/admin/events",
+            label: "Gestion des événements",
+            icon: "📊",
+            adminOnly: true,
+          },
+          {
             href: "/admin/security",
             label: "Sécurité",
             icon: "🔒",

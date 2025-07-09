@@ -11,6 +11,7 @@ import {
 import {
   AuthenticatedUser,
   getAuthenticatedUser,
+  hasEventPermission,
 } from "../../utils/session.ts";
 import { getWeatherForEvent } from "../../utils/cached-weather.ts";
 import { WeatherForecast } from "../../utils/weather.ts";
@@ -18,6 +19,7 @@ import CachedPotluckManager from "../../islands/CachedPotluckManager.tsx";
 import ParticipantsList from "../../islands/ParticipantsList.tsx";
 import Weather from "../../components/Weather.tsx";
 import CachedRSVPButton from "../../islands/CachedRSVPButton.tsx";
+import DeleteEventButton from "../../islands/DeleteEventButton.tsx";
 
 interface EventPageData {
   event: Event | null;
@@ -26,6 +28,8 @@ interface EventPageData {
   currentUserRsvp: RSVP | null;
   currentUser: AuthenticatedUser;
   weatherData: WeatherForecast | null;
+  canEditEvent: boolean;
+  canDeleteEvent: boolean;
 }
 
 export const handler: Handlers<EventPageData> = {
@@ -55,6 +59,10 @@ export const handler: Handlers<EventPageData> = {
     // Get weather data for event using coordinates if available
     const weatherData = await getWeatherForEvent(event);
 
+    // Check user permissions
+    const canEditEvent = await hasEventPermission(req, id, "edit");
+    const canDeleteEvent = await hasEventPermission(req, id, "delete");
+
     return ctx.render({
       event,
       rsvps,
@@ -62,6 +70,8 @@ export const handler: Handlers<EventPageData> = {
       currentUserRsvp,
       currentUser: user,
       weatherData,
+      canEditEvent,
+      canDeleteEvent,
     });
   },
 };
@@ -74,6 +84,8 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
     currentUserRsvp,
     currentUser,
     weatherData,
+    canEditEvent,
+    canDeleteEvent,
   } = data;
 
   if (!event) {
@@ -138,14 +150,22 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
                 </span>
               )}
             </div>
-            <div class="mt-4 md:mt-0">
-              <a
-                href={`/events/${event.id}/edit`}
-                class="btn btn-accent inline-flex"
-              >
-                <span class="mr-1">✏️</span>
-                Modifier l'événement
-              </a>
+            <div class="mt-4 md:mt-0 flex gap-3">
+              {canEditEvent && (
+                <a
+                  href={`/events/${event.id}/edit`}
+                  class="btn btn-accent inline-flex"
+                >
+                  <span class="mr-1">✏️</span>
+                  Modifier
+                </a>
+              )}
+              {canDeleteEvent && (
+                <DeleteEventButton
+                  eventId={event.id}
+                  eventTitle={event.title}
+                />
+              )}
             </div>
           </div>
 

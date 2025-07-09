@@ -130,6 +130,23 @@ export default function LoginPage({ data }: PageProps<LoginData>) {
             ← Retour à l'accueil
           </a>
         </div>
+
+        {/* Development Mock Login */}
+        {Deno.env.get("DENO_ENV") !== "production" && (
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <div class="text-center">
+              <p class="text-xs text-gray-500 mb-3">
+                Développement uniquement
+              </p>
+              <a
+                href="/dev/mock-login"
+                class="btn btn-ghost text-gray-600 hover:text-gray-800 text-sm"
+              >
+                🛠️ Mock Login
+              </a>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

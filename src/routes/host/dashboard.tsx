@@ -6,6 +6,7 @@ import {
 } from "../../utils/db-operations.ts";
 import { getAuthenticatedUser, hasPermission } from "../../utils/session.ts";
 import MobileLayout from "../../components/MobileLayout.tsx";
+import DeleteEventButton from "../../islands/DeleteEventButton.tsx";
 
 interface EventWithStats extends Event {
   rsvp_stats: { response: string; count: number }[];
@@ -171,6 +172,12 @@ function EventCard({ event }: { event: EventWithStats }) {
             <span class="mr-1">✏️</span>
             Modifier
           </a>
+          <DeleteEventButton
+            eventId={event.id}
+            eventTitle={event.title}
+            className="btn btn-ghost text-red-600 hover:bg-red-50 text-sm"
+            onDelete={() => globalThis.location.reload()}
+          />
         </div>
       </div>
 
