@@ -16,15 +16,17 @@ export default function Weather(
 ) {
   if (!weatherData) {
     return (
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-2xl font-semibold text-green-800 mb-4">
-          Météo prévue
+      <div class="card-elevated">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <span class="mr-2">🌤️</span>
+          Météo pour {location}
         </h2>
-        <div class="bg-gray-50 p-4 rounded-lg text-center">
-          <p class="text-gray-600">
-            ⚠️ Impossible de récupérer les données météo pour {location}
+        <div class="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 p-4 rounded-lg text-center">
+          <div class="text-4xl mb-2">⚠️</div>
+          <p class="text-gray-600 mb-2">
+            Impossible de récupérer les données météo pour {location}
           </p>
-          <p class="text-sm text-gray-500 mt-2">
+          <p class="text-sm text-gray-500">
             Vérifiez votre connexion internet
           </p>
         </div>
@@ -43,8 +45,9 @@ export default function Weather(
   });
 
   return (
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-2xl font-semibold text-green-800 mb-4">
+    <div class="card-elevated">
+      <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center">
+        <span class="mr-2">🌤️</span>
         Météo pour {location}
       </h2>
 
@@ -53,7 +56,7 @@ export default function Weather(
         <h3 class="text-lg font-medium text-gray-800 mb-3">
           Météo actuelle
         </h3>
-        <div class="bg-blue-50 p-4 rounded-lg">
+        <div class="bg-gradient-to-r from-blue-50 to-sky-100 border border-blue-200 p-4 rounded-lg">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <img
@@ -70,9 +73,11 @@ export default function Weather(
                 </p>
               </div>
             </div>
-            <div class="text-right text-sm text-gray-600">
-              <p>💧 Humidité: {current.humidity}%</p>
-              <p>🌪️ Vent: {current.windSpeed} m/s</p>
+            <div class="text-right text-sm">
+              <div class="bg-white/50 backdrop-blur-sm rounded-lg p-2 space-y-1">
+                <p class="text-blue-700">💧 Humidité: {current.humidity}%</p>
+                <p class="text-blue-700">🌪️ Vent: {current.windSpeed} m/s</p>
+              </div>
             </div>
           </div>
         </div>
@@ -81,10 +86,11 @@ export default function Weather(
       {/* Event Day Forecast */}
       {eventForecast && (
         <div class="mb-6">
-          <h3 class="text-lg font-medium text-gray-800 mb-3">
+          <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
+            <span class="mr-2">📅</span>
             Météo prévue le jour de l'événement
           </h3>
-          <div class="bg-green-50 p-4 rounded-lg border-2 border-green-200">
+          <div class="bg-gradient-to-r from-green-50 to-emerald-100 border-2 border-green-300 p-4 rounded-lg shadow-garden">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <img
@@ -96,7 +102,7 @@ export default function Weather(
                   <p class="text-2xl font-bold text-green-800">
                     {formatTemperature(eventForecast.temperature)}
                   </p>
-                  <p class="text-green-600 capitalize">
+                  <p class="text-green-600 capitalize font-medium">
                     {getWeatherDescription(eventForecast.description)}
                   </p>
                   <p class="text-sm text-gray-600">
@@ -108,9 +114,11 @@ export default function Weather(
                   </p>
                 </div>
               </div>
-              <div class="text-right text-sm text-gray-600">
-                <p>💧 {eventForecast.humidity}%</p>
-                <p>🌪️ {eventForecast.windSpeed} m/s</p>
+              <div class="text-right text-sm">
+                <div class="bg-white/50 backdrop-blur-sm rounded-lg p-2 space-y-1">
+                  <p class="text-green-700">💧 {eventForecast.humidity}%</p>
+                  <p class="text-green-700">🌪️ {eventForecast.windSpeed} m/s</p>
+                </div>
               </div>
             </div>
           </div>
@@ -119,8 +127,9 @@ export default function Weather(
 
       {/* 5-Day Forecast */}
       {forecast.length > 0 && (
-        <div>
-          <h3 class="text-lg font-medium text-gray-800 mb-3">
+        <div class="mb-6">
+          <h3 class="text-lg font-medium text-gray-800 mb-3 flex items-center">
+            <span class="mr-2">📊</span>
             Prévisions 5 jours
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
@@ -132,13 +141,13 @@ export default function Weather(
               return (
                 <div
                   key={index}
-                  class={`p-3 rounded-lg text-center ${
+                  class={`p-3 rounded-lg text-center transition-all duration-200 hover:scale-105 ${
                     isEventDay
-                      ? "bg-green-100 border-2 border-green-300"
-                      : "bg-gray-50 border border-gray-200"
+                      ? "bg-gradient-to-b from-green-100 to-emerald-100 border-2 border-green-300 shadow-garden"
+                      : "bg-gradient-to-b from-gray-50 to-gray-100 border border-gray-200 hover:shadow-soft"
                   }`}
                 >
-                  <p class="text-sm font-medium text-gray-800">
+                  <p class="text-sm font-medium text-gray-800 mb-1">
                     {date.toLocaleDateString("fr-FR", {
                       weekday: "short",
                       month: "short",
@@ -150,16 +159,16 @@ export default function Weather(
                     alt={item.description}
                     class="w-12 h-12 mx-auto my-2"
                   />
-                  <p class="text-lg font-bold text-gray-800">
+                  <p class="text-lg font-bold text-gray-800 mb-1">
                     {formatTemperature(item.temperature)}
                   </p>
-                  <p class="text-xs text-gray-600 capitalize">
+                  <p class="text-xs text-gray-600 capitalize mb-1">
                     {getWeatherDescription(item.description)}
                   </p>
                   {isEventDay && (
-                    <p class="text-xs text-green-600 font-medium mt-1">
+                    <span class="badge-success text-xs">
                       📅 Événement
-                    </p>
+                    </span>
                   )}
                 </div>
               );
@@ -169,29 +178,45 @@ export default function Weather(
       )}
 
       {/* Weather Tips */}
-      <div class="mt-6 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-        <h4 class="font-medium text-yellow-800 mb-2">
-          💡 Conseils météo
+      <div class="bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200 rounded-lg p-4">
+        <h4 class="font-medium text-amber-800 mb-3 flex items-center">
+          <span class="mr-2">💡</span>
+          Conseils météo
         </h4>
-        <ul class="text-sm text-yellow-700 space-y-1">
+        <ul class="text-sm text-amber-700 space-y-2">
           {eventForecast
             ? (
               <>
                 {eventForecast.temperature < 10 && (
-                  <li>🧥 Pensez à vous couvrir, il fera frais</li>
+                  <li class="flex items-center">
+                    <span class="mr-2">🧥</span>
+                    Pensez à vous couvrir, il fera frais
+                  </li>
                 )}
                 {eventForecast.temperature > 25 && (
-                  <li>☀️ Protégez-vous du soleil et hydratez-vous</li>
+                  <li class="flex items-center">
+                    <span class="mr-2">☀️</span>
+                    Protégez-vous du soleil et hydratez-vous
+                  </li>
                 )}
                 {eventForecast.description.includes("rain") && (
-                  <li>☔ Prévoyez un parapluie ou un abri</li>
+                  <li class="flex items-center">
+                    <span class="mr-2">☔</span>
+                    Prévoyez un parapluie ou un abri
+                  </li>
                 )}
                 {eventForecast.windSpeed > 5 && (
-                  <li>🌪️ Attention au vent, sécurisez vos affaires</li>
+                  <li class="flex items-center">
+                    <span class="mr-2">🌪️</span>
+                    Attention au vent, sécurisez vos affaires
+                  </li>
                 )}
               </>
             )
-            : <li>🌤️ Consultez la météo la veille de l'événement</li>}
+            : <li class="flex items-center">
+              <span class="mr-2">🌤️</span>
+              Consultez la météo la veille de l'événement
+            </li>}
         </ul>
       </div>
     </div>

@@ -63,8 +63,9 @@ export default function ParticipantsList(
   const maybeRsvps = participants.value.filter((p) => p.response === "maybe");
 
   return (
-    <section class="bg-white rounded-lg shadow-md p-6">
-      <h2 class="text-2xl font-semibold text-green-800 mb-4">
+    <section class="card-elevated">
+      <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+        <span class="mr-2">👥</span>
         Participants ({yesRsvps.length} confirmés)
         {isLoading.value && (
           <span class="ml-2 inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-green-600">
@@ -72,30 +73,42 @@ export default function ParticipantsList(
         )}
       </h2>
 
-      <div class="space-y-4">
+      <div class="space-y-6">
         <div>
-          <h3 class="font-semibold text-green-700 mb-2">
-            ✅ Confirmés ({yesRsvps.length})
-          </h3>
-          <div class="grid grid-cols-2 gap-2">
-            {yesRsvps.map((rsvp) => (
-              <div key={rsvp.id} class="bg-green-50 px-3 py-2 rounded">
-                {rsvp.user_name || "Utilisateur anonyme"}
-              </div>
-            ))}
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-green-700 flex items-center">
+              <span class="mr-2">✅</span>
+              Confirmés
+            </h3>
+            <span class="badge-success">{yesRsvps.length}</span>
           </div>
+          {yesRsvps.length > 0 ? (
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {yesRsvps.map((rsvp) => (
+                <div key={rsvp.id} class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 px-3 py-2 rounded-lg text-sm font-medium text-green-800">
+                  {rsvp.user_name || "Utilisateur anonyme"}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p class="text-gray-500 italic text-sm">Aucun participant confirmé</p>
+          )}
         </div>
 
         {maybeRsvps.length > 0 && (
           <div>
-            <h3 class="font-semibold text-yellow-700 mb-2">
-              🤔 Peut-être ({maybeRsvps.length})
-            </h3>
-            <div class="grid grid-cols-2 gap-2">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-semibold text-amber-700 flex items-center">
+                <span class="mr-2">🤔</span>
+                Peut-être
+              </h3>
+              <span class="badge-warning">{maybeRsvps.length}</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {maybeRsvps.map((rsvp) => (
                 <div
                   key={rsvp.id}
-                  class="bg-yellow-50 px-3 py-2 rounded"
+                  class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 px-3 py-2 rounded-lg text-sm font-medium text-amber-800"
                 >
                   {rsvp.user_name || "Utilisateur anonyme"}
                 </div>

@@ -29,54 +29,111 @@
 @layer components {
   .btn {
     @apply px-4 py-3 rounded-lg transition-all duration-200 font-medium
-      touch-manipulation;
+      touch-manipulation shadow-soft hover:shadow-soft-lg;
     @apply active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-500
       focus:ring-offset-2;
+    @apply relative overflow-hidden;
   }
 
   .btn-primary {
-    @apply btn bg-green-600 text-white hover:bg-green-700 active:bg-green-800;
+    @apply btn bg-gradient-to-r from-green-600 to-green-700 text-white 
+      hover:from-green-700 hover:to-green-800 active:from-green-800 active:to-green-900;
+    @apply shadow-garden hover:shadow-garden-lg;
   }
 
   .btn-secondary {
-    @apply btn bg-green-100 text-green-800 hover:bg-green-200
-      active:bg-green-300;
+    @apply btn bg-gradient-to-r from-green-50 to-green-100 text-green-800 
+      hover:from-green-100 hover:to-green-200 active:from-green-200 active:to-green-300;
+    @apply border border-green-200 hover:border-green-300;
   }
 
   .btn-accent {
-    @apply btn bg-yellow-500 text-white hover:bg-yellow-600
-      active:bg-yellow-700;
+    @apply btn bg-gradient-to-r from-accent-500 to-accent-600 text-white 
+      hover:from-accent-600 hover:to-accent-700 active:from-accent-700 active:to-accent-800;
+    @apply shadow-accent hover:shadow-accent;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-green-700 hover:bg-green-50 active:bg-green-100;
+    @apply border border-green-200 hover:border-green-300;
   }
 
   .card {
-    @apply bg-white rounded-lg shadow-md p-4 sm:p-6;
-    @apply transform transition-transform duration-200 hover:scale-[1.02];
+    @apply bg-white rounded-xl shadow-soft p-4 sm:p-6;
+    @apply transform transition-all duration-200 hover:scale-[1.02] hover:shadow-soft-lg;
+    @apply border border-gray-100 hover:border-green-200;
+    @apply relative overflow-hidden;
+  }
+
+  .card-elevated {
+    @apply card shadow-garden hover:shadow-garden-lg;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer hover:shadow-lg;
+    @apply hover:translate-y-[-2px] active:translate-y-[0px];
   }
 
   .mobile-nav {
-    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2;
+    @apply fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-200 p-2;
     @apply flex justify-around items-center z-50 safe-area-inset-bottom;
+    @apply shadow-soft-lg;
   }
 
   .mobile-nav-item {
     @apply flex flex-col items-center justify-center p-2 rounded-lg;
     @apply text-xs text-gray-600 hover:text-green-600 hover:bg-green-50;
-    @apply transition-colors duration-200 min-w-[60px];
+    @apply transition-all duration-200 min-w-[60px];
+    @apply relative overflow-hidden;
   }
 
   .mobile-nav-item.active {
     @apply text-green-600 bg-green-50;
+    @apply shadow-inner-soft;
+  }
+
+  .mobile-nav-item::before {
+    content: "";
+    @apply absolute top-0 left-0 right-0 h-[2px] bg-green-600;
+    @apply transform scale-x-0 transition-transform duration-200;
+  }
+
+  .mobile-nav-item.active::before {
+    @apply scale-x-100;
   }
 
   /* Enhanced form controls for mobile */
   .form-input {
     @apply w-full px-4 py-3 border border-gray-300 rounded-lg;
     @apply focus:ring-2 focus:ring-green-500 focus:border-green-500;
-    @apply text-base; /* Prevents zoom on iOS */
+    @apply text-base shadow-inner-soft; /* Prevents zoom on iOS */
+    @apply transition-all duration-200 hover:border-green-400;
+    @apply placeholder:text-gray-400;
   }
 
   .form-textarea {
     @apply form-input resize-y min-h-[120px];
+  }
+
+  .form-select {
+    @apply form-input cursor-pointer;
+    @apply bg-white hover:bg-gray-50;
+  }
+
+  .form-label {
+    @apply text-sm font-medium text-gray-700 mb-2 block;
+  }
+
+  .form-group {
+    @apply mb-4;
+  }
+
+  .form-error {
+    @apply text-red-600 text-sm mt-1;
+  }
+
+  .form-success {
+    @apply text-green-600 text-sm mt-1;
   }
 
   /* Loading states */
@@ -137,6 +194,63 @@
 
   .mobile-grid-dense {
     @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-green-100 text-green-800;
+  }
+
+  .badge-secondary {
+    @apply badge bg-gray-100 text-gray-800;
+  }
+
+  .badge-accent {
+    @apply badge bg-accent-100 text-accent-800;
+  }
+
+  .badge-success {
+    @apply badge bg-emerald-100 text-emerald-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-100 text-amber-800;
+  }
+
+  .badge-error {
+    @apply badge bg-red-100 text-red-800;
+  }
+
+  /* Metric cards */
+  .metric-card {
+    @apply card text-center p-4;
+    @apply bg-gradient-to-br from-white to-gray-50;
+  }
+
+  .metric-value {
+    @apply text-3xl font-bold text-green-700;
+  }
+
+  .metric-label {
+    @apply text-sm text-gray-600 mt-1;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-sm border border-white/20;
+  }
+
+  /* Gradient backgrounds */
+  .bg-garden-gradient {
+    @apply bg-gradient-to-br from-green-50 to-green-100;
+  }
+
+  .bg-accent-gradient {
+    @apply bg-gradient-to-br from-accent-50 to-accent-100;
   }
 }
 

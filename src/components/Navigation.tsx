@@ -140,11 +140,11 @@ export default function Navigation(
               isActive(item.href)
                 ? item.highlight ? "btn-accent" : "btn-primary"
                 : item.highlight
-                ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 active:bg-yellow-300"
+                ? "btn-accent bg-opacity-20 hover:bg-opacity-30 active:bg-opacity-40"
                 : "btn-secondary"
             }`}
           >
-            <span class="mr-1 md:mr-2">{item.icon}</span>
+            <span class="mr-1 md:mr-2 text-lg">{item.icon}</span>
             <span class="hidden sm:inline">{item.label}</span>
           </a>
         ))}

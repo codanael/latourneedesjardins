@@ -78,12 +78,16 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
 
   if (!event) {
     return (
-      <div class="min-h-screen bg-green-50 flex items-center justify-center">
-        <div class="text-center">
+      <div class="min-h-screen bg-garden-gradient flex items-center justify-center">
+        <div class="card-elevated text-center max-w-md mx-4 animate-scale-in">
+          <div class="text-6xl mb-4">😕</div>
           <h1 class="text-2xl font-bold text-red-600 mb-4">
             Événement non trouvé
           </h1>
-          <a href="/events" class="text-green-600 hover:text-green-800">
+          <p class="text-gray-600 mb-6">
+            L'événement que vous recherchez n'existe pas ou a été supprimé.
+          </p>
+          <a href="/events" class="btn btn-primary inline-flex">
             ← Retour aux événements
           </a>
         </div>
@@ -92,91 +96,120 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
   }
 
   return (
-    <div class="min-h-screen bg-green-50">
+    <div class="min-h-screen bg-garden-gradient">
       <div class="container mx-auto px-4 py-8">
         {/* Navigation */}
         <nav class="mb-8">
           <div class="flex flex-wrap justify-center gap-4">
             <a
               href="/"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
+              class="btn btn-secondary"
             >
+              <span class="mr-1">🏠</span>
               Accueil
             </a>
             <a
               href="/events"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
+              class="btn btn-secondary"
             >
+              <span class="mr-1">🌻</span>
               ← Tous les événements
             </a>
             <a
               href="/calendar"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
+              class="btn btn-secondary"
             >
+              <span class="mr-1">📅</span>
               Calendrier
             </a>
           </div>
         </nav>
 
         {/* Event Header */}
-        <header class="bg-white rounded-lg shadow-md p-8 mb-8">
-          <h1 class="text-3xl font-bold text-green-800 mb-4">
-            {event.title}
-          </h1>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <h3 class="text-lg font-semibold text-gray-800 mb-2">
-                Détails de l'événement
-              </h3>
-              <p class="text-gray-600 mb-2">
-                📅 {new Date(event.date).toLocaleDateString("fr-FR")} à{" "}
-                {event.time}
-              </p>
-              <p class="text-gray-600 mb-2">
-                📍 {event.location}
-              </p>
-              <p class="text-gray-600 mb-2">
-                🌱 Hôte: {event.host_name}
-              </p>
+        <header class="card-elevated mb-8 animate-fade-in">
+          <div class="flex flex-col md:flex-row md:items-start md:justify-between mb-6">
+            <div class="flex-1">
+              <h1 class="text-3xl font-bold text-green-800 mb-2">
+                {event.title}
+              </h1>
               {event.theme && (
-                <p class="text-gray-600 mb-2">
-                  🎨 Thème: {event.theme}
-                </p>
-              )}
-              {event.max_attendees && (
-                <p class="text-gray-600">
-                  👥 Places disponibles: {event.max_attendees}
-                </p>
+                <span class="badge-accent text-lg font-semibold px-4 py-2 rounded-xl inline-block">
+                  {event.theme}
+                </span>
               )}
             </div>
-
-            <div class="flex flex-col justify-center">
+            <div class="mt-4 md:mt-0">
               <a
                 href={`/events/${event.id}/edit`}
-                class="block w-full bg-orange-500 text-white text-center px-6 py-3 rounded-lg hover:bg-orange-600 transition-colors"
+                class="btn btn-accent inline-flex"
               >
-                ✏️ Modifier l'événement
+                <span class="mr-1">✏️</span>
+                Modifier l'événement
               </a>
             </div>
           </div>
 
-          <div class="border-t pt-6">
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">
-              Description
-            </h3>
-            <p class="text-gray-700 mb-4">
-              {event.description}
-            </p>
-
-            {event.special_instructions && (
-              <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                <h4 class="font-semibold text-yellow-800 mb-1">
-                  Instructions spéciales
-                </h4>
-                <p class="text-yellow-700">{event.special_instructions}</p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                Détails de l'événement
+              </h3>
+              <div class="space-y-3">
+                <div class="flex items-center bg-gray-50 p-3 rounded-lg">
+                  <span class="mr-3 text-lg text-green-600">📅</span>
+                  <div>
+                    <div class="font-medium text-gray-800">
+                      {new Date(event.date).toLocaleDateString("fr-FR")}
+                    </div>
+                    <div class="text-sm text-gray-600">à {event.time}</div>
+                  </div>
+                </div>
+                <div class="flex items-start bg-gray-50 p-3 rounded-lg">
+                  <span class="mr-3 mt-0.5 text-lg text-green-600">📍</span>
+                  <div>
+                    <div class="font-medium text-gray-800">Lieu</div>
+                    <div class="text-sm text-gray-600">{event.location}</div>
+                  </div>
+                </div>
+                <div class="flex items-center bg-gray-50 p-3 rounded-lg">
+                  <span class="mr-3 text-lg text-green-600">🌱</span>
+                  <div>
+                    <div class="font-medium text-gray-800">Hôte</div>
+                    <div class="text-sm text-gray-600">{event.host_name}</div>
+                  </div>
+                </div>
+                {event.max_attendees && (
+                  <div class="flex items-center bg-gray-50 p-3 rounded-lg">
+                    <span class="mr-3 text-lg text-green-600">👥</span>
+                    <div>
+                      <div class="font-medium text-gray-800">Places disponibles</div>
+                      <div class="text-sm text-gray-600">{event.max_attendees} participants max</div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                Description
+              </h3>
+              <div class="bg-garden-gradient p-4 rounded-lg">
+                <p class="text-gray-700 leading-relaxed">
+                  {event.description}
+                </p>
+              </div>
+
+              {event.special_instructions && (
+                <div class="mt-4 bg-gradient-to-r from-amber-50 to-yellow-100 border border-amber-200 rounded-lg p-4">
+                  <h4 class="font-semibold text-amber-800 mb-2 flex items-center">
+                    <span class="mr-2">💡</span>
+                    Instructions spéciales
+                  </h4>
+                  <p class="text-amber-700">{event.special_instructions}</p>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
@@ -184,7 +217,10 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
           {/* Left Column */}
           <div class="space-y-8">
             {/* RSVP Section */}
-            <section id="rsvp" class="bg-white rounded-lg shadow-md p-6">
+            <section id="rsvp" class="card-elevated animate-slide-up">
+              <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                Votre participation
+              </h2>
               <CachedRSVPButton
                 eventId={event.id}
                 currentResponse={currentUserRsvp?.response}
@@ -192,14 +228,16 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
             </section>
 
             {/* Participants List */}
-            <ParticipantsList
-              eventId={event.id}
-              initialParticipants={rsvps}
-            />
+            <div class="animate-slide-up" style="animation-delay: 0.1s">
+              <ParticipantsList
+                eventId={event.id}
+                initialParticipants={rsvps}
+              />
+            </div>
           </div>
 
           {/* Right Column - Potluck List */}
-          <div>
+          <div class="animate-slide-up" style="animation-delay: 0.2s">
             <CachedPotluckManager
               eventId={event.id}
               currentUserId={currentUser?.id}
@@ -209,7 +247,7 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
         </div>
 
         {/* Weather Section */}
-        <section class="mt-8">
+        <section class="mt-8 animate-slide-up" style="animation-delay: 0.3s">
           <Weather
             weatherData={weatherData}
             location={event.location}

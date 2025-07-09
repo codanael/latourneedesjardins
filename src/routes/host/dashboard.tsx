@@ -84,17 +84,19 @@ export default function HostDashboard({ data }: PageProps<DashboardData>) {
       <div class="space-y-6">
         {events.length === 0
           ? (
-            <div class="bg-white rounded-lg shadow-md p-8 text-center">
+            <div class="card-elevated text-center animate-fade-in">
+              <div class="text-6xl mb-4">🌱</div>
               <h2 class="text-2xl font-semibold text-gray-800 mb-4">
                 Aucun événement
               </h2>
-              <p class="text-gray-600 mb-6">
-                Vous n'avez pas encore créé d'événement.
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                Vous n'avez pas encore créé d'événement. Commencez par partager votre jardin avec la communauté !
               </p>
               <a
                 href="/host"
-                class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                class="btn btn-primary inline-flex"
               >
+                <span class="mr-2">🌻</span>
                 Créer votre premier événement
               </a>
             </div>
@@ -118,27 +120,36 @@ function EventCard({ event }: { event: EventWithStats }) {
   const isPast = new Date(event.date) < new Date();
 
   return (
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
+    <div class="card-elevated animate-slide-up">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
         <div class="flex-1">
-          <h3 class="text-xl font-semibold text-green-800 mb-2">
-            {event.title}
-          </h3>
-          <div class="flex flex-wrap gap-4 text-sm text-gray-600">
-            <span class="flex items-center">
-              📅 {new Date(event.date).toLocaleDateString("fr-FR")} à{" "}
+          <div class="flex items-start justify-between mb-3">
+            <h3 class="text-xl font-bold text-green-800 flex-1">
+              {event.title}
+            </h3>
+            {event.theme && (
+              <span class="badge-accent text-sm font-semibold px-3 py-1.5 rounded-xl flex-shrink-0 ml-2">
+                {event.theme}
+              </span>
+            )}
+          </div>
+          <div class="flex flex-wrap gap-3 text-sm text-gray-600">
+            <span class="flex items-center bg-gray-50 px-3 py-1 rounded-lg">
+              <span class="mr-2 text-green-600">📅</span>
+              {new Date(event.date).toLocaleDateString("fr-FR")} à{" "}
               {event.time}
             </span>
-            <span class="flex items-center">
-              📍 {event.location}
+            <span class="flex items-center bg-gray-50 px-3 py-1 rounded-lg">
+              <span class="mr-2 text-green-600">📍</span>
+              {event.location}
             </span>
             {isPast && (
-              <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+              <span class="badge-secondary">
                 Événement passé
               </span>
             )}
             {isUpcoming && (
-              <span class="bg-green-100 text-green-600 px-2 py-1 rounded text-xs">
+              <span class="badge-success">
                 À venir
               </span>
             )}
@@ -148,67 +159,76 @@ function EventCard({ event }: { event: EventWithStats }) {
         <div class="flex gap-2 mt-4 lg:mt-0">
           <a
             href={`/events/${event.id}`}
-            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
+            class="btn btn-primary text-sm"
           >
+            <span class="mr-1">👁️</span>
             Voir l'événement
           </a>
           <a
             href={`/events/${event.id}/edit`}
-            class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors text-sm"
+            class="btn btn-accent text-sm"
           >
+            <span class="mr-1">✏️</span>
             Modifier
           </a>
         </div>
       </div>
 
       {/* Statistics */}
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div class="bg-green-50 p-4 rounded-lg">
-          <div class="text-2xl font-bold text-green-600">{yesCount}</div>
-          <div class="text-sm text-green-700">Participants confirmés</div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="metric-card bg-gradient-to-br from-green-50 to-emerald-100 border border-green-200 hover:shadow-garden transition-all duration-200">
+          <div class="metric-value text-green-700">{yesCount}</div>
+          <div class="metric-label text-green-600">Participants confirmés</div>
+          <div class="text-xs text-green-500 mt-1">✓ Présents</div>
         </div>
 
-        <div class="bg-yellow-50 p-4 rounded-lg">
-          <div class="text-2xl font-bold text-yellow-600">{maybeCount}</div>
-          <div class="text-sm text-yellow-700">Peut-être</div>
+        <div class="metric-card bg-gradient-to-br from-amber-50 to-yellow-100 border border-amber-200 hover:shadow-accent transition-all duration-200">
+          <div class="metric-value text-amber-700">{maybeCount}</div>
+          <div class="metric-label text-amber-600">Peut-être</div>
+          <div class="text-xs text-amber-500 mt-1">? Incertains</div>
         </div>
 
-        <div class="bg-red-50 p-4 rounded-lg">
-          <div class="text-2xl font-bold text-red-600">{noCount}</div>
-          <div class="text-sm text-red-700">Absents</div>
+        <div class="metric-card bg-gradient-to-br from-red-50 to-rose-100 border border-red-200 hover:shadow-soft transition-all duration-200">
+          <div class="metric-value text-red-700">{noCount}</div>
+          <div class="metric-label text-red-600">Absents</div>
+          <div class="text-xs text-red-500 mt-1">✗ Ne viennent pas</div>
         </div>
       </div>
 
       {/* Additional Stats */}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="bg-blue-50 p-4 rounded-lg">
-          <div class="text-2xl font-bold text-blue-600">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="metric-card bg-gradient-to-br from-blue-50 to-sky-100 border border-blue-200 hover:shadow-soft transition-all duration-200">
+          <div class="metric-value text-blue-700">
             {event.potluck_count}
           </div>
-          <div class="text-sm text-blue-700">Contributions potluck</div>
+          <div class="metric-label text-blue-600">Contributions potluck</div>
+          <div class="text-xs text-blue-500 mt-1">🍽️ Plats apportés</div>
         </div>
 
-        <div class="bg-purple-50 p-4 rounded-lg">
-          <div class="text-2xl font-bold text-purple-600">
+        <div class="metric-card bg-gradient-to-br from-purple-50 to-violet-100 border border-purple-200 hover:shadow-soft transition-all duration-200">
+          <div class="metric-value text-purple-700">
             {event.total_rsvps}
           </div>
-          <div class="text-sm text-purple-700">Réponses totales</div>
+          <div class="metric-label text-purple-600">Réponses totales</div>
+          <div class="text-xs text-purple-500 mt-1">📊 Total des réponses</div>
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div class="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+      <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
         <a
           href={`/host/attendees/${event.id}`}
-          class="bg-green-100 text-green-800 px-3 py-1 rounded text-sm hover:bg-green-200 transition-colors"
+          class="btn btn-ghost text-sm"
         >
-          👥 Voir les participants
+          <span class="mr-1">👥</span>
+          Voir les participants
         </a>
         <a
           href={`/events/${event.id}/potluck`}
-          class="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200 transition-colors"
+          class="btn btn-ghost text-sm"
         >
-          🍽️ Gérer le potluck
+          <span class="mr-1">🍽️</span>
+          Gérer le potluck
         </a>
       </div>
     </div>

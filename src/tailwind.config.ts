@@ -19,6 +19,18 @@ export default {
           800: "#166534",
           900: "#14532d",
         },
+        accent: {
+          50: "#fffbeb",
+          100: "#fef3c7",
+          200: "#fde68a",
+          300: "#fcd34d",
+          400: "#fbbf24",
+          500: "#f59e0b",
+          600: "#d97706",
+          700: "#b45309",
+          800: "#92400e",
+          900: "#78350f",
+        },
       },
       fontFamily: {
         sans: [
@@ -48,6 +60,8 @@ export default {
         "fade-in": "fadeIn 0.2s ease-in-out",
         "slide-up": "slideUp 0.3s ease-out",
         "bounce-gentle": "bounceGentle 0.6s ease-in-out",
+        "scale-in": "scaleIn 0.2s ease-out",
+        "shimmer": "shimmer 2s linear infinite",
       },
       keyframes: {
         fadeIn: {
@@ -64,6 +78,25 @@ export default {
           "70%": { transform: "translate3d(0,-2px,0)" },
           "90%": { transform: "translate3d(0,-1px,0)" },
         },
+        scaleIn: {
+          "0%": { transform: "scale(0.9)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200px 0" },
+          "100%": { backgroundPosition: "calc(200px + 100%) 0" },
+        },
+      },
+      boxShadow: {
+        "soft": "0 2px 8px -2px rgba(0, 0, 0, 0.08)",
+        "soft-lg": "0 4px 16px -4px rgba(0, 0, 0, 0.12)",
+        "garden": "0 4px 16px -4px rgba(21, 128, 61, 0.15)",
+        "garden-lg": "0 8px 32px -8px rgba(21, 128, 61, 0.2)",
+        "accent": "0 4px 16px -4px rgba(245, 158, 11, 0.15)",
+        "inner-soft": "inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)",
+      },
+      backdropBlur: {
+        "xs": "2px",
       },
     },
   },

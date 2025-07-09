@@ -57,18 +57,18 @@ export default function Home({ data }: PageProps<HomeData>) {
       {/* Pending Approval Message */}
       {!isApproved && user?.host_status === "pending" && (
         <section class="mb-6 sm:mb-8">
-          <div class="card bg-yellow-50 border-yellow-200">
+          <div class="card-elevated bg-gradient-to-br from-amber-50 to-yellow-100 border-amber-200 animate-scale-in">
             <div class="text-center">
-              <div class="text-4xl mb-4">⏳</div>
-              <h2 class="text-xl sm:text-2xl font-semibold text-yellow-800 mb-4">
+              <div class="text-4xl mb-4 animate-bounce-gentle">⏳</div>
+              <h2 class="text-xl sm:text-2xl font-semibold text-amber-800 mb-4">
                 Compte en attente d'approbation
               </h2>
-              <p class="text-yellow-700 mb-4">
+              <p class="text-amber-700 mb-4 leading-relaxed">
                 Votre compte a été créé avec succès ! Un administrateur doit
                 approuver votre accès avant que vous puissiez voir les
                 événements et participer à la communauté.
               </p>
-              <p class="text-yellow-600 text-sm">
+              <p class="text-amber-600 text-sm">
                 Vous recevrez une notification par email une fois votre compte
                 approuvé.
               </p>
@@ -87,27 +87,35 @@ export default function Home({ data }: PageProps<HomeData>) {
           {events.length > 0
             ? (
               <div class="mobile-grid">
-                {events.map((event) => (
+                {events.map((event, index) => (
                   <div
                     key={event.id}
-                    class="card touch-manipulation"
+                    class="card-interactive touch-manipulation animate-slide-up"
+                    style={`animation-delay: ${index * 0.1}s`}
                   >
-                    <h3 class="text-lg sm:text-xl font-semibold text-green-800 mb-3">
-                      {event.title}
-                    </h3>
+                    <div class="flex items-start justify-between mb-3">
+                      <h3 class="text-lg sm:text-xl font-semibold text-green-800 flex-1">
+                        {event.title}
+                      </h3>
+                      {event.theme && (
+                        <span class="badge-accent text-xs ml-2 shrink-0">
+                          {event.theme}
+                        </span>
+                      )}
+                    </div>
                     <div class="space-y-2 mb-4">
-                      <p class="text-gray-600 text-sm sm:text-base flex items-center">
-                        <span class="mr-2">📅</span>
+                      <p class="text-gray-600 text-sm sm:text-base flex items-center bg-gray-50 px-3 py-2 rounded-lg">
+                        <span class="mr-2 text-green-600">📅</span>
                         <span>
                           {new Date(event.date).toLocaleDateString("fr-FR")}
                         </span>
                       </p>
-                      <p class="text-gray-600 text-sm sm:text-base flex items-start">
-                        <span class="mr-2 mt-0.5">📍</span>
+                      <p class="text-gray-600 text-sm sm:text-base flex items-start bg-gray-50 px-3 py-2 rounded-lg">
+                        <span class="mr-2 mt-0.5 text-green-600">📍</span>
                         <span class="flex-1 break-words">{event.location}</span>
                       </p>
-                      <p class="text-gray-600 text-sm sm:text-base flex items-center">
-                        <span class="mr-2">🌱</span>
+                      <p class="text-gray-600 text-sm sm:text-base flex items-center bg-gray-50 px-3 py-2 rounded-lg">
+                        <span class="mr-2 text-green-600">🌱</span>
                         <span>Hôte: {event.host_name}</span>
                       </p>
                     </div>
@@ -115,6 +123,7 @@ export default function Home({ data }: PageProps<HomeData>) {
                       href={`/events/${event.id}`}
                       class="btn btn-primary w-full justify-center inline-flex"
                     >
+                      <span class="mr-1">👁️</span>
                       Voir détails
                     </a>
                   </div>
@@ -122,15 +131,16 @@ export default function Home({ data }: PageProps<HomeData>) {
               </div>
             )
             : (
-              <div class="card text-center">
-                <div class="text-4xl mb-4">🌱</div>
-                <p class="text-gray-600 mb-4">
+              <div class="card-elevated text-center animate-fade-in">
+                <div class="text-6xl mb-4">🌱</div>
+                <p class="text-gray-600 mb-4 leading-relaxed">
                   Aucun événement prévu pour le moment
                 </p>
                 <a
                   href="/host"
                   class="btn btn-primary inline-flex"
                 >
+                  <span class="mr-2">🌻</span>
                   Organiser un événement
                 </a>
               </div>
