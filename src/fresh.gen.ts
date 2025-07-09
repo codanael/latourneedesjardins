@@ -42,6 +42,7 @@ import * as $CachedPotluckManager from "./islands/CachedPotluckManager.tsx";
 import * as $CachedRSVPButton from "./islands/CachedRSVPButton.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $DeleteEventButton from "./islands/DeleteEventButton.tsx";
+import * as $FilteredEventsList from "./islands/FilteredEventsList.tsx";
 import * as $HostFormValidator from "./islands/HostFormValidator.tsx";
 import * as $ParticipantsList from "./islands/ParticipantsList.tsx";
 import type { Manifest } from "$fresh/server.ts";
@@ -91,6 +92,7 @@ const manifest = {
     "./islands/CachedRSVPButton.tsx": $CachedRSVPButton,
     "./islands/Counter.tsx": $Counter,
     "./islands/DeleteEventButton.tsx": $DeleteEventButton,
+    "./islands/FilteredEventsList.tsx": $FilteredEventsList,
     "./islands/HostFormValidator.tsx": $HostFormValidator,
     "./islands/ParticipantsList.tsx": $ParticipantsList,
   },

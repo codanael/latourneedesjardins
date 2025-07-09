@@ -15,6 +15,12 @@ interface NavItem {
   hostOnly?: boolean;
 }
 
+interface AdminDropdownItem {
+  href: string;
+  label: string;
+  icon: string;
+}
+
 export default function Navigation(
   { currentPath = "/", user, isMobile = false }: NavigationProps,
 ) {
@@ -22,6 +28,30 @@ export default function Navigation(
   const isAdmin = user?.role === "admin";
   const isApproved = user?.host_status === "approved" || isAdmin;
   const isPending = user?.host_status === "pending";
+
+  // Admin dropdown items
+  const adminDropdownItems: AdminDropdownItem[] = [
+    {
+      href: "/admin/events",
+      label: "Gestion des événements",
+      icon: "📊",
+    },
+    {
+      href: "/admin/security",
+      label: "Sécurité",
+      icon: "🔒",
+    },
+    {
+      href: "/admin/hosts",
+      label: "Gestion des hôtes",
+      icon: "👥",
+    },
+  ];
+
+  // Check if current path is in admin section
+  const isInAdminSection = adminDropdownItems.some((item) =>
+    currentPath.startsWith(item.href)
+  );
 
   // Define consistent mobile navigation items (calendar removed for better mobile UX)
   const mobileNavItems: NavItem[] = user
@@ -39,6 +69,16 @@ export default function Navigation(
             label: "Tableau",
             icon: "📊",
             hostOnly: true,
+          },
+        ]
+        : []),
+      ...(isAdmin
+        ? [
+          {
+            href: "/admin/events",
+            label: "Admin",
+            icon: "⚙️",
+            adminOnly: true,
           },
         ]
         : []),
@@ -94,28 +134,6 @@ export default function Navigation(
           },
         ]
         : []),
-      ...(isAdmin
-        ? [
-          {
-            href: "/admin/events",
-            label: "Gestion des événements",
-            icon: "📊",
-            adminOnly: true,
-          },
-          {
-            href: "/admin/security",
-            label: "Sécurité",
-            icon: "🔒",
-            adminOnly: true,
-          },
-          {
-            href: "/admin/hosts",
-            label: "Gestion des hôtes",
-            icon: "👥",
-            adminOnly: true,
-          },
-        ]
-        : []),
       ...(isApproved
         ? [
           {
@@ -158,7 +176,7 @@ export default function Navigation(
     return false;
   };
 
-  // Mobile bottom navigation
+  // Mobile bottom navigation with improved touch targets
   if (isMobile) {
     return (
       <nav class="mobile-nav">
@@ -168,19 +186,27 @@ export default function Navigation(
             href={item.href}
             class={`mobile-nav-item ${isActive(item.href) ? "active" : ""} ${
               item.highlight ? "highlight" : ""
-            }`}
+            } ${item.href === "#" ? "disabled" : ""}`}
+            {...(item.href === "#" ? { onclick: "return false;" } : {})}
           >
-            <span class="text-lg mb-1">{item.icon}</span>
+            <span class="text-lg mb-1 transition-transform duration-200 hover:scale-110">
+              {item.icon}
+            </span>
             <span class="text-xs leading-tight font-medium">
               {item.label}
             </span>
+            {/* Active indicator */}
+            {isActive(item.href) && (
+              <span class="absolute -top-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full">
+              </span>
+            )}
           </a>
         ))}
       </nav>
     );
   }
 
-  // Desktop/tablet navigation
+  // Desktop/tablet navigation with admin dropdown
   return (
     <nav class="mb-8">
       <div class="flex flex-wrap justify-center gap-2 md:gap-4">
@@ -200,6 +226,42 @@ export default function Navigation(
             <span class="hidden sm:inline">{item.label}</span>
           </a>
         ))}
+
+        {/* Admin dropdown menu */}
+        {isAdmin && (
+          <div class="relative group">
+            <button
+              class={`btn touch-manipulation ${
+                isInAdminSection ? "btn-primary" : "btn-secondary"
+              }`}
+              type="button"
+            >
+              <span class="mr-1 md:mr-2 text-lg">⚙️</span>
+              <span class="hidden sm:inline">Administration</span>
+              <span class="ml-1 text-xs">▼</span>
+            </button>
+
+            {/* Dropdown menu */}
+            <div class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div class="py-1">
+                {adminDropdownItems.map((adminItem) => (
+                  <a
+                    key={adminItem.href}
+                    href={adminItem.href}
+                    class={`flex items-center px-4 py-2 text-sm hover:bg-gray-100 ${
+                      isActive(adminItem.href)
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-gray-700"
+                    }`}
+                  >
+                    <span class="mr-3 text-base">{adminItem.icon}</span>
+                    {adminItem.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

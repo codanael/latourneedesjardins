@@ -35,6 +35,11 @@ export default function EventCard(
     });
   };
 
+  const truncateAddress = (address: string, maxLength = 80) => {
+    if (address.length <= maxLength) return address;
+    return address.substring(0, maxLength) + "...";
+  };
+
   if (variant === "compact") {
     return (
       <div
@@ -70,7 +75,9 @@ export default function EventCard(
         <div class="space-y-2 mb-4 text-sm text-gray-600">
           <p class="flex items-start">
             <span class="mr-2 mt-0.5 flex-shrink-0 text-green-600">📍</span>
-            <span class="break-words leading-tight">{event.location}</span>
+            <span class="break-words leading-tight" title={event.location}>
+              {truncateAddress(event.location, 50)}
+            </span>
           </p>
           <p class="flex items-center">
             <span class="mr-2 flex-shrink-0 text-green-600">🌱</span>
@@ -152,7 +159,9 @@ export default function EventCard(
               <span class="mr-3 mt-0.5 flex-shrink-0 text-lg">📍</span>
               <div class="flex-1 break-words leading-tight">
                 <div class="font-medium text-gray-800">Lieu</div>
-                <div class="text-sm">{event.location}</div>
+                <div class="text-sm" title={event.location}>
+                  {truncateAddress(event.location, 80)}
+                </div>
               </div>
             </div>
 

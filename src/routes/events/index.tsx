@@ -9,7 +9,7 @@ import {
   getAuthenticatedUser,
 } from "../../utils/session.ts";
 import MobileLayout from "../../components/MobileLayout.tsx";
-import EventCard from "../../components/EventCard.tsx";
+import FilteredEventsList from "../../islands/FilteredEventsList.tsx";
 
 interface EventWithStats extends Event {
   rsvp_count: number;
@@ -61,37 +61,8 @@ export default function EventsPage(
         </p>
       </div>
 
-      {/* Events List */}
-      <section>
-        {events.length > 0
-          ? (
-            <div class="space-y-4 sm:space-y-6">
-              {events.map((event) => (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  variant="detailed"
-                  showRSVPCount
-                />
-              ))}
-            </div>
-          )
-          : (
-            <div class="text-center py-12">
-              <div class="text-6xl mb-4">🌱</div>
-              <p class="text-gray-500 text-lg mb-6">
-                Aucun événement disponible pour le moment
-              </p>
-              <a
-                href="/host"
-                class="btn btn-primary inline-flex items-center"
-              >
-                <span class="mr-2">🌱</span>
-                Organiser le premier événement
-              </a>
-            </div>
-          )}
-      </section>
+      {/* Events List with Search and Filters */}
+      <FilteredEventsList initialEvents={events} />
 
       {/* Quick Actions */}
       <section class="mt-12">
