@@ -30,6 +30,7 @@ export async function handler(req: Request, ctx: FreshContext) {
     "/auth/callback/google",
     "/auth/callback/apple",
     "/auth/logout",
+    "/dev/", // Development tools (only available in dev)
     "/_fresh/",
     "/static/",
     "/favicon.ico",

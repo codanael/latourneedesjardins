@@ -1,7 +1,7 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { getAllUsers, User } from "../../utils/db-operations.ts";
 import { setCookie } from "jsr:@std/http/cookie";
-import { encodeBase64 } from "jsr:@std/encoding/base64";
+import { createSession } from "../../utils/session.ts";
 
 interface MockLoginData {
   users: User[];
@@ -43,24 +43,19 @@ export const handler: Handlers<MockLoginData> = {
           return;
         }
 
-        // Create a mock session
-        const sessionData = {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          host_status: user.host_status,
-          confirmed_at: user.confirmed_at,
-          admin_notes: user.admin_notes,
-        };
-
-        const sessionString = encodeBase64(JSON.stringify(sessionData));
+        // Create a proper session in the database
+        const sessionId = createSession(
+          user.id,
+          "mock", // provider
+          req.headers.get("user-agent") || "Mock Login",
+          req.headers.get("x-forwarded-for") || "127.0.0.1",
+        );
 
         // Set session cookie
         const headers = new Headers();
         setCookie(headers, {
           name: "session",
-          value: sessionString,
+          value: sessionId,
           httpOnly: true,
           secure: false, // Development only
           sameSite: "Lax",

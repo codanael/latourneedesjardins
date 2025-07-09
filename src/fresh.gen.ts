@@ -5,9 +5,11 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
+import * as $admin_events from "./routes/admin/events.tsx";
 import * as $admin_hosts from "./routes/admin/hosts.tsx";
 import * as $admin_security from "./routes/admin/security.tsx";
 import * as $api_events from "./routes/api/events.ts";
+import * as $api_events_id_delete from "./routes/api/events/[id]/delete.ts";
 import * as $api_events_id_details from "./routes/api/events/[id]/details.ts";
 import * as $api_events_id_potluck from "./routes/api/events/[id]/potluck.ts";
 import * as $api_events_id_potluck_itemId_ from "./routes/api/events/[id]/potluck/[itemId].ts";
@@ -25,6 +27,7 @@ import * as $auth_google from "./routes/auth/google.ts";
 import * as $auth_login from "./routes/auth/login.tsx";
 import * as $auth_logout from "./routes/auth/logout.ts";
 import * as $calendar from "./routes/calendar.tsx";
+import * as $dev_mock_login from "./routes/dev/mock-login.tsx";
 import * as $events_id_ from "./routes/events/[id].tsx";
 import * as $events_id_edit from "./routes/events/[id]/edit.tsx";
 import * as $events_index from "./routes/events/index.tsx";
@@ -38,6 +41,7 @@ import * as $AttendeeActions from "./islands/AttendeeActions.tsx";
 import * as $CachedPotluckManager from "./islands/CachedPotluckManager.tsx";
 import * as $CachedRSVPButton from "./islands/CachedRSVPButton.tsx";
 import * as $Counter from "./islands/Counter.tsx";
+import * as $DeleteEventButton from "./islands/DeleteEventButton.tsx";
 import * as $HostFormValidator from "./islands/HostFormValidator.tsx";
 import * as $ParticipantsList from "./islands/ParticipantsList.tsx";
 import type { Manifest } from "$fresh/server.ts";
@@ -47,9 +51,11 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
+    "./routes/admin/events.tsx": $admin_events,
     "./routes/admin/hosts.tsx": $admin_hosts,
     "./routes/admin/security.tsx": $admin_security,
     "./routes/api/events.ts": $api_events,
+    "./routes/api/events/[id]/delete.ts": $api_events_id_delete,
     "./routes/api/events/[id]/details.ts": $api_events_id_details,
     "./routes/api/events/[id]/potluck.ts": $api_events_id_potluck,
     "./routes/api/events/[id]/potluck/[itemId].ts":
@@ -68,6 +74,7 @@ const manifest = {
     "./routes/auth/login.tsx": $auth_login,
     "./routes/auth/logout.ts": $auth_logout,
     "./routes/calendar.tsx": $calendar,
+    "./routes/dev/mock-login.tsx": $dev_mock_login,
     "./routes/events/[id].tsx": $events_id_,
     "./routes/events/[id]/edit.tsx": $events_id_edit,
     "./routes/events/index.tsx": $events_index,
@@ -83,6 +90,7 @@ const manifest = {
     "./islands/CachedPotluckManager.tsx": $CachedPotluckManager,
     "./islands/CachedRSVPButton.tsx": $CachedRSVPButton,
     "./islands/Counter.tsx": $Counter,
+    "./islands/DeleteEventButton.tsx": $DeleteEventButton,
     "./islands/HostFormValidator.tsx": $HostFormValidator,
     "./islands/ParticipantsList.tsx": $ParticipantsList,
   },
