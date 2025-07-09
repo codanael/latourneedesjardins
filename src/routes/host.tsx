@@ -153,57 +153,67 @@ export default function HostPage({ data }: PageProps<FormData>) {
 
   if (data.success) {
     return (
-      <div class="min-h-screen bg-garden-gradient flex items-center justify-center">
-        <div class="card-elevated max-w-md w-full mx-4 animate-scale-in">
-          <div class="text-center">
-            <div class="text-6xl mb-4 animate-bounce-gentle">🎉</div>
-            <h1 class="text-2xl font-bold text-green-800 mb-4">
-              {data.autoApproved
-                ? "Événement créé avec succès !"
-                : "Candidature soumise !"}
-            </h1>
-            <p class="text-gray-600 mb-6 leading-relaxed">
-              {data.autoApproved
-                ? "Votre événement a été créé et approuvé automatiquement ! Il est maintenant visible dans le calendrier et les autres utilisateurs peuvent s'y inscrire."
-                : "Votre candidature d'hôte a été soumise avec succès. Elle sera examinée par notre équipe et vous recevrez une notification une fois approuvée."}
-            </p>
-            <div class="space-y-3">
-              <a
-                href="/"
-                class="btn btn-primary w-full"
-              >
-                Retour à l'accueil
-              </a>
+      <MobileLayout
+        user={user}
+        currentPath="/host"
+        showMobileNav={false}
+      >
+        <div class="flex items-center justify-center min-h-[60vh]">
+          <div class="card-elevated w-full max-w-md animate-scale-in">
+            <div class="text-center">
+              <div class="text-6xl mb-6">🎉</div>
+              <h1 class="text-2xl font-bold text-green-800 mb-4">
+                {data.autoApproved
+                  ? "Événement créé avec succès !"
+                  : "Candidature soumise !"}
+              </h1>
+              <p class="text-gray-600 mb-8 leading-relaxed text-sm">
+                {data.autoApproved
+                  ? "Votre événement a été créé et approuvé automatiquement ! Il est maintenant visible dans le calendrier et les autres utilisateurs peuvent s'y inscrire."
+                  : "Votre candidature d'hôte a été soumise avec succès. Elle sera examinée par notre équipe et vous recevrez une notification une fois approuvée."}
+              </p>
+              <div class="space-y-4">
+                <a
+                  href="/"
+                  class="btn btn-primary w-full inline-flex items-center justify-center"
+                >
+                  <span class="mr-2">🏠</span>
+                  Retour à l'accueil
+                </a>
 
-              {data.autoApproved
-                ? (
-                  <>
+                {data.autoApproved
+                  ? (
+                    <div class="space-y-3">
+                      <a
+                        href="/events"
+                        class="btn btn-secondary w-full inline-flex items-center justify-center"
+                      >
+                        <span class="mr-2">🌻</span>
+                        Voir les événements
+                      </a>
+                      <a
+                        href="/host/dashboard"
+                        class="btn btn-accent w-full inline-flex items-center justify-center"
+                      >
+                        <span class="mr-2">📊</span>
+                        Gérer mes événements
+                      </a>
+                    </div>
+                  )
+                  : (
                     <a
-                      href="/calendar"
-                      class="btn btn-secondary w-full"
+                      href="/events"
+                      class="btn btn-secondary w-full inline-flex items-center justify-center"
                     >
-                      Voir le calendrier
+                      <span class="mr-2">🌻</span>
+                      Voir les autres événements
                     </a>
-                    <a
-                      href="/host/dashboard"
-                      class="btn btn-accent w-full"
-                    >
-                      Gérer mes événements
-                    </a>
-                  </>
-                )
-                : (
-                  <a
-                    href="/events"
-                    class="btn btn-secondary w-full"
-                  >
-                    Voir les autres événements
-                  </a>
-                )}
+                  )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </MobileLayout>
     );
   }
 
