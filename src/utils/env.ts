@@ -5,9 +5,8 @@ export const env = {
   // Application
   DENO_ENV: Deno.env.get("DENO_ENV") || "development",
   PORT: Number(Deno.env.get("PORT")) || 8000,
-  HOSTNAME: Deno.env.get("HOSTNMAE") || "0.0.0.0",
-  APP_NAME: Deno.env.get("APP_NAME") || "La Tournée des Jardins",
-  APP_VERSION: Deno.env.get("APP_VERSION") || "1.0.0",
+  HOSTNAME: Deno.env.get("HOSTNAME") || "0.0.0.0",
+  APP_URL: Deno.env.get("APP_URL") || "http://localhost:8000",
 
   // Weather API
   WEATHER_API_KEY: Deno.env.get("WEATHER_API_KEY") || "",
@@ -15,15 +14,13 @@ export const env = {
     "https://api.openweathermap.org/data/2.5",
 
   // Security
-  JWT_SECRET: Deno.env.get("JWT_SECRET") || "",
   SESSION_SECRET: Deno.env.get("SESSION_SECRET") || "",
 
   // OAuth
   GOOGLE_CLIENT_ID: Deno.env.get("GOOGLE_CLIENT_ID") || "",
   GOOGLE_CLIENT_SECRET: Deno.env.get("GOOGLE_CLIENT_SECRET") || "",
-
-  // CORS
-  CORS_ORIGIN: Deno.env.get("CORS_ORIGIN") || "http://localhost:8000",
+  APPLE_CLIENT_ID: Deno.env.get("APPLE_CLIENT_ID") || "",
+  APPLE_CLIENT_SECRET: Deno.env.get("APPLE_CLIENT_SECRET") || "",
 };
 
 // Validate required environment variables
@@ -48,10 +45,6 @@ export function validateEnv() {
 
   // Production-specific validation
   if (env.DENO_ENV === "production") {
-    if (!env.JWT_SECRET || env.JWT_SECRET.includes("change_in_production")) {
-      errors.push("JWT_SECRET must be set in production");
-    }
-
     if (
       !env.SESSION_SECRET || env.SESSION_SECRET.includes("change_in_production")
     ) {
@@ -85,4 +78,9 @@ export function validateEnv() {
   }
 
   return env;
+}
+
+// Check if Apple OAuth is configured
+export function isAppleOAuthEnabled(): boolean {
+  return !!(env.APPLE_CLIENT_ID && env.APPLE_CLIENT_SECRET);
 }

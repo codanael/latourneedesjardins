@@ -285,12 +285,15 @@ export function validateOAuthConfig(): {
     errors.push("GOOGLE_CLIENT_SECRET is required");
   }
 
-  // Apple OAuth validation
-  if (!Deno.env.get("APPLE_CLIENT_ID")) {
-    errors.push("APPLE_CLIENT_ID is required");
+  // Apple OAuth validation (optional)
+  const hasAppleClientId = Deno.env.get("APPLE_CLIENT_ID");
+  const hasAppleClientSecret = Deno.env.get("APPLE_CLIENT_SECRET");
+
+  if (hasAppleClientId && !hasAppleClientSecret) {
+    errors.push("APPLE_CLIENT_SECRET is required when APPLE_CLIENT_ID is set");
   }
-  if (!Deno.env.get("APPLE_CLIENT_SECRET")) {
-    errors.push("APPLE_CLIENT_SECRET is required");
+  if (hasAppleClientSecret && !hasAppleClientId) {
+    errors.push("APPLE_CLIENT_ID is required when APPLE_CLIENT_SECRET is set");
   }
 
   // General validation
@@ -323,6 +326,7 @@ export function validateOAuthConfig(): {
       errors.push("Default Google client secret must be changed in production");
     }
     if (
+      hasAppleClientSecret &&
       Deno.env.get("APPLE_CLIENT_SECRET") === "your_apple_client_secret_here"
     ) {
       errors.push("Default Apple client secret must be changed in production");
