@@ -4,7 +4,8 @@ import {
   type AuthenticatedUser,
   getAuthenticatedUser,
 } from "../utils/session.ts";
-import Navigation from "../components/Navigation.tsx";
+import MobileLayout from "../components/MobileLayout.tsx";
+import EventCard from "../components/EventCard.tsx";
 
 interface CalendarData {
   events: Event[];
@@ -169,20 +170,16 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
   }
 
   return (
-    <div class="min-h-screen bg-green-50">
-      <div class="container mx-auto px-4 py-8">
-        {/* Header */}
-        <header class="text-center mb-8">
-          <h1 class="text-3xl font-bold text-green-800 mb-2">
-            Calendrier des Événements
-          </h1>
-          <p class="text-green-600">
-            Planifiez vos visites de jardins
-          </p>
-        </header>
-
-        {/* Navigation */}
-        <Navigation currentPath="/calendar" user={user} />
+    <MobileLayout
+      user={user}
+      currentPath="/calendar"
+      title="Calendrier des Événements"
+    >
+      <div class="mb-6">
+        <p class="text-green-600 text-center">
+          Planifiez vos visites de jardins
+        </p>
+      </div>
 
         {/* Date Range Filter */}
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -461,8 +458,7 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
             </p>
           </div>
         </section>
-      </div>
-    </div>
+    </MobileLayout>
   );
 }
 

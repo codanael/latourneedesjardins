@@ -5,9 +5,10 @@ import {
   getAuthenticatedUser,
 } from "../utils/session.ts";
 import { isAutoApprovalEnabled } from "../utils/config.ts";
-import Navigation from "../components/Navigation.tsx";
+import MobileLayout from "../components/MobileLayout.tsx";
 import { sanitizeHtml, sanitizeInput } from "../utils/security.ts";
 import AddressValidator from "../islands/AddressValidator.tsx";
+import HostFormValidator from "../islands/HostFormValidator.tsx";
 
 interface FormData {
   success?: boolean;
@@ -208,22 +209,16 @@ export default function HostPage({ data }: PageProps<FormData>) {
   }
 
   return (
-    <div class="min-h-screen bg-garden-gradient">
-      <div class="container mx-auto px-4 py-8">
-        {/* Header */}
-        <header class="text-center mb-8">
-          <h1 class="text-3xl font-bold text-green-800 mb-2">
-            Devenir Hôte
-          </h1>
-          <p class="text-green-600">
-            Partagez votre jardin avec la communauté
-          </p>
-        </header>
-
-        {/* Navigation */}
-        {user && <Navigation currentPath="/host" user={user} />}
-
-        <div class="max-w-4xl mx-auto">
+    <MobileLayout
+      user={user}
+      currentPath="/host"
+      title="Devenir Hôte"
+    >
+      <div class="mb-6">
+        <p class="text-green-600 text-center">
+          Partagez votre jardin avec la communauté
+        </p>
+      </div>
 
           {/* Form */}
           <section class="card-elevated animate-slide-up">
@@ -403,8 +398,6 @@ export default function HostPage({ data }: PageProps<FormData>) {
               </div>
             </form>
           </section>
-        </div>
-      </div>
-    </div>
+    </MobileLayout>
   );
 }

@@ -23,18 +23,68 @@ export default function Navigation(
   const isApproved = user?.host_status === "approved" || isAdmin;
   const isPending = user?.host_status === "pending";
 
-  const baseNavItems: NavItem[] = isApproved
+  // Define consistent mobile navigation items
+  const mobileNavItems: NavItem[] = user
     ? [
       { href: "/", label: "Accueil", icon: "🏠" },
-      { href: "/events", label: "Événements", icon: "🌻" },
-      { href: "/calendar", label: "Calendrier", icon: "📅" },
+      ...(isApproved
+        ? [
+          { href: "/events", label: "Événements", icon: "🌻" },
+          { href: "/calendar", label: "Calendrier", icon: "📅" },
+        ]
+        : []),
+      ...(isApproved
+        ? [
+          {
+            href: "/host/dashboard",
+            label: "Tableau",
+            icon: "📊",
+            hostOnly: true,
+          },
+        ]
+        : []),
+      ...(isApproved
+        ? [
+          {
+            href: "/host",
+            label: "Nouvel",
+            icon: "🌱",
+            highlight: true,
+          },
+        ]
+        : isPending
+        ? [
+          {
+            href: "#",
+            label: "En attente",
+            icon: "⏳",
+            highlight: false,
+          },
+        ]
+        : [
+          {
+            href: "/host",
+            label: "Devenir Hôte",
+            icon: "🌱",
+            highlight: true,
+          },
+        ]),
     ]
     : [
       { href: "/", label: "Accueil", icon: "🏠" },
+      { href: "/auth/login", label: "Connexion", icon: "🔑" },
     ];
 
-  const authNavItems: NavItem[] = user
+  // Desktop navigation items (more comprehensive)
+  const desktopNavItems: NavItem[] = user
     ? [
+      { href: "/", label: "Accueil", icon: "🏠" },
+      ...(isApproved
+        ? [
+          { href: "/events", label: "Événements", icon: "🌻" },
+          { href: "/calendar", label: "Calendrier", icon: "📅" },
+        ]
+        : []),
       ...(isApproved
         ? [
           {
@@ -91,10 +141,11 @@ export default function Navigation(
       { href: "/auth/logout", label: "Déconnexion", icon: "🚪" },
     ]
     : [
+      { href: "/", label: "Accueil", icon: "🏠" },
       { href: "/auth/login", label: "Connexion", icon: "🔑" },
     ];
 
-  const navItems = [...baseNavItems, ...authNavItems];
+  const navItems = isMobile ? mobileNavItems : desktopNavItems;
 
   const isActive = (href: string) => {
     if (href === "/" && currentPath === "/") return true;
@@ -104,23 +155,19 @@ export default function Navigation(
 
   // Mobile bottom navigation
   if (isMobile) {
-    const mobileItems = navItems.filter((item) =>
-      !item.adminOnly && (!item.hostOnly || user?.host_status === "approved")
-    ).slice(0, 5); // Limit to 5 items for mobile
-
     return (
       <nav class="mobile-nav">
-        {mobileItems.map((item) => (
+        {navItems.map((item) => (
           <a
             key={item.href}
             href={item.href}
-            class={`mobile-nav-item ${isActive(item.href) ? "active" : ""}`}
+            class={`mobile-nav-item ${isActive(item.href) ? "active" : ""} ${
+              item.highlight ? "highlight" : ""
+            }`}
           >
             <span class="text-lg mb-1">{item.icon}</span>
-            <span class="text-xs leading-tight">
-              {item.label.length > 8
-                ? item.label.substring(0, 8) + "..."
-                : item.label}
+            <span class="text-xs leading-tight font-medium">
+              {item.label}
             </span>
           </a>
         ))}

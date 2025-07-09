@@ -3,6 +3,7 @@ import { getAuthenticatedUser, getUserSessions } from "../utils/session.ts";
 import { getEventsByHost } from "../utils/db-operations.ts";
 import type { AuthenticatedUser, Session } from "../utils/session.ts";
 import type { Event } from "../utils/db-operations.ts";
+import MobileLayout from "../components/MobileLayout.tsx";
 
 interface ProfileData {
   user: AuthenticatedUser;
@@ -40,54 +41,20 @@ export default function ProfilePage({ data }: PageProps<ProfileData>) {
   const { user, events, sessions } = data;
 
   return (
-    <div class="min-h-screen bg-green-50">
-      <div class="container mx-auto px-4 py-8">
-        {/* Header */}
-        <header class="mb-8">
-          <h1 class="text-3xl font-bold text-green-800 mb-2">
-            Mon Profil
-          </h1>
-          <p class="text-gray-600">
-            Gérez vos informations personnelles et vos événements
-          </p>
-        </header>
+    <MobileLayout
+      user={user}
+      currentPath="/profile"
+      title="Mon Profil"
+    >
+      <div class="mb-6">
+        <p class="text-gray-600 text-center">
+          Gérez vos informations personnelles et vos événements
+        </p>
+      </div>
 
-        {/* Navigation */}
-        <nav class="mb-8">
-          <div class="flex flex-wrap gap-4">
-            <a
-              href="/"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Accueil
-            </a>
-            <a
-              href="/events"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Événements
-            </a>
-            <a
-              href="/calendar"
-              class="bg-green-100 text-green-800 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors"
-            >
-              Calendrier
-            </a>
-            {user.host_status === "approved" && (
-              <a
-                href="/host/dashboard"
-                class="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors"
-              >
-                Tableau de bord hôte
-              </a>
-            )}
-          </div>
-        </nav>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="space-y-6">
           {/* Profile Information */}
-          <div class="lg:col-span-2">
-            <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+          <section class="card-elevated">
               <h2 class="text-xl font-semibold text-gray-800 mb-4">
                 Informations personnelles
               </h2>
