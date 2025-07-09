@@ -42,9 +42,8 @@
     "sqlite": "https://deno.land/x/sqlite@v3.9.1/mod.ts",
     "tailwindcss": "npm:tailwindcss@3.4.1",
     "tailwindcss/": "npm:/tailwindcss@3.4.1/",
-    "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
-    "$logging/": "https://deno.land/x/fresh_logging@1.1.2/"
-  },
+    "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js"
+    },
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "preact"
