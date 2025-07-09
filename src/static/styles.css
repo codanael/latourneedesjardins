@@ -164,6 +164,20 @@
     .mobile-nav-item span:last-child {
       @apply text-xs leading-tight;
     }
+
+    /* Calendar mobile improvements */
+    .calendar-grid {
+      @apply text-xs;
+    }
+
+    /* Success page mobile improvements */
+    .success-actions {
+      @apply space-y-3;
+    }
+
+    .success-actions .btn {
+      @apply w-full text-center;
+    }
   }
 
   .form-textarea {

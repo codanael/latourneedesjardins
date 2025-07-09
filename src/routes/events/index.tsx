@@ -93,24 +93,42 @@ export default function EventsPage(
           )}
       </section>
 
-      {/* Call to Action */}
+      {/* Quick Actions */}
       <section class="mt-12">
-        <div class="card-elevated text-center">
-          <div class="text-4xl mb-4">🌱</div>
-          <h2 class="text-2xl font-bold text-green-800 mb-4">
-            Envie d'organiser un événement ?
-          </h2>
-          <p class="text-green-700 mb-6">
-            Partagez votre jardin avec la communauté et créez des moments
-            inoubliables
-          </p>
-          <a
-            href="/host"
-            class="btn btn-primary inline-flex items-center"
-          >
-            <span class="mr-2">🌱</span>
-            Devenir Hôte
-          </a>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="card-elevated text-center">
+            <div class="text-4xl mb-4">🌱</div>
+            <h2 class="text-xl font-bold text-green-800 mb-4">
+              Organiser un événement
+            </h2>
+            <p class="text-green-700 mb-6 text-sm">
+              Partagez votre jardin avec la communauté
+            </p>
+            <a
+              href="/host"
+              class="btn btn-primary inline-flex items-center"
+            >
+              <span class="mr-2">🌱</span>
+              Devenir Hôte
+            </a>
+          </div>
+
+          <div class="card-elevated text-center">
+            <div class="text-4xl mb-4">📅</div>
+            <h2 class="text-xl font-bold text-green-800 mb-4">
+              Vue calendrier
+            </h2>
+            <p class="text-green-700 mb-6 text-sm">
+              Visualisez tous les événements par date
+            </p>
+            <a
+              href="/calendar"
+              class="btn btn-secondary inline-flex items-center"
+            >
+              <span class="mr-2">📅</span>
+              Voir le calendrier
+            </a>
+          </div>
         </div>
       </section>
     </MobileLayout>

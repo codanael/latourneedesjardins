@@ -23,14 +23,13 @@ export default function Navigation(
   const isApproved = user?.host_status === "approved" || isAdmin;
   const isPending = user?.host_status === "pending";
 
-  // Define consistent mobile navigation items
+  // Define consistent mobile navigation items (calendar removed for better mobile UX)
   const mobileNavItems: NavItem[] = user
     ? [
       { href: "/", label: "Accueil", icon: "🏠" },
       ...(isApproved
         ? [
           { href: "/events", label: "Événements", icon: "🌻" },
-          { href: "/calendar", label: "Calendrier", icon: "📅" },
         ]
         : []),
       ...(isApproved

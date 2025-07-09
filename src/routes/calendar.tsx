@@ -334,14 +334,20 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
         </div>
       </div>
 
-      {/* Calendar Grid */}
-      <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+      {/* Calendar Grid - Mobile optimized */}
+      <section class="card-elevated mb-8">
+        <div class="block sm:hidden mb-4">
+          <p class="text-sm text-gray-600 text-center">
+            💡 Conseil: Faites défiler horizontalement pour voir tous les jours
+          </p>
+        </div>
+
         {/* Weekday Headers */}
-        <div class="grid grid-cols-7 gap-2 mb-4">
+        <div class="grid grid-cols-7 gap-1 sm:gap-2 mb-4">
           {weekdays.map((day) => (
             <div
               key={day}
-              class="text-center font-semibold text-gray-700 py-2"
+              class="text-center font-semibold text-gray-700 py-2 text-xs sm:text-sm"
             >
               {day}
             </div>
@@ -349,10 +355,20 @@ export default function CalendarPage({ data }: PageProps<CalendarData>) {
         </div>
 
         {/* Calendar Days */}
-        <div class="grid grid-cols-7 gap-2">
+        <div class="grid grid-cols-7 gap-1 sm:gap-2">
           {calendarDays.map((dayData, index) => (
             <CalendarDay key={index} dayData={dayData} />
           ))}
+        </div>
+
+        {/* Mobile-friendly note */}
+        <div class="block sm:hidden mt-4 pt-4 border-t border-gray-200">
+          <p class="text-xs text-gray-500 text-center">
+            Pour une meilleure expérience mobile, consultez la{" "}
+            <a href="/events" class="text-green-600 underline">
+              liste des événements
+            </a>
+          </p>
         </div>
       </section>
 
@@ -477,7 +493,7 @@ function CalendarDay(
     today.getFullYear() === new Date().getFullYear();
 
   const dayClass = `
-    min-h-[120px] p-2 border border-gray-200 rounded-lg transition-colors
+    min-h-[80px] sm:min-h-[120px] p-1 sm:p-2 border border-gray-200 rounded-lg transition-colors
     ${
     dayData.isCurrentMonth
       ? (isToday
@@ -490,26 +506,37 @@ function CalendarDay(
   return (
     <div class={dayClass}>
       <div
-        class={`text-sm font-medium mb-2 ${isToday ? "text-green-800" : ""}`}
+        class={`text-xs sm:text-sm font-medium mb-1 sm:mb-2 ${
+          isToday ? "text-green-800" : ""
+        }`}
       >
         {dayData.day}
       </div>
 
-      <div class="space-y-1">
-        {dayData.events.slice(0, 3).map((event) => (
+      <div class="space-y-0.5 sm:space-y-1">
+        {/* Show limited events with responsive count */}
+        {dayData.events.slice(0, 2).map((event) => (
           <a
             key={event.id}
             href={`/events/${event.id}`}
-            class="block text-xs bg-green-200 text-green-800 px-2 py-1 rounded truncate hover:bg-green-300 transition-colors"
+            class="block text-[10px] sm:text-xs bg-green-200 text-green-800 px-1 sm:px-2 py-0.5 sm:py-1 rounded truncate hover:bg-green-300 transition-colors"
             title={`${event.title} - ${event.time}`}
           >
             {event.title}
           </a>
         ))}
 
-        {dayData.events.length > 3 && (
-          <div class="text-xs text-gray-600 text-center">
-            +{dayData.events.length - 3} autres
+        {/* Show event count indicator */}
+        {dayData.events.length > 2 && (
+          <div class="text-[10px] sm:text-xs text-gray-600 text-center">
+            <span class="block sm:hidden">
+              {dayData.events.length > 2 ? `+${dayData.events.length - 2}` : ""}
+            </span>
+            <span class="hidden sm:block">
+              {dayData.events.length > 2
+                ? `+${dayData.events.length - 2} autres`
+                : ""}
+            </span>
           </div>
         )}
       </div>
