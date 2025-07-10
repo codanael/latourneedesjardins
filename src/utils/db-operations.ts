@@ -38,7 +38,8 @@ export interface RSVP {
   user_id: number;
   user_name?: string;
   user_email?: string;
-  response: "yes" | "no" | "maybe";
+  response: "yes" | "no";
+  plus_one: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -141,11 +142,12 @@ function rowToRSVP(row: unknown[]): RSVP {
     id: row[0] as number,
     event_id: row[1] as number,
     user_id: row[2] as number,
-    response: row[3] as "yes" | "no" | "maybe",
-    created_at: row[4] as string,
-    updated_at: row[5] as string,
-    user_name: (row[6] as string) || undefined,
-    user_email: (row[7] as string) || undefined,
+    response: row[3] as "yes" | "no",
+    plus_one: Boolean(row[4]) || false,
+    created_at: row[5] as string,
+    updated_at: row[6] as string,
+    user_name: (row[7] as string) || undefined,
+    user_email: (row[8] as string) || undefined,
   };
 }
 
@@ -329,16 +331,17 @@ export function updateEvent(
 export function createOrUpdateRSVP(
   event_id: number,
   user_id: number,
-  response: "yes" | "no" | "maybe",
+  response: "yes" | "no",
+  plus_one: boolean = false,
 ): RSVP {
   const db = getDatabase();
 
   db.query(
     `
-    INSERT OR REPLACE INTO rsvps (event_id, user_id, response)
-    VALUES (?, ?, ?)
+    INSERT OR REPLACE INTO rsvps (event_id, user_id, response, plus_one)
+    VALUES (?, ?, ?, ?)
   `,
-    [event_id, user_id, response],
+    [event_id, user_id, response, plus_one],
   );
 
   return getRSVPsByEvent(event_id).find((r) => r.user_id === user_id)!;
@@ -444,7 +447,8 @@ export function getEventStats(event_id: number) {
     `
     SELECT 
       response,
-      COUNT(*) as count
+      COUNT(*) as count,
+      SUM(CASE WHEN plus_one = 1 THEN 1 ELSE 0 END) as plus_one_count
     FROM rsvps 
     WHERE event_id = ?
     GROUP BY response
@@ -452,10 +456,17 @@ export function getEventStats(event_id: number) {
     [event_id],
   );
 
-  const rsvpStats = rsvpResult.map((row) => ({
-    response: (row as unknown[])[0] as string,
-    count: (row as unknown[])[1] as number,
-  }));
+  const rsvpStats = rsvpResult.map((row) => {
+    const rowArray = row as unknown[];
+    const count = rowArray[1] as number;
+    const plusOneCount = rowArray[2] as number;
+    return {
+      response: rowArray[0] as string,
+      count: count,
+      plus_one_count: plusOneCount,
+      total_attendees: count + plusOneCount,
+    };
+  });
 
   const potluckResult = db.query(
     `

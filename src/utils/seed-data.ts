@@ -106,7 +106,7 @@ export function seedDatabase() {
       {
         event_id: createdEvents[0].id,
         user_id: createdUsers[3].id,
-        response: "maybe" as const,
+        response: "no" as const,
       },
       {
         event_id: createdEvents[0].id,
@@ -133,7 +133,7 @@ export function seedDatabase() {
       {
         event_id: createdEvents[1].id,
         user_id: createdUsers[4].id,
-        response: "maybe" as const,
+        response: "no" as const,
       },
 
       // Brunch dans les Vignes
@@ -157,7 +157,7 @@ export function seedDatabase() {
       {
         event_id: createdEvents[3].id,
         user_id: createdUsers[0].id,
-        response: "maybe" as const,
+        response: "no" as const,
       },
       {
         event_id: createdEvents[3].id,
@@ -172,7 +172,7 @@ export function seedDatabase() {
     ];
 
     for (const rsvp of rsvpData) {
-      createOrUpdateRSVP(rsvp.event_id, rsvp.user_id, rsvp.response);
+      createOrUpdateRSVP(rsvp.event_id, rsvp.user_id, rsvp.response, false);
     }
 
     // Create potluck items

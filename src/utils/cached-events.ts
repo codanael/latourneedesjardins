@@ -115,7 +115,8 @@ export async function getCachedUserRSVPs(userId: number): Promise<RSVP[]> {
  */
 export async function updateRSVPWithCache(
   eventId: number,
-  response: "yes" | "no" | "maybe",
+  response: "yes" | "no",
+  plusOne: boolean = false,
 ): Promise<boolean> {
   try {
     const apiResponse = await fetch(`/api/events/${eventId}/rsvp`, {
@@ -123,7 +124,7 @@ export async function updateRSVPWithCache(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ response }),
+      body: JSON.stringify({ response, plus_one: plusOne }),
     });
 
     if (!apiResponse.ok) {

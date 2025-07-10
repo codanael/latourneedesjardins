@@ -21,6 +21,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `deno lint` - Lint code
 - `deno check **/*.ts && deno check **/*.tsx` - Type check
 
+## Product Overview
+
+**"La Tournée des Jardins"** is a mobile-optimized web application for coordinating garden parties among friends. The platform centralizes event management, RSVP tracking, and potluck coordination.
+
+**Core Features:**
+- Event information and management
+- RSVP system (Yes/No/Maybe responses)
+- Calendar integration for event scheduling
+- Host sign-up and approval workflow
+- Potluck coordination with shared dish lists
+- Weather integration for event planning
+
+**Target Users:** Friend groups organizing garden parties, with primary focus on mobile smartphone usage.
+
 ## Architecture Overview
 
 ### Framework and Stack
@@ -95,6 +109,35 @@ Optional environment variables:
   - Database operations testing
   - Cache functionality testing
   - Environment validation testing
+
+### Site Navigation with Playwright MCP
+For automated testing and site navigation, use the Playwright MCP tools:
+
+**Setup and Navigation:**
+- `mcp__playwright__browser_navigate` - Navigate to specific pages (e.g., "http://localhost:8000")
+- `mcp__playwright__browser_snapshot` - Capture page state for analysis
+- `mcp__playwright__browser_take_screenshot` - Take screenshots for debugging
+
+**Common Navigation Paths:**
+- `/` - Home page with garden tour events
+- `/auth/login` - OAuth authentication (Google/Apple)
+- `/dashboard` - User dashboard with RSVP management
+- `/events/[id]` - Individual event details and RSVP
+- `/admin` - Admin panel for user and event management (admin role required)
+- `/api/events` - REST API for event data
+- `/api/rsvp` - REST API for RSVP management
+
+**Interactive Elements:**
+- `mcp__playwright__browser_click` - Click buttons, links, and interactive elements
+- `mcp__playwright__browser_type` - Fill forms and input fields
+- `mcp__playwright__browser_select_option` - Select dropdown options
+- `mcp__playwright__browser_wait_for` - Wait for content to load or disappear
+
+**Testing Workflows:**
+- Authentication flow testing with OAuth providers
+- Event creation and RSVP functionality
+- Admin approval workflows for hosts
+- Responsive design testing across viewport sizes
 
 ## Development Notes
 

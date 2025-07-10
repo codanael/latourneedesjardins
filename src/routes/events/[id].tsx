@@ -248,6 +248,7 @@ export default function EventDetailPage({ data }: PageProps<EventPageData>) {
               <CachedRSVPButton
                 eventId={event.id}
                 currentResponse={currentUserRsvp?.response}
+                currentPlusOne={currentUserRsvp?.plus_one}
               />
             </section>
 

@@ -51,11 +51,14 @@ export const handler: Handlers = {
 
       const requestData = await req.json();
       const response = sanitizeInput(requestData.response as string);
+      const plusOne = Boolean(requestData.plus_one);
 
       // Validate response
-      if (!response || !["yes", "no", "maybe"].includes(response)) {
+      if (!response || !["yes", "no"].includes(response)) {
         return new Response(
-          JSON.stringify({ error: "Invalid RSVP response" }),
+          JSON.stringify({
+            error: "Invalid RSVP response. Only 'yes' or 'no' are allowed.",
+          }),
           { status: 400, headers: { "Content-Type": "application/json" } },
         );
       }
@@ -64,7 +67,8 @@ export const handler: Handlers = {
       const rsvp = createOrUpdateRSVP(
         eventId,
         user.id,
-        response as "yes" | "no" | "maybe",
+        response as "yes" | "no",
+        plusOne,
       );
 
       return new Response(
@@ -73,6 +77,7 @@ export const handler: Handlers = {
           rsvp: {
             id: rsvp.id,
             response: rsvp.response,
+            plus_one: rsvp.plus_one,
             user_name: rsvp.user_name,
           },
         }),
@@ -140,6 +145,7 @@ export const handler: Handlers = {
             ? {
               id: userRsvp.id,
               response: userRsvp.response,
+              plus_one: userRsvp.plus_one,
               user_name: userRsvp.user_name,
             }
             : null,

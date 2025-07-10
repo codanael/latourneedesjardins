@@ -35,7 +35,7 @@ export const handler: Handlers = {
         const stats = getEventStats(event.id);
         const rsvp_count = stats.rsvp_stats
           .filter((stat) => stat.response === "yes")
-          .reduce((sum, stat) => sum + stat.count, 0);
+          .reduce((sum, stat) => sum + (stat.total_attendees || stat.count), 0);
 
         return {
           ...event,

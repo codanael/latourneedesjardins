@@ -6,44 +6,58 @@ import { updateRSVPWithCache } from "../utils/cached-events.ts";
 
 interface CachedRSVPButtonProps {
   eventId: number;
-  currentResponse?: "yes" | "no" | "maybe";
+  currentResponse?: "yes" | "no";
+  currentPlusOne?: boolean;
 }
 
 export default function CachedRSVPButton({
   eventId,
   currentResponse,
+  currentPlusOne,
 }: CachedRSVPButtonProps) {
-  const response: Signal<"yes" | "no" | "maybe" | undefined> = useSignal(
+  const response: Signal<"yes" | "no" | undefined> = useSignal(
     currentResponse,
   );
+  const plusOne: Signal<boolean> = useSignal(currentPlusOne || false);
   const isLoading: Signal<boolean> = useSignal(false);
   const error: Signal<string | null> = useSignal(null);
 
-  const handleRSVP = async (newResponse: "yes" | "no" | "maybe") => {
+  const handleRSVP = async (
+    newResponse: "yes" | "no",
+    newPlusOne: boolean = false,
+  ) => {
     // Optimistic update
     const previousResponse = response.value;
+    const previousPlusOne = plusOne.value;
     response.value = newResponse;
+    plusOne.value = newPlusOne;
     isLoading.value = true;
     error.value = null;
 
     try {
-      const success = await updateRSVPWithCache(eventId, newResponse);
+      const success = await updateRSVPWithCache(
+        eventId,
+        newResponse,
+        newPlusOne,
+      );
 
       if (!success) {
         // Revert optimistic update on failure
         response.value = previousResponse;
+        plusOne.value = previousPlusOne;
         error.value = "Erreur lors de la mise à jour de votre RSVP";
       } else {
         // Dispatch event to notify other components
         globalThis.dispatchEvent(
           new CustomEvent("rsvp-updated", {
-            detail: { eventId, response: newResponse },
+            detail: { eventId, response: newResponse, plus_one: newPlusOne },
           }),
         );
       }
     } catch (err) {
       // Revert optimistic update on error
       response.value = previousResponse;
+      plusOne.value = previousPlusOne;
       error.value = "Erreur de connexion";
       console.error("RSVP update failed:", err);
     } finally {
@@ -51,7 +65,7 @@ export default function CachedRSVPButton({
     }
   };
 
-  const getButtonClass = (buttonResponse: "yes" | "no" | "maybe") => {
+  const getButtonClass = (buttonResponse: "yes" | "no") => {
     const baseClass =
       "btn flex-1 justify-center inline-flex transition-all duration-200";
     const isSelected = response.value === buttonResponse;
@@ -68,12 +82,6 @@ export default function CachedRSVPButton({
             ? "bg-green-600 text-white hover:bg-green-700"
             : "bg-green-100 text-green-800 hover:bg-green-200"
         }`;
-      case "maybe":
-        return `${baseClass} ${
-          isSelected
-            ? "bg-yellow-600 text-white hover:bg-yellow-700"
-            : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-        }`;
       case "no":
         return `${baseClass} ${
           isSelected
@@ -82,6 +90,14 @@ export default function CachedRSVPButton({
         }`;
       default:
         return baseClass;
+    }
+  };
+
+  const handlePlusOneChange = (checked: boolean) => {
+    if (response.value === "yes") {
+      handleRSVP("yes", checked);
+    } else {
+      plusOne.value = checked;
     }
   };
 
@@ -100,7 +116,7 @@ export default function CachedRSVPButton({
       <div class="flex flex-col sm:flex-row gap-2">
         <button
           type="button"
-          onClick={() => handleRSVP("yes")}
+          onClick={() => handleRSVP("yes", plusOne.value)}
           disabled={isLoading.value}
           class={getButtonClass("yes")}
           aria-label="Confirmer ma participation"
@@ -111,18 +127,7 @@ export default function CachedRSVPButton({
 
         <button
           type="button"
-          onClick={() => handleRSVP("maybe")}
-          disabled={isLoading.value}
-          class={getButtonClass("maybe")}
-          aria-label="Peut-être participer"
-        >
-          <span class="mr-2">🤔</span>
-          {isLoading.value && response.value === "maybe" ? "..." : "Peut-être"}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleRSVP("no")}
+          onClick={() => handleRSVP("no", false)}
           disabled={isLoading.value}
           class={getButtonClass("no")}
           aria-label="Décliner la participation"
@@ -132,13 +137,34 @@ export default function CachedRSVPButton({
         </button>
       </div>
 
+      {response.value === "yes" && (
+        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+          <label class="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={plusOne.value}
+              onChange={(e) => handlePlusOneChange(e.currentTarget.checked)}
+              disabled={isLoading.value}
+              class="rounded border-green-300 text-green-600 focus:ring-green-500"
+            />
+            <span class="text-sm text-green-800">
+              J'amène un accompagnateur (+1)
+            </span>
+          </label>
+        </div>
+      )}
+
       {response.value && (
         <div class="text-sm text-gray-600 text-center">
           <p>
             Votre réponse:{"  "}
             <span class="font-medium">
-              {response.value === "yes" && "✅ Oui, je participe"}
-              {response.value === "maybe" && "🤔 Peut-être"}
+              {response.value === "yes" && (
+                <>
+                  ✅ Oui, je participe
+                  {plusOne.value && <span class="text-green-600">(+1)</span>}
+                </>
+              )}
               {response.value === "no" && "❌ Non, je ne peux pas"}
             </span>
           </p>

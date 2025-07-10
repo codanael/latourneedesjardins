@@ -87,8 +87,11 @@ export default function AttendeesPage({ data }: PageProps<AttendeesData>) {
   }
 
   const yesRsvps = rsvps.filter((r) => r.response === "yes");
-  const maybeRsvps = rsvps.filter((r) => r.response === "maybe");
   const noRsvps = rsvps.filter((r) => r.response === "no");
+  const totalAttendees = yesRsvps.reduce(
+    (total, rsvp) => total + 1 + (rsvp.plus_one ? 1 : 0),
+    0,
+  );
 
   return (
     <div class="min-h-screen bg-green-50">
@@ -140,10 +143,10 @@ export default function AttendeesPage({ data }: PageProps<AttendeesData>) {
             <div class="text-sm text-green-700">Confirmés</div>
           </div>
           <div class="bg-white rounded-lg shadow-md p-6 text-center">
-            <div class="text-3xl font-bold text-yellow-600">
-              {maybeRsvps.length}
+            <div class="text-3xl font-bold text-blue-600">
+              {totalAttendees}
             </div>
-            <div class="text-sm text-yellow-700">Peut-être</div>
+            <div class="text-sm text-blue-700">Total présents</div>
           </div>
           <div class="bg-white rounded-lg shadow-md p-6 text-center">
             <div class="text-3xl font-bold text-red-600">{noRsvps.length}</div>
@@ -182,21 +185,6 @@ export default function AttendeesPage({ data }: PageProps<AttendeesData>) {
               )}
           </section>
 
-          {/* Maybe Attendees */}
-          {maybeRsvps.length > 0 && (
-            <section class="bg-white rounded-lg shadow-md p-6">
-              <h2 class="text-2xl font-semibold text-yellow-700 mb-4 flex items-center">
-                <span class="mr-2">🤔</span>
-                Participants incertains ({maybeRsvps.length})
-              </h2>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {maybeRsvps.map((rsvp) => (
-                  <AttendeCard key={rsvp.id} rsvp={rsvp} variant="maybe" />
-                ))}
-              </div>
-            </section>
-          )}
-
           {/* Declined Attendees */}
           {noRsvps.length > 0 && (
             <section class="bg-white rounded-lg shadow-md p-6">
@@ -230,25 +218,30 @@ export default function AttendeesPage({ data }: PageProps<AttendeesData>) {
 function AttendeCard(
   { rsvp, variant }: {
     rsvp: RSVP;
-    variant: "confirmed" | "maybe" | "declined";
+    variant: "confirmed" | "declined";
   },
 ) {
   const bgColor = {
     confirmed: "bg-green-50 border-green-200",
-    maybe: "bg-yellow-50 border-yellow-200",
     declined: "bg-red-50 border-red-200",
   }[variant];
 
   const textColor = {
     confirmed: "text-green-800",
-    maybe: "text-yellow-800",
     declined: "text-red-800",
   }[variant];
 
   return (
     <div class={`p-4 rounded-lg border-2 ${bgColor}`}>
-      <div class={`font-semibold ${textColor} mb-2`}>
-        {rsvp.user_name || "Utilisateur"}
+      <div
+        class={`font-semibold ${textColor} mb-2 flex items-center justify-between`}
+      >
+        <span>{rsvp.user_name || "Utilisateur"}</span>
+        {rsvp.response === "yes" && rsvp.plus_one && (
+          <span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">
+            +1
+          </span>
+        )}
       </div>
       <div class="text-sm text-gray-600">
         Répondu le {new Date(rsvp.created_at).toLocaleDateString("fr-FR")}

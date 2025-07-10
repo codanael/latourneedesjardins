@@ -85,6 +85,20 @@ export function initializeDatabase() {
     // Column already exists, ignore the error
   }
 
+  // Add plus_one column to rsvps table if it doesn't exist
+  try {
+    db.query(`ALTER TABLE rsvps ADD COLUMN plus_one BOOLEAN DEFAULT FALSE`);
+  } catch {
+    // Column already exists, ignore the error
+  }
+
+  // Convert existing 'maybe' responses to 'no' as part of migration
+  try {
+    db.query(`UPDATE rsvps SET response = 'no' WHERE response = 'maybe'`);
+  } catch {
+    // Migration already done or table doesn't exist yet
+  }
+
   // RSVPs table
   db.query(`
     CREATE TABLE IF NOT EXISTS rsvps (
@@ -92,6 +106,7 @@ export function initializeDatabase() {
       event_id INTEGER NOT NULL,
       user_id INTEGER NOT NULL,
       response TEXT NOT NULL CHECK (response IN ('yes', 'no', 'maybe')),
+      plus_one BOOLEAN DEFAULT FALSE,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE,
