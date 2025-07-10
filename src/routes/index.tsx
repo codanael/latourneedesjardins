@@ -87,47 +87,75 @@ export default function Home({ data }: PageProps<HomeData>) {
           {events.length > 0
             ? (
               <div class="mobile-grid">
-                {events.map((event, index) => (
-                  <div
-                    key={event.id}
-                    class="card-interactive touch-manipulation animate-slide-up"
-                    style={`animation-delay: ${index * 0.1}s`}
-                  >
-                    <div class="flex items-start justify-between mb-3">
-                      <h3 class="text-lg sm:text-xl font-semibold text-green-800 flex-1">
-                        {event.title}
-                      </h3>
-                      {event.theme && (
-                        <span class="badge-accent text-xs ml-2 shrink-0">
-                          {event.theme}
-                        </span>
-                      )}
-                    </div>
-                    <div class="space-y-2 mb-4">
-                      <p class="text-gray-600 text-sm sm:text-base flex items-center bg-gray-50 px-3 py-2 rounded-lg">
-                        <span class="mr-2 text-green-600">📅</span>
-                        <span>
-                          {new Date(event.date).toLocaleDateString("fr-FR")}
-                        </span>
-                      </p>
-                      <p class="text-gray-600 text-sm sm:text-base flex items-start bg-gray-50 px-3 py-2 rounded-lg">
-                        <span class="mr-2 mt-0.5 text-green-600">📍</span>
-                        <span class="flex-1 break-words">{event.location}</span>
-                      </p>
-                      <p class="text-gray-600 text-sm sm:text-base flex items-center bg-gray-50 px-3 py-2 rounded-lg">
-                        <span class="mr-2 text-green-600">🌱</span>
-                        <span>Hôte: {event.host_name}</span>
-                      </p>
-                    </div>
+                {events.map((event, index) => {
+                  const eventDate = new Date(event.date);
+                  return (
                     <a
+                      key={event.id}
                       href={`/events/${event.id}`}
-                      class="btn btn-primary w-full justify-center inline-flex"
+                      class="card-interactive touch-manipulation animate-slide-up block hover:shadow-lg transition-shadow"
+                      style={`animation-delay: ${index * 0.1}s`}
                     >
-                      <span class="mr-1">👁️</span>
-                      Voir détails
+                      {/* Header with date badge and time */}
+                      <div class="flex items-start justify-between mb-3">
+                        <div class="badge-primary text-sm font-bold px-3 py-1.5 rounded-xl">
+                          <div class="text-center">
+                            <div class="text-xs leading-tight">
+                              {eventDate.toLocaleDateString("fr-FR", {
+                                month: "short",
+                              }).toUpperCase()}
+                            </div>
+                            <div class="text-base leading-tight font-bold">
+                              {eventDate.getDate()}
+                            </div>
+                          </div>
+                        </div>
+                        {event.time && (
+                          <div class="text-sm text-gray-600 font-medium bg-gray-50 px-2 py-1 rounded-lg">
+                            {event.time}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Title with theme */}
+                      <div class="flex items-start justify-between mb-3">
+                        <h3 class="text-lg sm:text-xl font-semibold text-green-800 flex-1">
+                          {event.title}
+                        </h3>
+                        {event.theme && (
+                          <span class="badge-accent text-xs ml-2 shrink-0">
+                            {event.theme}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Event details */}
+                      <div class="space-y-2 mb-4 text-sm text-gray-600">
+                        <p class="flex items-start">
+                          <span class="mr-2 mt-0.5 flex-shrink-0 text-green-600">
+                            📍
+                          </span>
+                          <span
+                            class="break-words leading-tight"
+                            title={event.location}
+                          >
+                            {event.location.length > 50
+                              ? event.location.substring(0, 50) + "..."
+                              : event.location}
+                          </span>
+                        </p>
+                        <p class="flex items-center">
+                          <span class="mr-2 flex-shrink-0 text-green-600">
+                            🌱
+                          </span>
+                          <span class="truncate font-medium">
+                            {event.host_name || "Hôte inconnu"}
+                          </span>
+                        </p>
+                      </div>
                     </a>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )
             : (
