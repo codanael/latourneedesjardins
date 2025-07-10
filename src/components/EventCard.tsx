@@ -14,13 +14,11 @@ interface Event {
 interface EventCardProps {
   event: Event;
   variant?: "compact" | "detailed";
-  showActions?: boolean;
   showRSVPCount?: boolean;
 }
 
 export default function EventCard(
-  { event, variant = "detailed", showActions = true, showRSVPCount = false }:
-    EventCardProps,
+  { event, variant = "detailed", showRSVPCount = false }: EventCardProps,
 ) {
   const eventDate = new Date(event.date);
   const isUpcoming = eventDate >= new Date();
@@ -42,15 +40,24 @@ export default function EventCard(
 
   if (variant === "compact") {
     return (
-      <div
-        class={`card-interactive touch-manipulation animate-fade-in ${
+      <a
+        href={`/events/${event.id}`}
+        class={`card-interactive touch-manipulation animate-fade-in block hover:shadow-lg transition-shadow ${
           isPastEvent ? "opacity-75" : ""
         }`}
       >
         {/* Header with date badge */}
         <div class="flex items-start justify-between mb-3">
           <div class="badge-primary text-sm font-bold px-3 py-1.5 rounded-xl">
-            {eventDate.getDate()}
+            <div class="text-center">
+              <div class="text-xs leading-tight">
+                {eventDate.toLocaleDateString("fr-FR", { month: "short" })
+                  .toUpperCase()}
+              </div>
+              <div class="text-base leading-tight font-bold">
+                {eventDate.getDate()}
+              </div>
+            </div>
           </div>
           {event.time && (
             <div class="text-sm text-gray-600 font-medium bg-gray-50 px-2 py-1 rounded-lg">
@@ -96,25 +103,14 @@ export default function EventCard(
             </span>
           </div>
         )}
-
-        {/* Action button */}
-        {showActions && (
-          <a
-            href={`/events/${event.id}`}
-            class="btn btn-primary text-sm w-full justify-center inline-flex"
-            aria-label={`Voir détails de l'événement ${event.title}`}
-          >
-            <span class="mr-1">👁️</span>
-            Voir détails
-          </a>
-        )}
-      </div>
+      </a>
     );
   }
 
   return (
-    <div
-      class={`card-elevated touch-manipulation animate-slide-up ${
+    <a
+      href={`/events/${event.id}`}
+      class={`card-elevated touch-manipulation animate-slide-up block hover:shadow-xl transition-shadow ${
         isPastEvent ? "opacity-75" : ""
       }`}
     >
@@ -202,24 +198,7 @@ export default function EventCard(
             )}
           </div>
         </div>
-
-        {/* Actions */}
-        {showActions && (
-          <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-100">
-            <a
-              href={`/events/${event.id}`}
-              class="btn btn-primary flex-1 justify-center inline-flex"
-              aria-label={`Voir détails de l'événement ${event.title}`}
-            >
-              <span class="mr-2">👁️</span>
-              Voir détails
-              {isUpcoming && (
-                <span class="ml-2 text-xs opacity-75">(+ RSVP)</span>
-              )}
-            </a>
-          </div>
-        )}
       </div>
-    </div>
+    </a>
   );
 }
