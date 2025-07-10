@@ -122,15 +122,6 @@ export default function LoginPage({ data }: PageProps<LoginData>) {
           </p>
         </div>
 
-        <div class="mt-6 text-center">
-          <a
-            href="/"
-            class="text-green-600 hover:text-green-800 text-sm font-medium hover:underline transition-all duration-200"
-          >
-            ← Retour à l'accueil
-          </a>
-        </div>
-
         {/* Development Mock Login */}
         {Deno.env.get("DENO_ENV") !== "production" && (
           <div class="mt-6 pt-6 border-t border-gray-200">
