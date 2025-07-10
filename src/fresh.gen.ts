@@ -40,6 +40,7 @@ import * as $AddressValidator from "./islands/AddressValidator.tsx";
 import * as $AttendeeActions from "./islands/AttendeeActions.tsx";
 import * as $CachedPotluckManager from "./islands/CachedPotluckManager.tsx";
 import * as $CachedRSVPButton from "./islands/CachedRSVPButton.tsx";
+import * as $CollapsibleWeatherSection from "./islands/CollapsibleWeatherSection.tsx";
 import * as $Counter from "./islands/Counter.tsx";
 import * as $DeleteEventButton from "./islands/DeleteEventButton.tsx";
 import * as $FilteredEventsList from "./islands/FilteredEventsList.tsx";
@@ -90,6 +91,7 @@ const manifest = {
     "./islands/AttendeeActions.tsx": $AttendeeActions,
     "./islands/CachedPotluckManager.tsx": $CachedPotluckManager,
     "./islands/CachedRSVPButton.tsx": $CachedRSVPButton,
+    "./islands/CollapsibleWeatherSection.tsx": $CollapsibleWeatherSection,
     "./islands/Counter.tsx": $Counter,
     "./islands/DeleteEventButton.tsx": $DeleteEventButton,
     "./islands/FilteredEventsList.tsx": $FilteredEventsList,

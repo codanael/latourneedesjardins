@@ -322,6 +322,58 @@
   .bg-accent-gradient {
     @apply bg-gradient-to-br from-accent-50 to-accent-100;
   }
+
+  /* Weather-specific mobile improvements */
+  .weather-forecast-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 0 16px 8px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .weather-forecast-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .weather-forecast-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 2px;
+  }
+
+  .weather-forecast-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+  }
+
+  .weather-card {
+    flex-shrink: 0;
+    width: 100px;
+    scroll-snap-align: center;
+  }
+
+  @media (max-width: 640px) {
+    .weather-card {
+      width: 85px;
+    }
+  }
+
+  /* Animations */
+  .animate-fadeIn {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 /* Performance optimizations */
