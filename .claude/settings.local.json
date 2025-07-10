@@ -20,7 +20,15 @@
       "Bash(DENO_ENV=test deno test tests/cache.test.ts --allow-all)",
       "Bash(DENO_ENV=test deno test tests/api-events.test.ts --allow-all)",
       "WebFetch(domain:docs.deno.com)",
-      "WebFetch(domain:nominatim.org)"
+      "WebFetch(domain:nominatim.org)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_install",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_select_option",
+      "mcp__playwright__browser_hover",
+      "mcp__playwright__browser_type",
+      "Bash(git push:*)"
     ],
     "deny": []
   }
